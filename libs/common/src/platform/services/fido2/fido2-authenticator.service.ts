@@ -43,7 +43,7 @@ export class Fido2AuthenticatorService implements Fido2AuthenticatorServiceAbstr
     private userInterface: Fido2UserInterfaceService,
     private syncService: SyncService,
     private logService?: LogService,
-  ) {}
+  ) { }
 
   async makeCredential(
     params: Fido2AuthenticatorMakeCredentialsParams,
@@ -112,6 +112,7 @@ export class Fido2AuthenticatorService implements Fido2AuthenticatorServiceAbstr
       const response = await userInterfaceSession.confirmNewCredential({
         credentialName: params.rpEntity.name,
         userName: params.userEntity.name,
+        userHandle: Fido2Utils.bufferToString(params.userEntity.id),
         userVerification: params.requireUserVerification,
         rpId: params.rpEntity.id,
       });
@@ -319,7 +320,7 @@ export class Fido2AuthenticatorService implements Fido2AuthenticatorServiceAbstr
       try {
         ids.push(guidToStandardFormat(credential.id));
         // eslint-disable-next-line no-empty
-      } catch {}
+      } catch { }
     }
 
     if (ids.length === 0) {
@@ -349,7 +350,7 @@ export class Fido2AuthenticatorService implements Fido2AuthenticatorServiceAbstr
       try {
         ids.push(guidToStandardFormat(credential.id));
         // eslint-disable-next-line no-empty
-      } catch {}
+      } catch { }
     }
 
     if (ids.length === 0) {
