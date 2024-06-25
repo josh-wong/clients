@@ -2,7 +2,7 @@ import { EFFLongWordList } from "@bitwarden/common/platform/misc/wordlist";
 
 import { Randomizer } from "../abstractions/randomizer";
 
-const SUBADDRESS_PARSER = new RegExp("(?<username>[^@+]+)(?<subaddress>\\+.+)?(?<domain>@.+)");
+import { SUBADDRESS_PARSER } from "./parsers";
 
 /** Generation algorithms that produce randomized email addresses */
 export class EmailRandomizer {
