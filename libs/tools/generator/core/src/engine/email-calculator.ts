@@ -1,4 +1,4 @@
-import { SUBADDRESS_PARSER } from "./parsers";
+import { SUBADDRESS_PARSER } from "./data";
 
 /**
  * Appends appendText to the subaddress of an email address.

@@ -2,7 +2,7 @@ import { EFFLongWordList } from "@bitwarden/common/platform/misc/wordlist";
 
 import { Randomizer } from "../abstractions/randomizer";
 
-import { SUBADDRESS_PARSER } from "./parsers";
+import { SUBADDRESS_PARSER } from "./data";
 
 /** Generation algorithms that produce randomized email addresses */
 export class EmailRandomizer {
