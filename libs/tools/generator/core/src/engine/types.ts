@@ -22,3 +22,10 @@ export type EffWordListRequest = {
   number: boolean;
   capitalize: boolean;
 };
+
+export type WordsRequest = {
+  length?: number;
+  words?: Array<string>;
+  digits?: number;
+  casing?: "lowercase" | "TitleCase" | "camelCase";
+};
