@@ -7,7 +7,7 @@ describe("EmailCalculator", () => {
       (website) => {
         const calculator = new EmailCalculator();
 
-        const result = calculator.appendToSubaddress(null, website);
+        const result = calculator.appendToSubaddress(website, null);
 
         expect(result).toEqual("");
       },
@@ -18,7 +18,7 @@ describe("EmailCalculator", () => {
       (email) => {
         const calculator = new EmailCalculator();
 
-        const result = calculator.appendToSubaddress(email, "foo");
+        const result = calculator.appendToSubaddress("foo", email);
 
         expect(result).toEqual(email);
       },
@@ -27,7 +27,7 @@ describe("EmailCalculator", () => {
     it("creates a subadress part", () => {
       const calculator = new EmailCalculator();
 
-      const result = calculator.appendToSubaddress("foo@example.com", "baz");
+      const result = calculator.appendToSubaddress("baz", "foo@example.com");
 
       expect(result).toEqual("foo+baz@example.com");
     });
@@ -35,7 +35,7 @@ describe("EmailCalculator", () => {
     it("appends to a subaddress part", () => {
       const calculator = new EmailCalculator();
 
-      const result = calculator.appendToSubaddress("foo+bar@example.com", "biz");
+      const result = calculator.appendToSubaddress("biz", "foo+bar@example.com");
 
       expect(result).toEqual("foo+barbiz@example.com");
     });

@@ -1,13 +1,13 @@
-type CharacterSet = string[];
+export type CharacterSet = string[];
 
-type CharacterSets = {
+export type CharacterSets = {
   Uppercase: CharacterSet;
   Lowercase: CharacterSet;
   Digit: CharacterSet;
   Special: CharacterSet;
 };
 
-type RandomAsciiRequest = {
+export type RandomAsciiRequest = {
   all: number;
   uppercase?: number;
   lowercase?: number;
@@ -16,11 +16,9 @@ type RandomAsciiRequest = {
   ambiguous: boolean;
 };
 
-type EffWordListRequest = {
+export type EffWordListRequest = {
   words: number;
   separator: string;
   number: boolean;
   capitalize: boolean;
 };
-
-export { CharacterSet, CharacterSets, RandomAsciiRequest, EffWordListRequest };
