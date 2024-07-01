@@ -1,3 +1,9 @@
+import {
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualForOf,
+  CdkVirtualScrollableWindow,
+  CdkVirtualScrollViewport,
+} from "@angular/cdk/scrolling";
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
@@ -28,7 +34,11 @@ import { CreateOrganizationComponent } from "./clients/create-organization.compo
 import { AcceptProviderComponent } from "./manage/accept-provider.component";
 import { BulkConfirmComponent } from "./manage/bulk/bulk-confirm.component";
 import { BulkRemoveComponent } from "./manage/bulk/bulk-remove.component";
+import { BulkConfirmDialogComponent } from "./manage/dialogs/bulk-confirm-dialog.component";
+import { BulkRemoveDialogComponent } from "./manage/dialogs/bulk-remove-dialog.component";
+import { MembersDialogComponent } from "./manage/dialogs/members-dialog.component";
 import { EventsComponent } from "./manage/events.component";
+import { MembersComponent } from "./manage/members.component";
 import { PeopleComponent } from "./manage/people.component";
 import { UserAddEditComponent } from "./manage/user-add-edit.component";
 import { ProvidersLayoutComponent } from "./providers-layout.component";
@@ -51,20 +61,28 @@ import { SetupComponent } from "./setup/setup.component";
     PaymentMethodWarningsModule,
     TaxInfoComponent,
     DangerZoneComponent,
+    CdkVirtualScrollViewport,
+    CdkVirtualScrollableWindow,
+    CdkFixedSizeVirtualScroll,
+    CdkVirtualForOf,
   ],
   declarations: [
     AcceptProviderComponent,
     AccountComponent,
     AddOrganizationComponent,
     BulkConfirmComponent,
+    BulkConfirmDialogComponent,
     BulkRemoveComponent,
+    BulkRemoveDialogComponent,
     ClientsComponent,
     CreateOrganizationComponent,
     EventsComponent,
     PeopleComponent,
+    MembersComponent,
     SetupComponent,
     SetupProviderComponent,
     UserAddEditComponent,
+    MembersDialogComponent,
     CreateClientDialogComponent,
     NoClientsComponent,
     ManageClientsComponent,

@@ -21,6 +21,7 @@ export enum FeatureFlag {
   InlineMenuFieldQualification = "inline-menu-field-qualification",
   MemberAccessReport = "ac-2059-member-access-report",
   EnableTimeThreshold = "PM-5864-dollar-threshold",
+  AC2828_ProviderPortalMembersPage = "AC-2828_provider-portal-members-page",
 }
 
 export type AllowedFeatureFlagTypes = boolean | number | string;
@@ -52,6 +53,7 @@ export const DefaultFeatureFlagValue = {
   [FeatureFlag.InlineMenuFieldQualification]: FALSE,
   [FeatureFlag.MemberAccessReport]: FALSE,
   [FeatureFlag.EnableTimeThreshold]: FALSE,
+  [FeatureFlag.AC2828_ProviderPortalMembersPage]: FALSE,
 } satisfies Record<FeatureFlag, AllowedFeatureFlagTypes>;
 
 export type DefaultFeatureFlagValueType = typeof DefaultFeatureFlagValue;

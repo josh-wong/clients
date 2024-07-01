@@ -4,7 +4,6 @@ import { FormControl } from "@angular/forms";
 import { firstValueFrom, lastValueFrom, debounceTime, combineLatest, BehaviorSubject } from "rxjs";
 
 import { UserNamePipe } from "@bitwarden/angular/pipes/user-name.pipe";
-import { ModalService } from "@bitwarden/angular/services/modal.service";
 import { ApiService } from "@bitwarden/common/abstractions/api.service";
 import { OrganizationManagementPreferencesService } from "@bitwarden/common/admin-console/abstractions/organization-management-preferences/organization-management-preferences.service";
 import {
@@ -52,6 +51,10 @@ export abstract class NewBasePeopleComponent<UserView extends UserViewTypes> {
     return this.dataSource.acceptedUserCount > 0;
   }
 
+  get showBulkReinviteUsers(): boolean {
+    return this.dataSource.invitedUserCount > 0;
+  }
+
   abstract userType: typeof OrganizationUserType | typeof ProviderUserType;
   abstract userStatusType: typeof OrganizationUserStatusType | typeof ProviderUserStatusType;
 
@@ -77,7 +80,6 @@ export abstract class NewBasePeopleComponent<UserView extends UserViewTypes> {
     protected i18nService: I18nService,
     protected cryptoService: CryptoService,
     protected validationService: ValidationService,
-    protected modalService: ModalService,
     private logService: LogService,
     protected userNamePipe: UserNamePipe,
     protected dialogService: DialogService,

@@ -16,7 +16,12 @@
       <bit-nav-item
         [text]="'people' | i18n"
         route="manage/people"
-        *ngIf="provider.canManageUsers"
+        *ngIf="provider.canManageUsers && !(useProviderPortalMembersPage$ | async)"
+      ></bit-nav-item>
+      <bit-nav-item
+        [text]="'members' | i18n"
+        route="manage/members"
+        *ngIf="provider.canManageUsers && (useProviderPortalMembersPage$ | async)"
       ></bit-nav-item>
       <bit-nav-item
         [text]="'eventLogs' | i18n"

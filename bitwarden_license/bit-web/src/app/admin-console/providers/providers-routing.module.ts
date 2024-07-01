@@ -20,6 +20,7 @@ import { CreateOrganizationComponent } from "./clients/create-organization.compo
 import { providerPermissionsGuard } from "./guards/provider-permissions.guard";
 import { AcceptProviderComponent } from "./manage/accept-provider.component";
 import { EventsComponent } from "./manage/events.component";
+import { MembersComponent } from "./manage/members.component";
 import { PeopleComponent } from "./manage/people.component";
 import { ProvidersLayoutComponent } from "./providers-layout.component";
 import { AccountComponent } from "./settings/account.component";
@@ -103,6 +104,16 @@ const routes: Routes = [
                 ],
                 data: {
                   titleId: "people",
+                },
+              },
+              {
+                path: "members",
+                component: MembersComponent,
+                canActivate: [
+                  providerPermissionsGuard((provider: Provider) => provider.canManageUsers),
+                ],
+                data: {
+                  titleId: "members",
                 },
               },
               {

@@ -40,6 +40,7 @@ export class ProvidersLayoutComponent implements OnInit, OnDestroy {
 
   protected hasConsolidatedBilling$: Observable<boolean>;
   protected canAccessBilling$: Observable<boolean>;
+  protected useProviderPortalMembersPage$: Observable<boolean>;
 
   protected showPaymentMethodWarningBanners$ = this.configService.getFeatureFlag$(
     FeatureFlag.ShowPaymentMethodWarningBanners,
@@ -69,6 +70,10 @@ export class ProvidersLayoutComponent implements OnInit, OnDestroy {
         ([hasConsolidatedBilling, provider]) => hasConsolidatedBilling && provider.isProviderAdmin,
       ),
       takeUntil(this.destroy$),
+    );
+
+    this.useProviderPortalMembersPage$ = this.configService.getFeatureFlag$(
+      FeatureFlag.AC2828_ProviderPortalMembersPage,
     );
   }
 

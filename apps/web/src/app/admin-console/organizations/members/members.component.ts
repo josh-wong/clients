@@ -94,7 +94,6 @@ export class MembersComponent extends NewBasePeopleComponent<OrganizationUserVie
     apiService: ApiService,
     i18nService: I18nService,
     organizationManagementPreferencesService: OrganizationManagementPreferencesService,
-    modalService: ModalService,
     cryptoService: CryptoService,
     validationService: ValidationService,
     logService: LogService,
@@ -112,13 +111,13 @@ export class MembersComponent extends NewBasePeopleComponent<OrganizationUserVie
     private groupService: GroupService,
     private collectionService: CollectionService,
     private billingApiService: BillingApiServiceAbstraction,
+    private modalService: ModalService,
   ) {
     super(
       apiService,
       i18nService,
       cryptoService,
       validationService,
-      modalService,
       logService,
       userNamePipe,
       dialogService,
@@ -564,7 +563,7 @@ export class MembersComponent extends NewBasePeopleComponent<OrganizationUserVie
           users: users,
           filteredUsers: filteredUsers,
           request: response,
-          successfullMessage: this.i18nService.t("bulkReinviteMessage"),
+          successfulMessage: this.i18nService.t("bulkReinviteMessage"),
         },
       });
       await lastValueFrom(dialogRef.closed);

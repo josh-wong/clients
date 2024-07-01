@@ -1,6 +1,6 @@
 import { Component, ViewChild, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { lastValueFrom } from "rxjs";
+import { firstValueFrom, lastValueFrom } from "rxjs";
 import { first } from "rxjs/operators";
 
 import { SearchPipe } from "@bitwarden/angular/pipes/search.pipe";
@@ -14,7 +14,9 @@ import { ProviderUserStatusType, ProviderUserType } from "@bitwarden/common/admi
 import { ProviderUserBulkRequest } from "@bitwarden/common/admin-console/models/request/provider/provider-user-bulk.request";
 import { ProviderUserConfirmRequest } from "@bitwarden/common/admin-console/models/request/provider/provider-user-confirm.request";
 import { ProviderUserUserDetailsResponse } from "@bitwarden/common/admin-console/models/response/provider/provider-user.response";
+import { FeatureFlag } from "@bitwarden/common/enums/feature-flag.enum";
 import { ListResponse } from "@bitwarden/common/models/response/list.response";
+import { ConfigService } from "@bitwarden/common/platform/abstractions/config/config.service";
 import { CryptoService } from "@bitwarden/common/platform/abstractions/crypto.service";
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
 import { LogService } from "@bitwarden/common/platform/abstractions/log.service";
@@ -67,6 +69,7 @@ export class PeopleComponent extends BasePeopleComponent<ProviderUserUserDetails
     private providerService: ProviderService,
     dialogService: DialogService,
     organizationManagementPreferencesService: OrganizationManagementPreferencesService,
+    private configService: ConfigService,
   ) {
     super(
       apiService,
@@ -87,6 +90,20 @@ export class PeopleComponent extends BasePeopleComponent<ProviderUserUserDetails
   ngOnInit() {
     // eslint-disable-next-line rxjs-angular/prefer-takeuntil, rxjs/no-async-subscribe
     this.route.parent.params.subscribe(async (params) => {
+      const useProviderPortalMembersPage = await this.configService.getFeatureFlag(
+        FeatureFlag.AC2828_ProviderPortalMembersPage,
+      );
+
+      if (useProviderPortalMembersPage) {
+        const queryParams = await firstValueFrom(this.route.queryParams);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.router.navigate(["../members"], {
+          relativeTo: this.route,
+          queryParams,
+        });
+        return;
+      }
+
       this.providerId = params.providerId;
       const provider = await this.providerService.get(this.providerId);
 
@@ -225,7 +242,7 @@ export class PeopleComponent extends BasePeopleComponent<ProviderUserUserDetails
           users: users,
           filteredUsers: filteredUsers,
           request: response,
-          successfullMessage: this.i18nService.t("bulkReinviteMessage"),
+          successfulMessage: this.i18nService.t("bulkReinviteMessage"),
         },
       });
       await lastValueFrom(dialogRef.closed);
