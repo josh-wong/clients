@@ -2,8 +2,7 @@ import { mock } from "jest-mock-extended";
 
 import { EFFLongWordList } from "@bitwarden/common/platform/misc/wordlist";
 
-import { Randomizer } from "../abstractions/randomizer";
-
+import { Randomizer } from "./abstractions";
 import { EmailRandomizer } from "./email-randomizer";
 
 describe("EmailRandomizer", () => {

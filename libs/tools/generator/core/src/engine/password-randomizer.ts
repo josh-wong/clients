@@ -1,7 +1,6 @@
 import { EFFLongWordList } from "@bitwarden/common/platform/misc/wordlist";
 
-import { Randomizer } from "../abstractions";
-
+import { Randomizer } from "./abstractions";
 import { Ascii } from "./data";
 import { CharacterSet, EffWordListRequest, RandomAsciiRequest } from "./types";
 
