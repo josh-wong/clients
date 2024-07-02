@@ -17,6 +17,7 @@ import {
 
 import { PasswordRepromptService } from "../../../services/password-reprompt.service";
 import { CipherFormContainer } from "../../cipher-form-container";
+import { CustomFieldsComponent } from "../custom-fields/custom-fields.component";
 
 @Component({
   selector: "vault-additional-options-section",
@@ -32,6 +33,7 @@ import { CipherFormContainer } from "../../cipher-form-container";
     ReactiveFormsModule,
     CheckboxModule,
     CommonModule,
+    CustomFieldsComponent,
   ],
 })
 export class AdditionalOptionsSectionComponent implements OnInit {

@@ -3636,5 +3636,11 @@
         "example": "Visa"
       }
     }
+  },
+  "addField": {
+    "message": "Add field"
+  },
+  "add": {
+    "message": "Add"
   }
 }
