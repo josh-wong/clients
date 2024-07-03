@@ -971,7 +971,7 @@ const safeProviders: SafeProvider[] = [
   safeProvider({
     provide: LoginEmailServiceAbstraction,
     useClass: LoginEmailService,
-    deps: [StateProvider],
+    deps: [AccountServiceAbstraction, AuthServiceAbstraction, StateProvider],
   }),
   safeProvider({
     provide: OrgDomainInternalServiceAbstraction,

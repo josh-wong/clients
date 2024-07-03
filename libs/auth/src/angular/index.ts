@@ -18,6 +18,7 @@ export * from "./input-password/password-input-result";
 
 // password callout
 export * from "./password-callout/password-callout.component";
+export * from "./vault-timeout-input/vault-timeout-input.component";
 
 // set password (JIT user)
 export * from "./set-password-jit/set-password-jit.component";
