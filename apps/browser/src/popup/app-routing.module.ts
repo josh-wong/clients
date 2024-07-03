@@ -39,6 +39,7 @@ import { TwoFactorOptionsComponent } from "../auth/popup/two-factor-options.comp
 import { TwoFactorComponent } from "../auth/popup/two-factor.component";
 import { UpdateTempPasswordComponent } from "../auth/popup/update-temp-password.component";
 import { AutofillComponent } from "../autofill/popup/settings/autofill.component";
+import { ExcludedDomainsV1Component } from "../autofill/popup/settings/excluded-domains-v1.component";
 import { ExcludedDomainsComponent } from "../autofill/popup/settings/excluded-domains.component";
 import { NotificationsSettingsV1Component } from "../autofill/popup/settings/notifications-v1.component";
 import { NotificationsSettingsComponent } from "../autofill/popup/settings/notifications.component";
@@ -322,12 +323,12 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { state: "sync" },
   },
-  {
+  ...extensionRefreshSwap(ExcludedDomainsV1Component, ExcludedDomainsComponent, {
     path: "excluded-domains",
-    component: ExcludedDomainsComponent,
+    component: ExcludedDomainsV1Component,
     canActivate: [AuthGuard],
     data: { state: "excluded-domains" },
-  },
+  }),
   {
     path: "premium",
     component: PremiumComponent,
