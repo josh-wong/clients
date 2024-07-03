@@ -13,7 +13,6 @@ import { PasswordRepromptService } from "@bitwarden/vault";
 import { CipherReportComponent } from "./cipher-report.component";
 import { cipherData } from "./reports-ciphers.mock";
 
-
 @Component({
   selector: "app-exposed-passwords-report",
   templateUrl: "exposed-passwords-report.component.html",
