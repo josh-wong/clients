@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { firstValueFrom, map } from "rxjs";
 
@@ -25,7 +25,7 @@ import { SetPasswordJitService } from "./set-password-jit.service.abstraction";
   templateUrl: "set-password-jit.component.html",
   imports: [CommonModule, InputPasswordComponent, JslibModule],
 })
-export class SetPasswordJitComponent implements OnInit, OnDestroy {
+export class SetPasswordJitComponent implements OnInit {
   email: string;
   masterPasswordPolicyOptions: MasterPasswordPolicyOptions;
   orgId: string;
@@ -47,9 +47,6 @@ export class SetPasswordJitComponent implements OnInit, OnDestroy {
     private toastService: ToastService,
     private validationService: ValidationService,
   ) {}
-  ngOnDestroy(): void {
-    throw new Error("Method not implemented.");
-  }
 
   async ngOnInit() {
     this.email = await firstValueFrom(
