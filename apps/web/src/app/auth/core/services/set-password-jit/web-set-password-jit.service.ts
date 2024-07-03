@@ -39,7 +39,7 @@ export class WebSetPasswordJitService
     );
   }
 
-  override async onSetPasswordSuccess(): Promise<void> {
+  override async runClientSpecificLogic(): Promise<void> {
     // SSO JIT accepts org invites when setting their MP, meaning
     // we can clear the deep linked url for accepting it.
     await this.routerService.getAndClearLoginRedirectUrl();

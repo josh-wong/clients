@@ -56,7 +56,7 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
       hint,
       orgSsoIdentifier,
       keysRequest,
-      kdfConfig.kdfType, // always PBKDF2
+      kdfConfig.kdfType, // kdfConfig is always DEFAULT_KDF_CONFIG (see InputPasswordComponent)
       kdfConfig.iterations,
     );
 
@@ -75,27 +75,7 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
     await this.masterPasswordService.setMasterKeyHash(localMasterKeyHash, userId);
 
     if (resetPasswordAutoEnroll) {
-      const organizationKeys = await this.organizationApiService.getKeys(orgId);
-
-      if (organizationKeys == null) {
-        throw new Error(this.i18nService.t("resetPasswordOrgKeysError"));
-      }
-
-      const publicKey = Utils.fromB64ToArray(organizationKeys.publicKey);
-
-      // RSA Encrypt user key with organization public key
-      const userKey = await firstValueFrom(this.cryptoService.userKey$(userId));
-      const encryptedUserKey = await this.cryptoService.rsaEncrypt(userKey.key, publicKey);
-
-      const resetRequest = new OrganizationUserResetPasswordEnrollmentRequest();
-      resetRequest.masterPasswordHash = masterKeyHash;
-      resetRequest.resetPasswordKey = encryptedUserKey.encryptedString;
-
-      await this.organizationUserService.putOrganizationUserResetPasswordEnrollment(
-        orgId,
-        userId,
-        resetRequest,
-      );
+      await this.handleResetPasswordAutoEnroll(masterKeyHash, orgId, userId);
     }
   }
 
@@ -132,7 +112,36 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
     await this.cryptoService.setUserKey(protectedUserKey[0], userId);
   }
 
-  onSetPasswordSuccess(): void | Promise<void> {
+  private async handleResetPasswordAutoEnroll(
+    masterKeyHash: string,
+    orgId: string,
+    userId: UserId,
+  ) {
+    const organizationKeys = await this.organizationApiService.getKeys(orgId);
+
+    if (organizationKeys == null) {
+      throw new Error(this.i18nService.t("resetPasswordOrgKeysError"));
+    }
+
+    const publicKey = Utils.fromB64ToArray(organizationKeys.publicKey);
+
+    // RSA Encrypt user key with organization public key
+    const userKey = await firstValueFrom(this.cryptoService.userKey$(userId));
+    const encryptedUserKey = await this.cryptoService.rsaEncrypt(userKey.key, publicKey);
+
+    const resetRequest = new OrganizationUserResetPasswordEnrollmentRequest();
+    resetRequest.masterPasswordHash = masterKeyHash;
+    resetRequest.resetPasswordKey = encryptedUserKey.encryptedString;
+
+    await this.organizationUserService.putOrganizationUserResetPasswordEnrollment(
+      orgId,
+      userId,
+      resetRequest,
+    );
+  }
+
+  async runClientSpecificLogic(): Promise<void> | null {
     // override in client-specific service
+    return null;
   }
 }

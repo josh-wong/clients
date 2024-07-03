@@ -10,5 +10,5 @@ export abstract class SetPasswordJitService {
     resetPasswordAutoEnroll: boolean,
     userId: UserId,
   ) => Promise<void>;
-  onSetPasswordSuccess: () => Promise<void> | void;
+  runClientSpecificLogic: () => Promise<void> | null;
 }

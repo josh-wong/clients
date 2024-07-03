@@ -1,13 +1,12 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { filter, first, firstValueFrom, map, switchMap, tap } from "rxjs";
+import { firstValueFrom, map } from "rxjs";
 
 import { JslibModule } from "@bitwarden/angular/jslib.module";
 import { OrganizationApiServiceAbstraction } from "@bitwarden/common/admin-console/abstractions/organization/organization-api.service.abstraction";
 import { PolicyApiServiceAbstraction } from "@bitwarden/common/admin-console/abstractions/policy/policy-api.service.abstraction";
 import { MasterPasswordPolicyOptions } from "@bitwarden/common/admin-console/models/domain/master-password-policy-options";
-import { OrganizationAutoEnrollStatusResponse } from "@bitwarden/common/admin-console/models/response/organization-auto-enroll-status.response";
 import { AccountService } from "@bitwarden/common/auth/abstractions/account.service";
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
 import { ValidationService } from "@bitwarden/common/platform/abstractions/validation.service";
@@ -26,7 +25,7 @@ import { SetPasswordJitService } from "./set-password-jit.service.abstraction";
   templateUrl: "set-password-jit.component.html",
   imports: [CommonModule, InputPasswordComponent, JslibModule],
 })
-export class SetPasswordJitComponent implements OnInit {
+export class SetPasswordJitComponent implements OnInit, OnDestroy {
   email: string;
   masterPasswordPolicyOptions: MasterPasswordPolicyOptions;
   orgId: string;
@@ -48,6 +47,9 @@ export class SetPasswordJitComponent implements OnInit {
     private toastService: ToastService,
     private validationService: ValidationService,
   ) {}
+  ngOnDestroy(): void {
+    throw new Error("Method not implemented.");
+  }
 
   async ngOnInit() {
     this.email = await firstValueFrom(
@@ -59,38 +61,31 @@ export class SetPasswordJitComponent implements OnInit {
 
     this.userId = (await firstValueFrom(this.accountService.activeAccount$))?.id;
 
-    this.activatedRoute.queryParams
-      .pipe(
-        first(),
-        map((qParams) => qParams?.identifier),
-        filter((orgSsoId) => orgSsoId != null),
-        tap((orgSsoId: string) => {
-          this.orgSsoIdentifier = orgSsoId;
-        }),
-        switchMap((orgSsoId: string) => this.organizationApiService.getAutoEnrollStatus(orgSsoId)),
-        tap((orgAutoEnrollStatusResponse: OrganizationAutoEnrollStatusResponse) => {
-          this.orgId = orgAutoEnrollStatusResponse.id;
-          this.resetPasswordAutoEnroll = orgAutoEnrollStatusResponse.resetPasswordEnabled;
-        }),
-        switchMap((orgAutoEnrollStatusResponse: OrganizationAutoEnrollStatusResponse) =>
-          // Must get org id from response to get master password policy options
-          this.policyApiService.getMasterPasswordPolicyOptsForOrgUser(
-            orgAutoEnrollStatusResponse.id,
-          ),
-        ),
-        tap((masterPasswordPolicyOptions: MasterPasswordPolicyOptions) => {
-          this.masterPasswordPolicyOptions = masterPasswordPolicyOptions;
-        }),
-      )
-      .subscribe({
-        error: () => {
-          this.toastService.showToast({
-            variant: "error",
-            title: null,
-            message: this.i18nService.t("errorOccurred"),
-          });
-        },
-      });
+    await this.handleQueryParams();
+  }
+
+  async handleQueryParams() {
+    const qParams = await firstValueFrom(this.activatedRoute.queryParams);
+
+    if (qParams.identifier !== null) {
+      try {
+        this.orgSsoIdentifier = qParams.identifier;
+
+        const autoEnrollStatus = await this.organizationApiService.getAutoEnrollStatus(
+          this.orgSsoIdentifier,
+        );
+        this.orgId = autoEnrollStatus.id;
+        this.resetPasswordAutoEnroll = autoEnrollStatus.resetPasswordEnabled;
+        this.masterPasswordPolicyOptions =
+          await this.policyApiService.getMasterPasswordPolicyOptsForOrgUser(autoEnrollStatus.id);
+      } catch {
+        this.toastService.showToast({
+          variant: "error",
+          title: null,
+          message: this.i18nService.t("errorOccurred"),
+        });
+      }
+    }
   }
 
   async handlePasswordFormSubmit(passwordInputResult: PasswordInputResult) {
@@ -104,15 +99,14 @@ export class SetPasswordJitComponent implements OnInit {
         this.resetPasswordAutoEnroll,
         this.userId,
       );
-
-      await this.setPasswordJitService.onSetPasswordSuccess();
-
-      await this.router.navigate(["vault"]);
+      await this.setPasswordJitService.runClientSpecificLogic();
     } catch (e) {
       this.validationService.showError(e);
       return;
     }
 
     this.submitting = false;
+
+    await this.router.navigate(["vault"]);
   }
 }
