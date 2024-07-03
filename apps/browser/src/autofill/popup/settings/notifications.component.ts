@@ -18,9 +18,9 @@ import {
 } from "@bitwarden/components";
 
 import { PopOutComponent } from "../../../platform/popup/components/pop-out.component";
+import { PopupFooterComponent } from "../../../platform/popup/layout/popup-footer.component";
 import { PopupHeaderComponent } from "../../../platform/popup/layout/popup-header.component";
 import { PopupPageComponent } from "../../../platform/popup/layout/popup-page.component";
-import { PopupTabNavigationComponent } from "../../../platform/popup/layout/popup-tab-navigation.component";
 
 @Component({
   templateUrl: "notifications.component.html",
@@ -31,8 +31,8 @@ import { PopupTabNavigationComponent } from "../../../platform/popup/layout/popu
     RouterModule,
     PopupPageComponent,
     PopupHeaderComponent,
+    PopupFooterComponent,
     PopOutComponent,
-    PopupTabNavigationComponent,
     ItemModule,
     CardComponent,
     SectionComponent,
