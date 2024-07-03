@@ -749,6 +749,9 @@
   "enableAddLoginNotification": {
     "message": "Ask to add login"
   },
+  "vaultSaveOptionsTitle": {
+    "message": "Save to vault options"
+  },
   "addLoginNotificationDesc": {
     "message": "Ask to add an item if one isn't found in your vault."
   },

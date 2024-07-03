@@ -40,6 +40,7 @@ import { TwoFactorComponent } from "../auth/popup/two-factor.component";
 import { UpdateTempPasswordComponent } from "../auth/popup/update-temp-password.component";
 import { AutofillComponent } from "../autofill/popup/settings/autofill.component";
 import { ExcludedDomainsComponent } from "../autofill/popup/settings/excluded-domains.component";
+import { NotificationsSettingsV2Component } from "../autofill/popup/settings/notifications-v2.component";
 import { NotificationsSettingsComponent } from "../autofill/popup/settings/notifications.component";
 import { PremiumComponent } from "../billing/popup/settings/premium.component";
 import BrowserPopupUtils from "../platform/popup/browser-popup-utils";
@@ -286,12 +287,12 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { state: "account-security" },
   },
-  {
+  ...extensionRefreshSwap(NotificationsSettingsComponent, NotificationsSettingsV2Component, {
     path: "notifications",
     component: NotificationsSettingsComponent,
     canActivate: [AuthGuard],
     data: { state: "notifications" },
-  },
+  }),
   ...extensionRefreshSwap(VaultSettingsComponent, VaultSettingsV2Component, {
     path: "vault-settings",
     canActivate: [AuthGuard],
