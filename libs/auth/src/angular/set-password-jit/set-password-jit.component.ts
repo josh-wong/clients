@@ -26,14 +26,14 @@ import { SetPasswordJitService } from "./set-password-jit.service.abstraction";
   imports: [CommonModule, InputPasswordComponent, JslibModule],
 })
 export class SetPasswordJitComponent implements OnInit {
-  email: string;
-  masterPasswordPolicyOptions: MasterPasswordPolicyOptions;
-  orgId: string;
-  orgSsoIdentifier: string;
-  resetPasswordAutoEnroll: boolean;
-  submitting = false;
-  syncLoading = false;
-  userId: UserId;
+  protected email: string;
+  protected masterPasswordPolicyOptions: MasterPasswordPolicyOptions;
+  protected orgId: string;
+  protected orgSsoIdentifier: string;
+  protected resetPasswordAutoEnroll: boolean;
+  protected submitting = false;
+  protected syncLoading = true;
+  protected userId: UserId;
 
   constructor(
     private accountService: AccountService,
@@ -61,7 +61,7 @@ export class SetPasswordJitComponent implements OnInit {
     await this.handleQueryParams();
   }
 
-  async handleQueryParams() {
+  private async handleQueryParams() {
     const qParams = await firstValueFrom(this.activatedRoute.queryParams);
 
     if (qParams.identifier !== null) {
@@ -85,7 +85,7 @@ export class SetPasswordJitComponent implements OnInit {
     }
   }
 
-  async handlePasswordFormSubmit(passwordInputResult: PasswordInputResult) {
+  protected async handlePasswordFormSubmit(passwordInputResult: PasswordInputResult) {
     this.submitting = true;
 
     try {
@@ -96,7 +96,7 @@ export class SetPasswordJitComponent implements OnInit {
         this.resetPasswordAutoEnroll,
         this.userId,
       );
-      await this.setPasswordJitService.runClientSpecificLogic();
+      await this.setPasswordJitService.runClientSpecificLogicAfterSetPasswordSuccess();
     } catch (e) {
       this.validationService.showError(e);
       return;

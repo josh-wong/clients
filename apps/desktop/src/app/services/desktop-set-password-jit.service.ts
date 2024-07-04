@@ -36,7 +36,7 @@ export class DesktopSetPasswordJitService
     );
   }
 
-  override async runClientSpecificLogic(): Promise<void> {
+  override async runClientSpecificLogicAfterSetPasswordSuccess(): Promise<void> {
     this.messagingService.send("redrawMenu");
   }
 }

@@ -46,7 +46,7 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
     const protectedUserKey = await this.makeProtectedUserKey(masterKey, userId);
 
     // Since this is an existing JIT provisioned user in a MP encryption org setting first password,
-    // they will not already have a user asymmetric key pair so must create it for them.
+    // they will not already have a user asymmetric key pair so we must create it for them.
     const newKeyPair = await this.cryptoService.makeKeyPair(protectedUserKey[0]);
     const keysRequest = new KeysRequest(newKeyPair[0], newKeyPair[1].encryptedString);
 
@@ -140,7 +140,7 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
     );
   }
 
-  async runClientSpecificLogic(): Promise<void> | null {
+  async runClientSpecificLogicAfterSetPasswordSuccess(): Promise<void> | null {
     // override in client-specific service
     return null;
   }
