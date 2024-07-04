@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import {
   combineLatest,
   filter,
@@ -13,8 +13,6 @@ import {
 } from "rxjs";
 
 import { OrganizationService } from "@bitwarden/common/admin-console/abstractions/organization/organization.service.abstraction";
-import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
-import { PlatformUtilsService } from "@bitwarden/common/platform/abstractions/platform-utils.service";
 import { DialogService } from "@bitwarden/components";
 
 import { ProjectCounts } from "../../models/view/counts.view";
@@ -49,10 +47,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     private secretService: SecretService,
     private accessPolicyService: AccessPolicyService,
     private serviceAccountService: ServiceAccountService,
-    private router: Router,
     private dialogService: DialogService,
-    private platformUtilsService: PlatformUtilsService,
-    private i18nService: I18nService,
     private organizationService: OrganizationService,
     private countService: CountService,
   ) {}

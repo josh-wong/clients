@@ -1,9 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { Subject, combineLatest, filter, startWith, switchMap, takeUntil } from "rxjs";
 
-import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
-import { PlatformUtilsService } from "@bitwarden/common/platform/abstractions/platform-utils.service";
 import { DialogService } from "@bitwarden/components";
 
 import { ServiceAccountCounts } from "../models/view/counts.view";
@@ -21,7 +19,6 @@ import { ServiceAccountService } from "./service-account.service";
 })
 export class ServiceAccountComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  private organizationId: string;
   private serviceAccountId: string;
 
   private onChange$ = this.serviceAccountService.serviceAccount$.pipe(
@@ -46,9 +43,6 @@ export class ServiceAccountComponent implements OnInit, OnDestroy {
     private accessPolicyService: AccessPolicyService,
     private accessService: AccessService,
     private dialogService: DialogService,
-    private router: Router,
-    private platformUtilsService: PlatformUtilsService,
-    private i18nService: I18nService,
     private countService: CountService,
   ) {}
 
