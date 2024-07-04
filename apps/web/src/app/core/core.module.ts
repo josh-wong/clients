@@ -54,7 +54,6 @@ import { VaultTimeout, VaultTimeoutStringType } from "@bitwarden/common/types/va
 
 import { PolicyListService } from "../admin-console/core/policy-list.service";
 import { WebSetPasswordJitService } from "../auth";
-import { AcceptOrganizationInviteService } from "../auth/organization-invite/accept-organization.service";
 import { HtmlStorageService } from "../core/html-storage.service";
 import { I18nService } from "../core/i18n.service";
 import { WebEnvironmentService } from "../platform/web-environment.service";
@@ -193,8 +192,6 @@ const safeProviders: SafeProvider[] = [
       OrganizationApiServiceAbstraction,
       OrganizationUserService,
       InternalUserDecryptionOptionsServiceAbstraction,
-      RouterService,
-      AcceptOrganizationInviteService,
     ],
   }),
 ];

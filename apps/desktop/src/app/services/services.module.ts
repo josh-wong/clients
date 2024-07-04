@@ -53,10 +53,7 @@ import {
   LogService,
   LogService as LogServiceAbstraction,
 } from "@bitwarden/common/platform/abstractions/log.service";
-import {
-  MessagingService,
-  MessagingService as MessagingServiceAbstraction,
-} from "@bitwarden/common/platform/abstractions/messaging.service";
+import { MessagingService as MessagingServiceAbstraction } from "@bitwarden/common/platform/abstractions/messaging.service";
 import { PlatformUtilsService as PlatformUtilsServiceAbstraction } from "@bitwarden/common/platform/abstractions/platform-utils.service";
 import { StateService as StateServiceAbstraction } from "@bitwarden/common/platform/abstractions/state.service";
 import { AbstractStorageService } from "@bitwarden/common/platform/abstractions/storage.service";
@@ -318,7 +315,6 @@ const safeProviders: SafeProvider[] = [
       OrganizationApiServiceAbstraction,
       OrganizationUserService,
       InternalUserDecryptionOptionsServiceAbstraction,
-      MessagingService,
     ],
   }),
 ];
