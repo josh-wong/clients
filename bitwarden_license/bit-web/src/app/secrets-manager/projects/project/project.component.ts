@@ -17,6 +17,7 @@ import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.servic
 import { PlatformUtilsService } from "@bitwarden/common/platform/abstractions/platform-utils.service";
 import { DialogService } from "@bitwarden/components";
 
+import { ProjectCounts } from "../../models/view/counts.view";
 import { ProjectView } from "../../models/view/project.view";
 import { SecretService } from "../../secrets/secret.service";
 import { ServiceAccountService } from "../../service-accounts/service-account.service";
@@ -26,7 +27,6 @@ import {
   ProjectDialogComponent,
   ProjectOperation,
 } from "../dialog/project-dialog.component";
-import { ProjectCounts } from "../models/view/counts.view";
 import { ProjectService } from "../project.service";
 
 @Component({
