@@ -9,10 +9,12 @@
   [attr.aria-disabled]="disabled"
   ariaCurrentWhenActive="page"
   role="link"
-  [class]="'tw-flex' + (haveEndSlot ? ' hover:tw-no-underline' : '')"
+  class="tw-flex tw-group/tab hover:tw-no-underline"
 >
-  <div [class]="'tw-inline-flex' + (haveEndSlot ? ' hover:tw-underline' : '')">
+  <div class="group-hover/tab:tw-underline">
     <ng-content></ng-content>
   </div>
-  <ng-content #endSlot select="[slot=end]"></ng-content>
+  <div class="tw-font-normal tw-ml-2 empty:tw-ml-0">
+    <ng-content select="[slot=end]"></ng-content>
+  </div>
 </a>

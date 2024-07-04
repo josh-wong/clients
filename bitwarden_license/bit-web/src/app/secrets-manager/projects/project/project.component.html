@@ -5,20 +5,20 @@
   <bit-tab-nav-bar label="Main" slot="tabs">
     <bit-tab-link [route]="['secrets']">
       {{ "secrets" | i18n }}
-      <div slot="end" class="tw-font-normal tw-text-muted tw-pl-2">
+      <div slot="end" class="tw-text-muted">
         {{ projectCounts?.secrets }}
       </div>
     </bit-tab-link>
     <ng-container *ngIf="project.write">
       <bit-tab-link [route]="['people']">
         {{ "people" | i18n }}
-        <div slot="end" class="tw-font-normal tw-text-muted tw-pl-2">
+        <div slot="end" class="tw-text-muted">
           {{ projectCounts?.people }}
         </div>
       </bit-tab-link>
       <bit-tab-link [route]="['machine-accounts']">
         {{ "machineAccounts" | i18n }}
-        <div slot="end" class="tw-font-normal tw-text-muted tw-pl-2">
+        <div slot="end" class="tw-text-muted">
           {{ projectCounts?.serviceAccounts }}
         </div>
       </bit-tab-link>
