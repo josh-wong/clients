@@ -156,7 +156,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
       orgId$,
       this.secretService.secret$.pipe(startWith(null)),
       this.projectService.project$.pipe(startWith(null)),
-      this.serviceAccountService.serviceAccount$.pipe(startWith(null)),
     ]).pipe(
       switchMap(([orgId]) => this.countService.getOrganizationCounts(orgId)),
       share(),

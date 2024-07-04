@@ -18,7 +18,6 @@ import { DialogService } from "@bitwarden/components";
 import { ProjectCounts } from "../../models/view/counts.view";
 import { ProjectView } from "../../models/view/project.view";
 import { SecretService } from "../../secrets/secret.service";
-import { ServiceAccountService } from "../../service-accounts/service-account.service";
 import { AccessPolicyService } from "../../shared/access-policies/access-policy.service";
 import { CountService } from "../../shared/counts/count.service";
 import {
@@ -46,7 +45,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
     private projectService: ProjectService,
     private secretService: SecretService,
     private accessPolicyService: AccessPolicyService,
-    private serviceAccountService: ServiceAccountService,
     private dialogService: DialogService,
     private organizationService: OrganizationService,
     private countService: CountService,
@@ -71,7 +69,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
       this.route.params,
       this.secretService.secret$.pipe(startWith(null)),
       this.accessPolicyService.accessPolicy$.pipe(startWith(null)),
-      this.serviceAccountService.serviceAccount$.pipe(startWith(null)),
     ]).pipe(switchMap(([params]) => this.countService.getProjectCounts(params.projectId)));
 
     combineLatest([projectId$, organization$, projectCounts$])
