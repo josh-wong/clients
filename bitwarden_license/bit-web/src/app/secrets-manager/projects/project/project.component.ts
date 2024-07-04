@@ -22,6 +22,7 @@ import { ProjectView } from "../../models/view/project.view";
 import { SecretService } from "../../secrets/secret.service";
 import { ServiceAccountService } from "../../service-accounts/service-account.service";
 import { AccessPolicyService } from "../../shared/access-policies/access-policy.service";
+import { CountService } from "../../shared/counts/count.service";
 import {
   OperationType,
   ProjectDialogComponent,
@@ -53,6 +54,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     private platformUtilsService: PlatformUtilsService,
     private i18nService: I18nService,
     private organizationService: OrganizationService,
+    private countService: CountService,
   ) {}
 
   ngOnInit(): void {
@@ -75,7 +77,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       this.secretService.secret$.pipe(startWith(null)),
       this.accessPolicyService.accessPolicy$.pipe(startWith(null)),
       this.serviceAccountService.serviceAccount$.pipe(startWith(null)),
-    ]).pipe(switchMap(([params]) => this.projectService.getProjectCounts(params.projectId)));
+    ]).pipe(switchMap(([params]) => this.countService.getProjectCounts(params.projectId)));
 
     combineLatest([projectId$, organization$, projectCounts$])
       .pipe(takeUntil(this.destroy$))

@@ -9,6 +9,7 @@ import { DialogService } from "@bitwarden/components";
 import { ServiceAccountCounts } from "../models/view/counts.view";
 import { ServiceAccountView } from "../models/view/service-account.view";
 import { AccessPolicyService } from "../shared/access-policies/access-policy.service";
+import { CountService } from "../shared/counts/count.service";
 
 import { AccessService } from "./access/access.service";
 import { AccessTokenCreateDialogComponent } from "./access/dialogs/access-token-create-dialog.component";
@@ -48,6 +49,7 @@ export class ServiceAccountComponent implements OnInit, OnDestroy {
     private router: Router,
     private platformUtilsService: PlatformUtilsService,
     private i18nService: I18nService,
+    private countService: CountService,
   ) {}
 
   ngOnInit(): void {
@@ -57,7 +59,9 @@ export class ServiceAccountComponent implements OnInit, OnDestroy {
       this.accessService.accessToken$.pipe(startWith(null)),
       this.onChange$,
     ]).pipe(
-      switchMap(([params, _]) => this.serviceAccountService.getCounts(params.serviceAccountId)),
+      switchMap(([params, _]) =>
+        this.countService.getServiceAccountCounts(params.serviceAccountId),
+      ),
     );
 
     combineLatest([this.serviceAccount$, serviceAccountCounts$])

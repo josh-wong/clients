@@ -47,12 +47,12 @@ import {
   SecretViewDialogParams,
 } from "../secrets/dialog/secret-view-dialog.component";
 import { SecretService } from "../secrets/secret.service";
-import { SecretsManagerService } from "../secrets-manager.service";
 import {
   ServiceAccountDialogComponent,
   ServiceAccountOperation,
 } from "../service-accounts/dialog/service-account-dialog.component";
 import { ServiceAccountService } from "../service-accounts/service-account.service";
+import { CountService } from "../shared/counts/count.service";
 import { SecretsListComponent } from "../shared/secrets-list.component";
 
 import { SMOnboardingTasks, SMOnboardingTasksService } from "./sm-onboarding-tasks.service";
@@ -95,7 +95,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
-    private secretsManagerService: SecretsManagerService,
+    private countService: CountService,
     private secretService: SecretService,
     private serviceAccountService: ServiceAccountService,
     private dialogService: DialogService,
@@ -158,7 +158,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
       this.projectService.project$.pipe(startWith(null)),
       this.serviceAccountService.serviceAccount$.pipe(startWith(null)),
     ]).pipe(
-      switchMap(([orgId]) => this.secretsManagerService.getCounts(orgId)),
+      switchMap(([orgId]) => this.countService.getOrganizationCounts(orgId)),
       share(),
     );
 

@@ -13,7 +13,6 @@ import { ProjectView } from "../models/view/project.view";
 import { BulkOperationStatus } from "../shared/dialogs/bulk-status-dialog.component";
 
 import { ProjectRequest } from "./models/requests/project.request";
-import { ProjectCountsResponse } from "./models/responses/counts.response";
 import { ProjectListItemResponse } from "./models/responses/project-list-item.response";
 import { ProjectResponse } from "./models/responses/project.response";
 
@@ -46,17 +45,6 @@ export class ProjectService {
     );
     const results = new ListResponse(r, ProjectListItemResponse);
     return await this.createProjectsListView(organizationId, results.data);
-  }
-
-  async getProjectCounts(projectId: string): Promise<ProjectCountsResponse> {
-    const r = await this.apiService.send(
-      "GET",
-      "/projects/" + projectId + "/sm-counts",
-      null,
-      true,
-      true,
-    );
-    return new ProjectCountsResponse(r);
   }
 
   async create(organizationId: string, projectView: ProjectView): Promise<ProjectView> {

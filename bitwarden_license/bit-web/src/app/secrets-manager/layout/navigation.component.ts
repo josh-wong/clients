@@ -19,8 +19,8 @@ import { SecretsManagerLogo } from "@bitwarden/web-vault/app/layouts/secrets-man
 import { OrganizationCounts } from "../models/view/counts.view";
 import { ProjectService } from "../projects/project.service";
 import { SecretService } from "../secrets/secret.service";
-import { SecretsManagerService } from "../secrets-manager.service";
 import { ServiceAccountService } from "../service-accounts/service-account.service";
+import { CountService } from "../shared/counts/count.service";
 
 @Component({
   selector: "sm-navigation",
@@ -36,7 +36,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
   constructor(
     protected route: ActivatedRoute,
     private organizationService: OrganizationService,
-    private secretsManagerService: SecretsManagerService,
+    private countService: CountService,
     private projectService: ProjectService,
     private secretService: SecretService,
     private serviceAccountService: ServiceAccountService,
@@ -62,7 +62,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
       this.serviceAccountService.serviceAccount$.pipe(startWith(null)),
     ])
       .pipe(
-        switchMap(([orgId]) => this.secretsManagerService.getCounts(orgId)),
+        switchMap(([orgId]) => this.countService.getOrganizationCounts(orgId)),
         takeUntil(this.destroy$),
       )
       .subscribe((organizationCounts) => {
