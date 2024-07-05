@@ -244,7 +244,7 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
       },
     });
 
-  getUsers = (): Promise<ProviderUser[] | ListResponse<ProviderUser>> =>
+  getUsers = (): Promise<ListResponse<ProviderUser>> =>
     this.apiService.getProviderUsers(this.providerId);
 
   reinviteUser = (id: string): Promise<void> =>
