@@ -29,9 +29,9 @@ import { CreateOrganizationComponent } from "./clients/create-organization.compo
 import { AcceptProviderComponent } from "./manage/accept-provider.component";
 import { BulkConfirmComponent } from "./manage/bulk/bulk-confirm.component";
 import { BulkRemoveComponent } from "./manage/bulk/bulk-remove.component";
+import { AddEditMemberDialogComponent } from "./manage/dialogs/add-edit-member-dialog.component";
 import { BulkConfirmDialogComponent } from "./manage/dialogs/bulk-confirm-dialog.component";
 import { BulkRemoveDialogComponent } from "./manage/dialogs/bulk-remove-dialog.component";
-import { MembersDialogComponent } from "./manage/dialogs/members-dialog.component";
 import { EventsComponent } from "./manage/events.component";
 import { MembersComponent } from "./manage/members.component";
 import { PeopleComponent } from "./manage/people.component";
@@ -74,7 +74,7 @@ import { SetupComponent } from "./setup/setup.component";
     SetupComponent,
     SetupProviderComponent,
     UserAddEditComponent,
-    MembersDialogComponent,
+    AddEditMemberDialogComponent,
     CreateClientDialogComponent,
     NoClientsComponent,
     ManageClientsComponent,

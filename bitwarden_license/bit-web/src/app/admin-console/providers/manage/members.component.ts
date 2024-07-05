@@ -30,13 +30,13 @@ import { PeopleTableDataSource } from "@bitwarden/web-vault/app/admin-console/co
 import { openEntityEventsDialog } from "@bitwarden/web-vault/app/admin-console/organizations/manage/entity-events.component";
 import { BulkStatusComponent } from "@bitwarden/web-vault/app/admin-console/organizations/members/components/bulk/bulk-status.component";
 
+import {
+  AddEditMemberDialogComponent,
+  AddEditMemberDialogParams,
+  AddEditMemberDialogResultType,
+} from "./dialogs/add-edit-member-dialog.component";
 import { BulkConfirmDialogComponent } from "./dialogs/bulk-confirm-dialog.component";
 import { BulkRemoveDialogComponent } from "./dialogs/bulk-remove-dialog.component";
-import {
-  MembersDialogParams,
-  MembersDialogResultType,
-  openMembersDialog,
-} from "./dialogs/members-dialog.component";
 
 type ProviderUser = ProviderUserUserDetailsResponse;
 
@@ -208,7 +208,7 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
   deleteUser = (id: string) => this.apiService.deleteProviderUser(this.providerId, id);
 
   edit = async (user: ProviderUser | null) => {
-    const data: MembersDialogParams = {
+    const data: AddEditMemberDialogParams = {
       providerId: this.providerId,
     };
 
@@ -220,15 +220,15 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
       };
     }
 
-    const dialogRef = openMembersDialog(this.dialogService, {
+    const dialogRef = AddEditMemberDialogComponent.open(this.dialogService, {
       data,
     });
 
     const result = await lastValueFrom(dialogRef.closed);
 
     switch (result) {
-      case MembersDialogResultType.Saved:
-      case MembersDialogResultType.Deleted:
+      case AddEditMemberDialogResultType.Saved:
+      case AddEditMemberDialogResultType.Deleted:
         await this.load();
         break;
     }
