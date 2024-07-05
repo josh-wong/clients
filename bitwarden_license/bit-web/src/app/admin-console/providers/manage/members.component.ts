@@ -116,7 +116,7 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
           if (queryParams.viewEvents != null) {
             const user = this.dataSource.data.find((user) => user.id === queryParams.viewEvents);
             if (user && user.status === ProviderUserStatusType.Confirmed) {
-              this.events(user);
+              this.openEventsDialog(user);
             }
           }
         }),
@@ -233,7 +233,7 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
     }
   };
 
-  events = (user: ProviderUser): DialogRef<void> =>
+  openEventsDialog = (user: ProviderUser): DialogRef<void> =>
     openEntityEventsDialog(this.dialogService, {
       data: {
         name: this.userNamePipe.transform(user),
