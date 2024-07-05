@@ -1458,6 +1458,15 @@ export default class MainBackground {
     }
   }
 
+  async sendUserKeyToDesktop(): Promise<void> {
+    const activeAccount = await firstValueFrom(this.accountService.activeAccount$);
+    const userKeyB64 = (await firstValueFrom(this.cryptoService.userKey$(activeAccount.id))).keyB64;
+    await this.nativeMessagingBackground.send({
+      command: "browserProvidedUserKey",
+      userKeyB64: userKeyB64,
+    });
+  }
+
   private scheduleNextSync() {
     if (this.syncTimeout) {
       clearTimeout(this.syncTimeout);
