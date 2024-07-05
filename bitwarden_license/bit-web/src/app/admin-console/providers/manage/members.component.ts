@@ -26,7 +26,10 @@ import { LogService } from "@bitwarden/common/platform/abstractions/log.service"
 import { ValidationService } from "@bitwarden/common/platform/abstractions/validation.service";
 import { DialogService, ToastService } from "@bitwarden/components";
 import { BaseMembersComponent } from "@bitwarden/web-vault/app/admin-console/common/base.members.component";
-import { PeopleTableDataSource } from "@bitwarden/web-vault/app/admin-console/common/people-table-data-source";
+import {
+  peopleFilter,
+  PeopleTableDataSource,
+} from "@bitwarden/web-vault/app/admin-console/common/people-table-data-source";
 import { openEntityEventsDialog } from "@bitwarden/web-vault/app/admin-console/organizations/manage/entity-events.component";
 import { BulkStatusComponent } from "@bitwarden/web-vault/app/admin-console/organizations/members/components/bulk/bulk-status.component";
 
@@ -104,7 +107,8 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
             });
           }
 
-          this.searchControl.setValue(queryParams.search);
+          this.searchControl.setValue(queryParams.search, { emitEvent: false });
+          this.dataSource.filter = peopleFilter(queryParams.search, null);
 
           this.providerId = urlParams.providerId;
           const provider = await this.providerService.get(this.providerId);
