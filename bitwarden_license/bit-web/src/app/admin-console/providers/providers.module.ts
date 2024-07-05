@@ -1,9 +1,4 @@
-import {
-  CdkFixedSizeVirtualScroll,
-  CdkVirtualForOf,
-  CdkVirtualScrollableWindow,
-  CdkVirtualScrollViewport,
-} from "@angular/cdk/scrolling";
+import { ScrollingModule } from "@angular/cdk/scrolling";
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
@@ -61,10 +56,7 @@ import { SetupComponent } from "./setup/setup.component";
     PaymentMethodWarningsModule,
     TaxInfoComponent,
     DangerZoneComponent,
-    CdkVirtualScrollViewport,
-    CdkVirtualScrollableWindow,
-    CdkFixedSizeVirtualScroll,
-    CdkVirtualForOf,
+    ScrollingModule,
   ],
   declarations: [
     AcceptProviderComponent,
