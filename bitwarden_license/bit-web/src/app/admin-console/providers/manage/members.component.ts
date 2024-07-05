@@ -1,7 +1,8 @@
 import { DialogRef } from "@angular/cdk/dialog";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router } from "@angular/router";
-import { combineLatest, lastValueFrom, Subject, switchMap, takeUntil } from "rxjs";
+import { combineLatest, lastValueFrom, Subject, switchMap } from "rxjs";
 import { first } from "rxjs/operators";
 
 import { UserNamePipe } from "@bitwarden/angular/pipes/user-name.pipe";
@@ -46,10 +47,7 @@ class MembersTableDataSource extends PeopleTableDataSource<ProviderUser> {
 @Component({
   templateUrl: "members.component.html",
 })
-export class MembersComponent
-  extends NewBasePeopleComponent<ProviderUser>
-  implements OnInit, OnDestroy
-{
+export class MembersComponent extends NewBasePeopleComponent<ProviderUser> {
   accessEvents = false;
   dataSource = new MembersTableDataSource();
   loading = true;
@@ -88,9 +86,7 @@ export class MembersComponent
       organizationManagementPreferencesService,
       toastService,
     );
-  }
 
-  ngOnInit(): void {
     const useProviderPortalMembersPage$ = this.configService.getFeatureFlag$(
       FeatureFlag.AC2828_ProviderPortalMembersPage,
     );
@@ -124,14 +120,9 @@ export class MembersComponent
             }
           }
         }),
-        takeUntil(this.destroy$),
+        takeUntilDestroyed(),
       )
       .subscribe();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   async bulkConfirm(): Promise<void> {
