@@ -102,6 +102,18 @@ export class SetPasswordJitComponent implements OnInit {
       return;
     }
 
+    this.toastService.showToast({
+      variant: "success",
+      title: null,
+      message: this.i18nService.t("accountSuccessfullyCreated"),
+    });
+
+    this.toastService.showToast({
+      variant: "success",
+      title: null,
+      message: this.i18nService.t("inviteAccepted"),
+    });
+
     this.submitting = false;
 
     await this.router.navigate(["vault"]);

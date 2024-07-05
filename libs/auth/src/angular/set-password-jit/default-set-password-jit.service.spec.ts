@@ -56,4 +56,8 @@ describe("DefaultSetPasswordJitService", () => {
       expect(result).toBeNull();
     });
   });
+
+  describe("setPassword", () => {
+    it("should set password successfully", async () => {});
+  });
 });
