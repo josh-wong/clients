@@ -53,6 +53,7 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
   loading = true;
   providerId: string;
   rowHeight = 62;
+  rowHeightClass = `tw-h-[62px]`;
   status: ProviderUserStatusType = null;
 
   userStatusType = ProviderUserStatusType;

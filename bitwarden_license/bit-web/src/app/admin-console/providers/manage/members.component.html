@@ -113,7 +113,12 @@
           </tr>
         </ng-container>
         <ng-template body let-rows$>
-          <tr bitRow *cdkVirtualFor="let user of rows$" alignContent="middle" class="tw-h-[62px]">
+          <tr
+            bitRow
+            *cdkVirtualFor="let user of rows$"
+            alignContent="middle"
+            [ngClass]="rowHeightClass"
+          >
             <td bitCell (click)="dataSource.checkUser(user)">
               <input type="checkbox" bitCheckbox [(ngModel)]="$any(user).checked" />
             </td>
