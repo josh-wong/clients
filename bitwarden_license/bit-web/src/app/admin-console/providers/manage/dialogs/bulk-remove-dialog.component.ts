@@ -13,11 +13,6 @@ type BulkRemoveDialogParams = {
   users: BulkUserDetails[];
 };
 
-export const openBulkRemoveDialog = (
-  dialogService: DialogService,
-  dialogConfig: DialogConfig<BulkRemoveDialogParams>,
-) => dialogService.open(BulkRemoveDialogComponent, dialogConfig);
-
 @Component({
   templateUrl: "bulk-remove-dialog.component.html",
 })
@@ -65,5 +60,9 @@ export class BulkRemoveDialogComponent {
 
   protected get removeUsersWarning() {
     return this.i18nService.t("removeOrgUsersConfirmation");
+  }
+
+  static open(dialogService: DialogService, dialogConfig: DialogConfig<BulkRemoveDialogParams>) {
+    return dialogService.open(BulkRemoveDialogComponent, dialogConfig);
   }
 }

@@ -30,8 +30,8 @@ import { PeopleTableDataSource } from "@bitwarden/web-vault/app/admin-console/co
 import { openEntityEventsDialog } from "@bitwarden/web-vault/app/admin-console/organizations/manage/entity-events.component";
 import { BulkStatusComponent } from "@bitwarden/web-vault/app/admin-console/organizations/members/components/bulk/bulk-status.component";
 
-import { openBulkConfirmDialog } from "./dialogs/bulk-confirm-dialog.component";
-import { openBulkRemoveDialog } from "./dialogs/bulk-remove-dialog.component";
+import { BulkConfirmDialogComponent } from "./dialogs/bulk-confirm-dialog.component";
+import { BulkRemoveDialogComponent } from "./dialogs/bulk-remove-dialog.component";
 import {
   MembersDialogParams,
   MembersDialogResultType,
@@ -131,7 +131,7 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
       return;
     }
 
-    const dialogRef = openBulkConfirmDialog(this.dialogService, {
+    const dialogRef = BulkConfirmDialogComponent.open(this.dialogService, {
       data: {
         providerId: this.providerId,
         users: this.dataSource.getCheckedUsers(),
@@ -186,7 +186,7 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
       return;
     }
 
-    const dialogRef = openBulkRemoveDialog(this.dialogService, {
+    const dialogRef = BulkRemoveDialogComponent.open(this.dialogService, {
       data: {
         providerId: this.providerId,
         users: this.dataSource.getCheckedUsers(),

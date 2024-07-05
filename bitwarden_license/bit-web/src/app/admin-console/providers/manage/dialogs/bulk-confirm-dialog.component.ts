@@ -1,6 +1,5 @@
 import { DIALOG_DATA, DialogConfig } from "@angular/cdk/dialog";
 import { Component, Inject, OnInit } from "@angular/core";
-import { filter } from "rxjs";
 
 import { ApiService } from "@bitwarden/common/abstractions/api.service";
 import { ProviderUserStatusType } from "@bitwarden/common/admin-console/enums";
@@ -16,11 +15,6 @@ type BulkConfirmDialogParams = {
   providerId: string;
   users: BulkUserDetails[];
 };
-
-export const openBulkConfirmDialog = (
-  dialogService: DialogService,
-  dialogConfig: DialogConfig<BulkConfirmDialogParams>,
-) => dialogService.open(BulkConfirmDialogComponent, dialogConfig);
 
 @Component({
   templateUrl: "bulk-confirm-dialog.component.html",
@@ -108,5 +102,8 @@ export class BulkConfirmDialogComponent implements OnInit {
     }
     this.loading = false;
   };
-  protected readonly filter = filter;
+
+  static open(dialogService: DialogService, dialogConfig: DialogConfig<BulkConfirmDialogParams>) {
+    return dialogService.open(BulkConfirmDialogComponent, dialogConfig);
+  }
 }
