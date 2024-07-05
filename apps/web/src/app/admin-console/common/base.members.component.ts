@@ -34,7 +34,7 @@ export type UserViewTypes = ProviderUserUserDetailsResponse | OrganizationUserVi
  * This will replace BasePeopleComponent once all subclasses have been changed over to use this class.
  */
 @Directive()
-export abstract class NewBasePeopleComponent<UserView extends UserViewTypes> {
+export abstract class BaseMembersComponent<UserView extends UserViewTypes> {
   /**
    * Shows a banner alerting the admin that users need to be confirmed.
    */

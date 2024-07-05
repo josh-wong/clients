@@ -25,7 +25,7 @@ import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.servic
 import { LogService } from "@bitwarden/common/platform/abstractions/log.service";
 import { ValidationService } from "@bitwarden/common/platform/abstractions/validation.service";
 import { DialogService, ToastService } from "@bitwarden/components";
-import { NewBasePeopleComponent } from "@bitwarden/web-vault/app/admin-console/common/new-base.people.component";
+import { BaseMembersComponent } from "@bitwarden/web-vault/app/admin-console/common/base.members.component";
 import { PeopleTableDataSource } from "@bitwarden/web-vault/app/admin-console/common/people-table-data-source";
 import { openEntityEventsDialog } from "@bitwarden/web-vault/app/admin-console/organizations/manage/entity-events.component";
 import { BulkStatusComponent } from "@bitwarden/web-vault/app/admin-console/organizations/members/components/bulk/bulk-status.component";
@@ -47,7 +47,7 @@ class MembersTableDataSource extends PeopleTableDataSource<ProviderUser> {
 @Component({
   templateUrl: "members.component.html",
 })
-export class MembersComponent extends NewBasePeopleComponent<ProviderUser> {
+export class MembersComponent extends BaseMembersComponent<ProviderUser> {
   accessEvents = false;
   dataSource = new MembersTableDataSource();
   loading = true;
