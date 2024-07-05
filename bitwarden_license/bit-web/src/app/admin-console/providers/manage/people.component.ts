@@ -31,6 +31,9 @@ import { BulkConfirmComponent } from "./bulk/bulk-confirm.component";
 import { BulkRemoveComponent } from "./bulk/bulk-remove.component";
 import { UserAddEditComponent } from "./user-add-edit.component";
 
+/**
+ * @deprecated Please use the {@link MembersComponent} instead.
+ */
 @Component({
   selector: "provider-people",
   templateUrl: "people.component.html",
