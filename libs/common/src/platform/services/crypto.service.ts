@@ -927,6 +927,10 @@ export class CryptoService implements CryptoServiceAbstraction {
     return this.userPrivateKeyHelper$(userId, false).pipe(map((keys) => keys?.userPrivateKey));
   }
 
+  userPrivateKeyWithLegacySupport$(userId: UserId): Observable<UserPrivateKey> {
+    return this.userPrivateKeyHelper$(userId, true).pipe(map((keys) => keys?.userPrivateKey));
+  }
+
   private userPrivateKeyHelper$(userId: UserId, legacySupport: boolean) {
     const userKey$ = legacySupport ? this.userKeyWithLegacySupport$(userId) : this.userKey$(userId);
     return userKey$.pipe(
@@ -1008,7 +1012,7 @@ export class CryptoService implements CryptoServiceAbstraction {
   }
 
   orgKeys$(userId: UserId) {
-    return this.cipherDecryptionKeys$(userId).pipe(map((keys) => keys?.orgKeys));
+    return this.cipherDecryptionKeys$(userId, true).pipe(map((keys) => keys?.orgKeys));
   }
 
   cipherDecryptionKeys$(
