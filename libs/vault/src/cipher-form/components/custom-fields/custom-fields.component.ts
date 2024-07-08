@@ -15,6 +15,7 @@ import {
   TypographyModule,
   CardComponent,
   IconButtonModule,
+  CheckboxModule,
 } from "@bitwarden/components";
 
 import { CipherFormContainer } from "../../cipher-form-container";
@@ -36,6 +37,7 @@ import { AddCustomFieldDialogComponent } from "./add-custom-field-dialog/add-cus
     TypographyModule,
     CardComponent,
     IconButtonModule,
+    CheckboxModule,
   ],
 })
 export class CustomFieldsComponent implements OnInit {
@@ -63,7 +65,7 @@ export class CustomFieldsComponent implements OnInit {
         const fieldView = new FieldView();
         fieldView.type = field.type;
         fieldView.name = field.name;
-        fieldView.value = field.value;
+        fieldView.value = `${field.value}`; // Use string literal to turn a boolean into a string, no impact to other strings
         return fieldView;
       });
 
@@ -80,11 +82,13 @@ export class CustomFieldsComponent implements OnInit {
 
   ngOnInit() {
     this.initialFields?.forEach((field) => {
+      const value = field.type === FieldType.Boolean ? field.value === "true" : field.value;
+
       this.fields.push(
         this.formBuilder.group({
           type: field.type,
           name: field.name,
-          value: field.value,
+          value,
         }),
       );
     });
@@ -102,11 +106,14 @@ export class CustomFieldsComponent implements OnInit {
   /** Adds a new field to the form */
   addField(type: FieldType, label: string) {
     this.dialogRef.close();
+
+    const value = type === FieldType.Boolean ? false : null;
+
     this.fields.push(
       this.formBuilder.group({
         type,
         name: label,
-        value: "",
+        value,
       }),
     );
   }
