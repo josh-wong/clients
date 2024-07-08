@@ -49,7 +49,7 @@ export class WeakPasswordsReportComponent extends CipherReportComponent implemen
   }
 
   async setCiphers() {
-    const allCiphers: any = await this.getAllCiphers();
+    const allCiphers = await this.getAllCiphers();
     this.passwordStrengthCache = new Map<string, number>();
     this.weakPasswordCiphers = [];
     this.filterStatus = [0];
