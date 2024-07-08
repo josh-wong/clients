@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
 
-import { BiometricsServiceAbstraction } from "@bitwarden/common/platform/biometrics/biometric.service.abstraction";
+import { BiometricsService } from "@bitwarden/common/platform/biometrics/biometric.service";
 
 import { BrowserApi } from "../browser/browser-api";
 
 @Injectable()
-export class BrowserBiometricsService extends BiometricsServiceAbstraction {
+export class BrowserBiometricsService extends BiometricsService {
   constructor(
     private biometricCallback: () => Promise<boolean>,
     private biometricUnlockAvailableCallback: () => Promise<boolean>,

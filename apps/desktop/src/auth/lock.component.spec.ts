@@ -28,7 +28,7 @@ import { MessagingService } from "@bitwarden/common/platform/abstractions/messag
 import { PlatformUtilsService } from "@bitwarden/common/platform/abstractions/platform-utils.service";
 import { StateService } from "@bitwarden/common/platform/abstractions/state.service";
 import { BiometricStateService } from "@bitwarden/common/platform/biometrics/biometric-state.service";
-import { BiometricsServiceAbstraction } from "@bitwarden/common/platform/biometrics/biometric.service.abstraction";
+import { BiometricsService as AbstractBiometricService } from "@bitwarden/common/platform/biometrics/biometric.service";
 import { Utils } from "@bitwarden/common/platform/misc/utils";
 import { FakeAccountService, mockAccountServiceWith } from "@bitwarden/common/spec";
 import { PasswordStrengthServiceAbstraction } from "@bitwarden/common/tools/password-strength";
@@ -168,7 +168,7 @@ describe("LockComponent", () => {
           useValue: biometricStateService,
         },
         {
-          provide: BiometricsServiceAbstraction,
+          provide: AbstractBiometricService,
           useValue: biometricsService,
         },
         {

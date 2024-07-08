@@ -63,7 +63,7 @@ import {
   ObservableStorageService,
 } from "@bitwarden/common/platform/abstractions/storage.service";
 import { BiometricStateService } from "@bitwarden/common/platform/biometrics/biometric-state.service";
-import { BiometricsServiceAbstraction } from "@bitwarden/common/platform/biometrics/biometric.service.abstraction";
+import { BiometricsService } from "@bitwarden/common/platform/biometrics/biometric.service";
 import { StateFactory } from "@bitwarden/common/platform/factories/state-factory";
 import { Message, MessageListener, MessageSender } from "@bitwarden/common/platform/messaging";
 // eslint-disable-next-line no-restricted-imports -- Used for dependency injection
@@ -225,7 +225,7 @@ const safeProviders: SafeProvider[] = [
       accountService: AccountServiceAbstraction,
       stateProvider: StateProvider,
       biometricStateService: BiometricStateService,
-      biometricsService: BiometricsServiceAbstraction,
+      biometricsService: BiometricsService,
       kdfConfigService: KdfConfigService,
     ) => {
       const cryptoService = new BrowserCryptoService(
@@ -258,7 +258,7 @@ const safeProviders: SafeProvider[] = [
       AccountServiceAbstraction,
       StateProvider,
       BiometricStateService,
-      BiometricsServiceAbstraction,
+      BiometricsService,
       KdfConfigService,
     ],
   }),
@@ -305,7 +305,7 @@ const safeProviders: SafeProvider[] = [
     deps: [ToastService, OffscreenDocumentService],
   }),
   safeProvider({
-    provide: BiometricsServiceAbstraction,
+    provide: BiometricsService,
     useFactory: () => {
       return new BrowserBiometricsService(
         async () => {

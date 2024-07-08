@@ -95,7 +95,7 @@ import {
   BiometricStateService,
   DefaultBiometricStateService,
 } from "@bitwarden/common/platform/biometrics/biometric-state.service";
-import { BiometricsServiceAbstraction } from "@bitwarden/common/platform/biometrics/biometric.service.abstraction";
+import { BiometricsService } from "@bitwarden/common/platform/biometrics/biometric.service";
 import { StateFactory } from "@bitwarden/common/platform/factories/state-factory";
 import { Message, MessageListener, MessageSender } from "@bitwarden/common/platform/messaging";
 // eslint-disable-next-line no-restricted-imports -- Used for dependency creation
@@ -330,7 +330,7 @@ export default class MainBackground {
   organizationVaultExportService: OrganizationVaultExportServiceAbstraction;
   vaultSettingsService: VaultSettingsServiceAbstraction;
   biometricStateService: BiometricStateService;
-  biometricsService: BiometricsServiceAbstraction;
+  biometricsService: BiometricsService;
   stateEventRunnerService: StateEventRunnerService;
   ssoLoginService: SsoLoginServiceAbstraction;
   billingAccountProfileStateService: BillingAccountProfileStateService;

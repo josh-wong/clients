@@ -6,14 +6,14 @@ import { passwords } from "@bitwarden/desktop-napi";
 
 import { BiometricMessage, BiometricAction } from "../../types/biometric-message";
 
-import { DesktopBiometricsServiceAbstraction } from "./biometric/index";
+import { DesktopBiometricsService } from "./biometric/index";
 
 const AuthRequiredSuffix = "_biometric";
 
 export class DesktopCredentialStorageListener {
   constructor(
     private serviceName: string,
-    private biometricService: DesktopBiometricsServiceAbstraction,
+    private biometricService: DesktopBiometricsService,
     private logService: ConsoleLogService,
   ) {}
 

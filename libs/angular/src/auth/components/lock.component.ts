@@ -32,7 +32,7 @@ import { MessagingService } from "@bitwarden/common/platform/abstractions/messag
 import { PlatformUtilsService } from "@bitwarden/common/platform/abstractions/platform-utils.service";
 import { StateService } from "@bitwarden/common/platform/abstractions/state.service";
 import { BiometricStateService } from "@bitwarden/common/platform/biometrics/biometric-state.service";
-import { BiometricsServiceAbstraction } from "@bitwarden/common/platform/biometrics/biometric.service.abstraction";
+import { BiometricsService } from "@bitwarden/common/platform/biometrics/biometric.service";
 import { KeySuffixOptions } from "@bitwarden/common/platform/enums";
 import { PasswordStrengthServiceAbstraction } from "@bitwarden/common/tools/password-strength";
 import { UserId } from "@bitwarden/common/types/guid";
@@ -87,7 +87,7 @@ export class LockComponent implements OnInit, OnDestroy {
     protected userVerificationService: UserVerificationService,
     protected pinService: PinServiceAbstraction,
     protected biometricStateService: BiometricStateService,
-    protected biometricsService: BiometricsServiceAbstraction,
+    protected biometricsService: BiometricsService,
     protected accountService: AccountService,
     protected authService: AuthService,
     protected kdfConfigService: KdfConfigService,

@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 
-import { BiometricsServiceAbstraction } from "@bitwarden/common/platform/biometrics/biometric.service.abstraction";
+import { BiometricsService } from "@bitwarden/common/platform/biometrics/biometric.service";
 
 @Injectable()
-export class ElectronBiometricsService extends BiometricsServiceAbstraction {
+export class ElectronBiometricsService extends BiometricsService {
   async supportsBiometric(): Promise<boolean> {
     return await ipc.platform.biometric.osSupported();
   }

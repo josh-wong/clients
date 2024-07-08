@@ -45,7 +45,7 @@ import { StateService as StateServiceAbstraction } from "@bitwarden/common/platf
 import { AbstractStorageService } from "@bitwarden/common/platform/abstractions/storage.service";
 import { SystemService as SystemServiceAbstraction } from "@bitwarden/common/platform/abstractions/system.service";
 import { BiometricStateService } from "@bitwarden/common/platform/biometrics/biometric-state.service";
-import { BiometricsServiceAbstraction } from "@bitwarden/common/platform/biometrics/biometric.service.abstraction";
+import { BiometricsService } from "@bitwarden/common/platform/biometrics/biometric.service";
 import { StateFactory } from "@bitwarden/common/platform/factories/state-factory";
 import { Message, MessageListener, MessageSender } from "@bitwarden/common/platform/messaging";
 // eslint-disable-next-line no-restricted-imports -- Used for dependency injection
@@ -105,7 +105,7 @@ const DESKTOP_STATE_FACTORY = new SafeInjectionToken<StateFactory<GlobalState, A
 const safeProviders: SafeProvider[] = [
   safeProvider(InitService),
   safeProvider({
-    provide: BiometricsServiceAbstraction,
+    provide: BiometricsService,
     useClass: ElectronBiometricsService,
     deps: [],
   }),

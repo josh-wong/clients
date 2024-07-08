@@ -1,6 +1,6 @@
-import { BiometricsServiceAbstraction } from "@bitwarden/common/platform/biometrics/biometric.service.abstraction";
+import { BiometricsService } from "@bitwarden/common/platform/biometrics/biometric.service";
 
-export abstract class DesktopBiometricsServiceAbstraction extends BiometricsServiceAbstraction {
+export abstract class DesktopBiometricsService extends BiometricsService {
   abstract canAuthBiometric({
     service,
     key,

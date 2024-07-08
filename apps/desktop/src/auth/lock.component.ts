@@ -25,7 +25,7 @@ import { MessagingService } from "@bitwarden/common/platform/abstractions/messag
 import { PlatformUtilsService } from "@bitwarden/common/platform/abstractions/platform-utils.service";
 import { StateService } from "@bitwarden/common/platform/abstractions/state.service";
 import { BiometricStateService } from "@bitwarden/common/platform/biometrics/biometric-state.service";
-import { BiometricsServiceAbstraction } from "@bitwarden/common/platform/biometrics/biometric.service.abstraction";
+import { BiometricsService } from "@bitwarden/common/platform/biometrics/biometric.service";
 import { PasswordStrengthServiceAbstraction } from "@bitwarden/common/tools/password-strength";
 import { SyncService } from "@bitwarden/common/vault/abstractions/sync/sync.service.abstraction";
 import { DialogService } from "@bitwarden/components";
@@ -66,7 +66,7 @@ export class LockComponent extends BaseLockComponent {
     userVerificationService: UserVerificationService,
     pinService: PinServiceAbstraction,
     biometricStateService: BiometricStateService,
-    biometricsService: BiometricsServiceAbstraction,
+    biometricsService: BiometricsService,
     accountService: AccountService,
     authService: AuthService,
     kdfConfigService: KdfConfigService,

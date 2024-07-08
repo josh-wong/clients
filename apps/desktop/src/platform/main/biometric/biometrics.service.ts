@@ -7,7 +7,7 @@ import { UserId } from "@bitwarden/common/types/guid";
 import { WindowMain } from "../../../main/window.main";
 import { ElectronBiometricsService } from "../../services/electron-biometrics.service";
 
-import { OsBiometricService } from "./biometrics.service.abstraction";
+import { OsBiometricService } from "./desktop.biometrics.service";
 
 export class BiometricsService extends ElectronBiometricsService {
   private platformSpecificService: OsBiometricService;
