@@ -1,14 +1,22 @@
 import { DIALOG_DATA, DialogConfig } from "@angular/cdk/dialog";
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject } from "@angular/core";
 
 import { ApiService } from "@bitwarden/common/abstractions/api.service";
+import {
+  OrganizationUserBulkPublicKeyResponse,
+  OrganizationUserBulkResponse,
+} from "@bitwarden/common/admin-console/abstractions/organization-user/responses";
 import { ProviderUserStatusType } from "@bitwarden/common/admin-console/enums";
 import { ProviderUserBulkConfirmRequest } from "@bitwarden/common/admin-console/models/request/provider/provider-user-bulk-confirm.request";
 import { ProviderUserBulkRequest } from "@bitwarden/common/admin-console/models/request/provider/provider-user-bulk.request";
+import { ProviderUserBulkPublicKeyResponse } from "@bitwarden/common/admin-console/models/response/provider/provider-user-bulk-public-key.response";
+import { ProviderUserBulkResponse } from "@bitwarden/common/admin-console/models/response/provider/provider-user-bulk.response";
+import { ListResponse } from "@bitwarden/common/models/response/list.response";
 import { CryptoService } from "@bitwarden/common/platform/abstractions/crypto.service";
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
-import { Utils } from "@bitwarden/common/platform/misc/utils";
+import { SymmetricCryptoKey } from "@bitwarden/common/platform/models/domain/symmetric-crypto-key";
 import { DialogService } from "@bitwarden/components";
+import { BaseBulkConfirmComponent } from "@bitwarden/web-vault/app/admin-console/organizations/members/components/bulk/base.bulk-confirm.component";
 import { BulkUserDetails } from "@bitwarden/web-vault/app/admin-console/organizations/members/components/bulk/bulk-status.component";
 
 type BulkConfirmDialogParams = {
@@ -19,31 +27,21 @@ type BulkConfirmDialogParams = {
 @Component({
   templateUrl: "bulk-confirm-dialog.component.html",
 })
-export class BulkConfirmDialogComponent implements OnInit {
+export class BulkConfirmDialogComponent extends BaseBulkConfirmComponent {
   providerId: string;
   users: BulkUserDetails[];
 
-  excludedUsers: BulkUserDetails[];
-  filteredUsers: BulkUserDetails[];
-  publicKeys: Map<string, Uint8Array> = new Map();
-  fingerprints: Map<string, string> = new Map();
-  statuses: Map<string, string> = new Map();
-
-  loading = true;
-  done = false;
-  error: string;
-
   constructor(
     private apiService: ApiService,
-    private cryptoService: CryptoService,
+    protected cryptoService: CryptoService,
     @Inject(DIALOG_DATA) protected dialogParams: BulkConfirmDialogParams,
-    private i18nService: I18nService,
+    protected i18nService: I18nService,
   ) {
+    super(cryptoService, i18nService);
+
     this.providerId = dialogParams.providerId;
     this.users = dialogParams.users;
-  }
 
-  async ngOnInit() {
     this.excludedUsers = this.users.filter(
       (user) => user.status !== ProviderUserStatusType.Accepted,
     );
@@ -55,52 +53,27 @@ export class BulkConfirmDialogComponent implements OnInit {
       this.done = true;
     }
 
-    const request = new ProviderUserBulkRequest(this.filteredUsers.map((user) => user.id));
-    const publicKeys = await this.apiService.postProviderUsersPublicKey(this.providerId, request);
-
-    for (const entry of publicKeys.data) {
-      const publicKey = Utils.fromB64ToArray(entry.key);
-      const fingerprint = await this.cryptoService.getFingerprint(entry.userId, publicKey);
-      if (fingerprint != null) {
-        this.publicKeys.set(entry.id, publicKey);
-        this.fingerprints.set(entry.id, fingerprint.join("-"));
-      }
-    }
-
     this.loading = false;
   }
 
-  submit = async () => {
-    this.loading = true;
-    try {
-      const providerKey = await this.cryptoService.getProviderKey(this.providerId);
+  protected getCryptoKey = (): Promise<SymmetricCryptoKey> =>
+    this.cryptoService.getProviderKey(this.providerId);
 
-      const userIdsWithKeys: any[] = [];
-      for (const user of this.filteredUsers) {
-        const publicKey = this.publicKeys.get(user.id);
-        if (publicKey == null) {
-          continue;
-        }
-        const encryptedKey = await this.cryptoService.rsaEncrypt(providerKey.key, publicKey);
-        userIdsWithKeys.push({
-          id: user.id,
-          key: encryptedKey.encryptedString,
-        });
-      }
+  protected getPublicKeys = async (): Promise<
+    ListResponse<OrganizationUserBulkPublicKeyResponse | ProviderUserBulkPublicKeyResponse>
+  > => {
+    const request = new ProviderUserBulkRequest(this.filteredUsers.map((user) => user.id));
+    return await this.apiService.postProviderUsersPublicKey(this.providerId, request);
+  };
 
-      const request = new ProviderUserBulkConfirmRequest(userIdsWithKeys);
-      const response = await this.apiService.postProviderUserBulkConfirm(this.providerId, request);
+  protected isAccepted = (user: BulkUserDetails): boolean =>
+    user.status === ProviderUserStatusType.Accepted;
 
-      response.data.forEach((entry) => {
-        const error = entry.error !== "" ? entry.error : this.i18nService.t("bulkConfirmMessage");
-        this.statuses.set(entry.id, error);
-      });
-
-      this.done = true;
-    } catch (e) {
-      this.error = e.message;
-    }
-    this.loading = false;
+  protected postConfirmRequest = async (
+    userIdsWithKeys: { id: string; key: string }[],
+  ): Promise<ListResponse<OrganizationUserBulkResponse | ProviderUserBulkResponse>> => {
+    const request = new ProviderUserBulkConfirmRequest(userIdsWithKeys);
+    return await this.apiService.postProviderUserBulkConfirm(this.providerId, request);
   };
 
   static open(dialogService: DialogService, dialogConfig: DialogConfig<BulkConfirmDialogParams>) {
