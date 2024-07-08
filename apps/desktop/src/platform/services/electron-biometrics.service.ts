@@ -4,10 +4,6 @@ import { BiometricsServiceAbstraction } from "@bitwarden/common/platform/biometr
 
 @Injectable()
 export class ElectronBiometricsService extends BiometricsServiceAbstraction {
-  constructor() {
-    super();
-  }
-
   async supportsBiometric(): Promise<boolean> {
     return await ipc.platform.biometric.osSupported();
   }
