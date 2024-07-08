@@ -2,6 +2,10 @@ import { Injectable } from "@angular/core";
 
 import { BiometricsService } from "@bitwarden/common/platform/biometrics/biometric.service";
 
+/**
+ * This service implement the base biometrics service to provide desktop specific functions,
+ * specifically for the renderer process by passing messages to the main process.
+ */
 @Injectable()
 export class ElectronBiometricsService extends BiometricsService {
   async supportsBiometric(): Promise<boolean> {
