@@ -1,18 +1,15 @@
-import { ApiService } from "@bitwarden/common/abstractions/api.service";
 import { CryptoService } from "@bitwarden/common/platform/abstractions/crypto.service";
 import { EncryptService } from "@bitwarden/common/platform/abstractions/encrypt.service";
-import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
 import { StateProvider } from "@bitwarden/common/platform/state";
+import { RestClient } from "@bitwarden/common/tools/integration/rpc";
 
-import { DefaultAddyIoOptions, Forwarders } from "../../data";
-import { EmailDomainOptions, SelfHostedApiOptions } from "../../types";
+import { Integrations } from "../../data";
+import { ForwarderRequestBuilder } from "../../engine/rpc";
+import { AddyIoOptions } from "../../integration/addy-io";
 import { ForwarderGeneratorStrategy } from "../forwarder-generator-strategy";
-import { ADDY_IO_FORWARDER, ADDY_IO_BUFFER } from "../storage";
 
 /** Generates a forwarding address for addy.io (formerly anon addy) */
-export class AddyIoForwarder extends ForwarderGeneratorStrategy<
-  SelfHostedApiOptions & EmailDomainOptions
-> {
+export class AddyIoForwarder extends ForwarderGeneratorStrategy<AddyIoOptions> {
   /** Instantiates the forwarder
    *  @param apiService used for ajax requests to the forwarding service
    *  @param i18nService used to look up error strings
@@ -21,80 +18,28 @@ export class AddyIoForwarder extends ForwarderGeneratorStrategy<
    *  @param stateProvider creates the durable state for options storage
    */
   constructor(
-    private apiService: ApiService,
-    private i18nService: I18nService,
+    private client: RestClient,
+    private request: ForwarderRequestBuilder,
     encryptService: EncryptService,
     keyService: CryptoService,
     stateProvider: StateProvider,
   ) {
-    super(encryptService, keyService, stateProvider, DefaultAddyIoOptions);
+    super(
+      encryptService,
+      keyService,
+      stateProvider,
+      Integrations.AddyIo.forwarder.defaultSettings as any,
+    );
   }
 
   // configuration
-  readonly key = ADDY_IO_FORWARDER;
-  readonly rolloverKey = ADDY_IO_BUFFER;
+  readonly key = Integrations.AddyIo.forwarder.settings;
+  readonly rolloverKey = Integrations.AddyIo.forwarder.importBuffer;
 
-  // request
-  generate = async (options: SelfHostedApiOptions & EmailDomainOptions) => {
-    if (!options.token || options.token === "") {
-      const error = this.i18nService.t("forwaderInvalidToken", Forwarders.AddyIo.name);
-      throw error;
-    }
-    if (!options.domain || options.domain === "") {
-      const error = this.i18nService.t("forwarderNoDomain", Forwarders.AddyIo.name);
-      throw error;
-    }
-    if (!options.baseUrl || options.baseUrl === "") {
-      const error = this.i18nService.t("forwarderNoUrl", Forwarders.AddyIo.name);
-      throw error;
-    }
-
-    let descriptionId = "forwarderGeneratedByWithWebsite";
-    if (!options.website || options.website === "") {
-      descriptionId = "forwarderGeneratedBy";
-    }
-    const description = this.i18nService.t(descriptionId, options.website ?? "");
-
-    const url = options.baseUrl + "/api/v1/aliases";
-    const request = new Request(url, {
-      redirect: "manual",
-      cache: "no-store",
-      method: "POST",
-      headers: new Headers({
-        Authorization: "Bearer " + options.token,
-        "Content-Type": "application/json",
-        "X-Requested-With": "XMLHttpRequest",
-      }),
-      body: JSON.stringify({
-        domain: options.domain,
-        description,
-      }),
-    });
-
-    const response = await this.apiService.nativeFetch(request);
-    if (response.status === 200 || response.status === 201) {
-      const json = await response.json();
-      return json?.data?.email;
-    } else if (response.status === 401) {
-      const error = this.i18nService.t("forwaderInvalidToken", Forwarders.AddyIo.name);
-      throw error;
-    } else if (response?.statusText) {
-      const error = this.i18nService.t(
-        "forwarderError",
-        Forwarders.AddyIo.name,
-        response.statusText,
-      );
-      throw error;
-    } else {
-      const error = this.i18nService.t("forwarderUnknownError", Forwarders.AddyIo.name);
-      throw error;
-    }
+  // FIXME: can be reduced into `ForwarderGeneratorStrategy`
+  generate = async (options: AddyIoOptions) => {
+    const create = this.request.createForwardingAddress(Integrations.AddyIo, options);
+    const result = await this.client.fetchJson(create, options);
+    return result;
   };
 }
-
-export const DefaultOptions = Object.freeze({
-  website: null,
-  baseUrl: "https://app.addy.io",
-  domain: "",
-  token: "",
-});

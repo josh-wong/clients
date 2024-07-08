@@ -1,4 +1,5 @@
-import { RequestOptions } from "./forwarder-options";
+import { RequestOptions } from "@bitwarden/common/tools/integration/rpc";
+
 import { UsernameGenerationMode } from "./generator-options";
 
 /** Settings supported when generating an email subaddress */

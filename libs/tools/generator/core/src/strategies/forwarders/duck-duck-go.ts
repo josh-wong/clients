@@ -1,13 +1,12 @@
-import { ApiService } from "@bitwarden/common/abstractions/api.service";
 import { CryptoService } from "@bitwarden/common/platform/abstractions/crypto.service";
 import { EncryptService } from "@bitwarden/common/platform/abstractions/encrypt.service";
-import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
 import { StateProvider } from "@bitwarden/common/platform/state";
+import { RestClient } from "@bitwarden/common/tools/integration/rpc";
 
-import { Forwarders, DefaultDuckDuckGoOptions } from "../../data";
+import { DefaultDuckDuckGoOptions, Integrations } from "../../data";
+import { ForwarderRequestBuilder } from "../../engine/rpc";
 import { ApiOptions } from "../../types";
 import { ForwarderGeneratorStrategy } from "../forwarder-generator-strategy";
-import { DUCK_DUCK_GO_FORWARDER, DUCK_DUCK_GO_BUFFER } from "../storage";
 
 /** Generates a forwarding address for DuckDuckGo */
 export class DuckDuckGoForwarder extends ForwarderGeneratorStrategy<ApiOptions> {
@@ -19,8 +18,8 @@ export class DuckDuckGoForwarder extends ForwarderGeneratorStrategy<ApiOptions> 
    *  @param stateProvider creates the durable state for options storage
    */
   constructor(
-    private apiService: ApiService,
-    private i18nService: I18nService,
+    private client: RestClient,
+    private request: ForwarderRequestBuilder,
     encryptService: EncryptService,
     keyService: CryptoService,
     stateProvider: StateProvider,
@@ -29,47 +28,13 @@ export class DuckDuckGoForwarder extends ForwarderGeneratorStrategy<ApiOptions> 
   }
 
   // configuration
-  readonly key = DUCK_DUCK_GO_FORWARDER;
-  readonly rolloverKey = DUCK_DUCK_GO_BUFFER;
+  readonly key = Integrations.DuckDuckGo.forwarder.settings;
+  readonly rolloverKey = Integrations.DuckDuckGo.forwarder.importBuffer;
 
   // request
   generate = async (options: ApiOptions): Promise<string> => {
-    if (!options.token || options.token === "") {
-      const error = this.i18nService.t("forwaderInvalidToken", Forwarders.DuckDuckGo.name);
-      throw error;
-    }
-
-    const url = "https://quack.duckduckgo.com/api/email/addresses";
-    const request = new Request(url, {
-      redirect: "manual",
-      cache: "no-store",
-      method: "POST",
-      headers: new Headers({
-        Authorization: "Bearer " + options.token,
-        "Content-Type": "application/json",
-      }),
-    });
-
-    const response = await this.apiService.nativeFetch(request);
-    if (response.status === 200 || response.status === 201) {
-      const json = await response.json();
-      if (json.address) {
-        return `${json.address}@duck.com`;
-      } else {
-        const error = this.i18nService.t("forwarderUnknownError", Forwarders.DuckDuckGo.name);
-        throw error;
-      }
-    } else if (response.status === 401) {
-      const error = this.i18nService.t("forwaderInvalidToken", Forwarders.DuckDuckGo.name);
-      throw error;
-    } else {
-      const error = this.i18nService.t("forwarderUnknownError", Forwarders.DuckDuckGo.name);
-      throw error;
-    }
+    const create = this.request.createForwardingAddress(Integrations.DuckDuckGo, options);
+    const result = await this.client.fetchJson(create, options);
+    return result;
   };
 }
-
-export const DefaultOptions = Object.freeze({
-  website: null,
-  token: "",
-});
