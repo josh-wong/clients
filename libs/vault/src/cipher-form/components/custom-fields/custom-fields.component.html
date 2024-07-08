@@ -21,9 +21,16 @@
 
   <bit-card formArrayName="fields">
     <ng-container *ngFor="let field of fields.controls; let i = index" [formGroupName]="i">
-      <bit-form-field>
+      {{ field.value.type }}
+      <bit-form-field *ngIf="field.value.type === FieldType.Text">
         <bit-label>{{ field.value.name }}</bit-label>
         <input bitInput formControlName="value" />
+      </bit-form-field>
+
+      <bit-form-field *ngIf="field.value.type === FieldType.Hidden">
+        <bit-label>{{ field.value.name }}</bit-label>
+        <input bitInput formControlName="value" type="password" />
+        <button type="button" bitIconButton bitSuffix bitPasswordInputToggle></button>
       </bit-form-field>
     </ng-container>
 

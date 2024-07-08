@@ -14,6 +14,7 @@ import {
   FormFieldModule,
   TypographyModule,
   CardComponent,
+  IconButtonModule,
 } from "@bitwarden/components";
 
 import { CipherFormContainer } from "../../cipher-form-container";
@@ -34,6 +35,7 @@ import { AddCustomFieldDialogComponent } from "./add-custom-field-dialog/add-cus
     SectionHeaderComponent,
     TypographyModule,
     CardComponent,
+    IconButtonModule,
   ],
 })
 export class CustomFieldsComponent implements OnInit {
@@ -46,6 +48,8 @@ export class CustomFieldsComponent implements OnInit {
 
   /** Reference to the add field dialog */
   dialogRef: DialogRef;
+
+  FieldType = FieldType;
 
   constructor(
     private dialogService: DialogService,
