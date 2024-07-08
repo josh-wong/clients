@@ -294,8 +294,7 @@ export class Main {
         });
       },
       (e: any) => {
-        // eslint-disable-next-line
-        console.error(e);
+        this.logService.error("Error while running migrations:", e);
       },
     );
   }
