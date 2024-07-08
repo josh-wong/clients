@@ -13,6 +13,11 @@
       <bit-label>{{ "passwordPrompt" | i18n }}</bit-label>
     </bit-form-control>
 
-    <vault-custom-fields></vault-custom-fields>
+    <vault-custom-fields *ngIf="!updatedCipherView?.fields?.length"></vault-custom-fields>
   </bit-card>
 </bit-section>
+
+<vault-custom-fields
+  *ngIf="updatedCipherView?.fields?.length"
+  [initialFields]="updatedCipherView.fields"
+></vault-custom-fields>

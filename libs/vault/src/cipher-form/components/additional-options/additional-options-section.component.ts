@@ -1,11 +1,12 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { shareReplay } from "rxjs";
 
 import { JslibModule } from "@bitwarden/angular/jslib.module";
 import { CipherRepromptType } from "@bitwarden/common/vault/enums";
+import { CipherView } from "@bitwarden/common/vault/models/view/cipher.view";
 import {
   CardComponent,
   CheckboxModule,
@@ -24,6 +25,7 @@ import { CustomFieldsComponent } from "../custom-fields/custom-fields.component"
   templateUrl: "./additional-options-section.component.html",
   standalone: true,
   imports: [
+    CommonModule,
     SectionComponent,
     SectionHeaderComponent,
     TypographyModule,
@@ -37,6 +39,8 @@ import { CustomFieldsComponent } from "../custom-fields/custom-fields.component"
   ],
 })
 export class AdditionalOptionsSectionComponent implements OnInit {
+  @Input({ required: true }) updatedCipherView: CipherView | null = null;
+
   additionalOptionsForm = this.formBuilder.group({
     notes: [null as string],
     reprompt: [false],

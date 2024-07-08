@@ -1,9 +1,32 @@
-<button
-  type="button"
-  class="tw-text-primary-600 tw-font-bold tw-flex tw-items-center tw-gap-1"
-  bitTypography="body2"
-  (click)="openAddCustomFieldDialog()"
->
-  <i class="bwi bwi-plus tw-font-bold" aria-hidden="true"></i>
-  {{ "addField" | i18n }}
-</button>
+<ng-template #addTemplate>
+  <button
+    type="button"
+    class="tw-text-primary-600 tw-font-bold tw-flex tw-items-center tw-gap-1"
+    bitTypography="body2"
+    (click)="openAddCustomFieldDialog()"
+  >
+    <i class="bwi bwi-plus tw-font-bold" aria-hidden="true"></i>
+    {{ "addField" | i18n }}
+  </button>
+</ng-template>
+
+<ng-container *ngIf="!fields?.length">
+  <ng-container *ngTemplateOutlet="addTemplate"></ng-container>
+</ng-container>
+
+<bit-section *ngIf="fields?.length" [formGroup]="customFieldsForm">
+  <bit-section-header>
+    <h2 bitTypography="h5">{{ "customFields" | i18n }}</h2>
+  </bit-section-header>
+
+  <bit-card formArrayName="fields">
+    <ng-container *ngFor="let field of fields.controls; let i = index" [formGroupName]="i">
+      <bit-form-field>
+        <bit-label>{{ field.value.name }}</bit-label>
+        <input bitInput formControlName="value" />
+      </bit-form-field>
+    </ng-container>
+
+    <ng-container *ngTemplateOutlet="addTemplate"></ng-container>
+  </bit-card>
+</bit-section>

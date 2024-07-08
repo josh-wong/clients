@@ -62,6 +62,7 @@ export class AddCustomFieldDialogComponent {
     }
   }
 
+  /** Invoke the `addField` callback with the custom field details */
   addField() {
     const { type, label } = this.customFieldForm.value;
     this.data.addField(type, label);
