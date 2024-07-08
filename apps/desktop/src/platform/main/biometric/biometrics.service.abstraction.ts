@@ -1,7 +1,6 @@
 import { BiometricsServiceAbstraction } from "@bitwarden/common/platform/biometrics/biometric.service.abstraction";
 
 export abstract class DesktopBiometricsServiceAbstraction extends BiometricsServiceAbstraction {
-  abstract supportsBiometric(): Promise<boolean>;
   abstract canAuthBiometric({
     service,
     key,
@@ -11,7 +10,6 @@ export abstract class DesktopBiometricsServiceAbstraction extends BiometricsServ
     key: string;
     userId: string;
   }): Promise<boolean>;
-  abstract authenticateBiometric(): Promise<boolean>;
   abstract getBiometricKey(service: string, key: string): Promise<string | null>;
   abstract setBiometricKey(service: string, key: string, value: string): Promise<void>;
   abstract setEncryptionKeyHalf({
