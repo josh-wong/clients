@@ -107,12 +107,12 @@ import BrowserPopupUtils from "../../platform/popup/browser-popup-utils";
 import { BrowserFileDownloadService } from "../../platform/popup/services/browser-file-download.service";
 import { BrowserStateService as StateServiceAbstraction } from "../../platform/services/abstractions/browser-state.service";
 import { ScriptInjectorService } from "../../platform/services/abstractions/script-injector.service";
-import { BrowserBiometricsService } from "../../platform/services/browser-biometrics.service";
 import { BrowserCryptoService } from "../../platform/services/browser-crypto.service";
 import { BrowserEnvironmentService } from "../../platform/services/browser-environment.service";
 import BrowserLocalStorageService from "../../platform/services/browser-local-storage.service";
 import { BrowserScriptInjectorService } from "../../platform/services/browser-script-injector.service";
 import { DefaultBrowserStateService } from "../../platform/services/default-browser-state.service";
+import { ForegroundBrowserBiometricsService } from "../../platform/services/foreground-browser-biometrics";
 import I18nService from "../../platform/services/i18n.service";
 import { ForegroundPlatformUtilsService } from "../../platform/services/platform-utils/foreground-platform-utils.service";
 import { BrowserStorageServiceProvider } from "../../platform/storage/browser-storage-service.provider";
@@ -307,25 +307,7 @@ const safeProviders: SafeProvider[] = [
   safeProvider({
     provide: BiometricsService,
     useFactory: () => {
-      return new BrowserBiometricsService(
-        async () => {
-          const response = await BrowserApi.sendMessageWithResponse<{
-            result: boolean;
-            error: string;
-          }>("biometricUnlock");
-          if (!response.result) {
-            throw response.error;
-          }
-          return response.result;
-        },
-        async () => {
-          const response = await BrowserApi.sendMessageWithResponse<{
-            result: boolean;
-            error: string;
-          }>("biometricUnlockAvailable");
-          return response.result && response.result === true;
-        },
-      );
+      return new ForegroundBrowserBiometricsService();
     },
     deps: [],
   }),

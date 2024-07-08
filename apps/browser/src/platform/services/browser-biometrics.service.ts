@@ -5,14 +5,7 @@ import { BiometricsService } from "@bitwarden/common/platform/biometrics/biometr
 import { BrowserApi } from "../browser/browser-api";
 
 @Injectable()
-export class BrowserBiometricsService extends BiometricsService {
-  constructor(
-    private biometricCallback: () => Promise<boolean>,
-    private biometricUnlockAvailableCallback: () => Promise<boolean>,
-  ) {
-    super();
-  }
-
+export abstract class BrowserBiometricsService extends BiometricsService {
   async supportsBiometric() {
     const platformInfo = await BrowserApi.getPlatformInfo();
     if (platformInfo.os === "mac" || platformInfo.os === "win") {
@@ -21,11 +14,6 @@ export class BrowserBiometricsService extends BiometricsService {
     return false;
   }
 
-  authenticateBiometric(): Promise<boolean> {
-    return this.biometricCallback();
-  }
-
-  isBiometricUnlockAvailable(): Promise<boolean> {
-    return this.biometricUnlockAvailableCallback();
-  }
+  abstract authenticateBiometric(): Promise<boolean>;
+  abstract isBiometricUnlockAvailable(): Promise<boolean>;
 }

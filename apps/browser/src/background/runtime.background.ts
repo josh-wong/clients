@@ -180,11 +180,11 @@ export default class RuntimeBackground {
         }
         break;
       case "biometricUnlock": {
-        const result = await this.main.biometricUnlock();
+        const result = await this.main.biometricsService.authenticateBiometric();
         return result;
       }
       case "biometricUnlockAvailable": {
-        const result = await this.main.biometricUnlockAvailable();
+        const result = await this.main.biometricsService.isBiometricUnlockAvailable();
         return result;
       }
       case "getUseTreeWalkerApiForPageDetailsCollectionFeatureFlag": {

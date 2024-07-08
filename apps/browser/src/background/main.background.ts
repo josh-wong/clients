@@ -217,7 +217,7 @@ import { ChromeMessageSender } from "../platform/messaging/chrome-message.sender
 import { OffscreenDocumentService } from "../platform/offscreen-document/abstractions/offscreen-document";
 import { DefaultOffscreenDocumentService } from "../platform/offscreen-document/offscreen-document.service";
 import { BrowserStateService as StateServiceAbstraction } from "../platform/services/abstractions/browser-state.service";
-import { BrowserBiometricsService } from "../platform/services/browser-biometrics.service";
+import { BackgroundBrowserBiometricsService } from "../platform/services/background-browser-biometrics.";
 import { BrowserCryptoService } from "../platform/services/browser-crypto.service";
 import { BrowserEnvironmentService } from "../platform/services/browser-environment.service";
 import BrowserLocalStorageService from "../platform/services/browser-local-storage.service";
@@ -565,10 +565,7 @@ export default class MainBackground {
 
     this.i18nService = new I18nService(BrowserApi.getUILanguage(), this.globalStateProvider);
 
-    this.biometricsService = new BrowserBiometricsService(
-      async () => this.biometricUnlock(),
-      async () => this.biometricUnlockAvailable(),
-    );
+    this.biometricsService = new BackgroundBrowserBiometricsService(this.nativeMessagingBackground);
 
     this.kdfConfigService = new KdfConfigService(this.stateProvider);
 
@@ -1447,28 +1444,6 @@ export default class MainBackground {
     if (this.systemService != null) {
       await this.systemService.clearClipboard(clipboardValue, clearMs);
     }
-  }
-
-  async biometricUnlock(): Promise<boolean> {
-    if (this.nativeMessagingBackground == null) {
-      return false;
-    }
-
-    const responsePromise = this.nativeMessagingBackground.getResponse();
-    await this.nativeMessagingBackground.send({ command: "biometricUnlock" });
-    const response = await responsePromise;
-    return response.response === "unlocked";
-  }
-
-  async biometricUnlockAvailable(): Promise<boolean> {
-    if (this.nativeMessagingBackground == null) {
-      return false;
-    }
-
-    const responsePromise = this.nativeMessagingBackground.getResponse();
-    await this.nativeMessagingBackground.send({ command: "biometricUnlockAvailable" });
-    const response = await responsePromise;
-    return response.response === "available";
   }
 
   private async fullSync(override = false) {
