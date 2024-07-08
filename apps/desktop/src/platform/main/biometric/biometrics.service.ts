@@ -5,11 +5,10 @@ import { BiometricStateService } from "@bitwarden/common/platform/biometrics/bio
 import { UserId } from "@bitwarden/common/types/guid";
 
 import { WindowMain } from "../../../main/window.main";
-import { ElectronBiometricsService } from "../../services/electron-biometrics.service";
 
-import { OsBiometricService } from "./desktop.biometrics.service";
+import { DesktopBiometricsService, OsBiometricService } from "./desktop.biometrics.service";
 
-export class BiometricsService extends ElectronBiometricsService {
+export class BiometricsService extends DesktopBiometricsService {
   private platformSpecificService: OsBiometricService;
   private clientKeyHalves = new Map<string, string>();
 
@@ -90,6 +89,10 @@ export class BiometricsService extends ElectronBiometricsService {
       },
     );
     return result;
+  }
+
+  async isBiometricUnlockAvailable(): Promise<boolean> {
+    return await this.platformSpecificService.osSupportsBiometric();
   }
 
   async getBiometricKey(service: string, storageKey: string): Promise<string | null> {

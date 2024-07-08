@@ -1,5 +1,8 @@
 import { BiometricsService } from "@bitwarden/common/platform/biometrics/biometric.service";
 
+/**
+ * This service extends the base biometrics service to provide desktop specific functions.
+ */
 export abstract class DesktopBiometricsService extends BiometricsService {
   abstract canAuthBiometric({
     service,
