@@ -5,7 +5,10 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormArray, FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 import { JslibModule } from "@bitwarden/angular/jslib.module";
-import { FieldType } from "@bitwarden/common/vault/enums";
+import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
+import { Utils } from "@bitwarden/common/platform/misc/utils";
+import { FieldType, LinkedIdType } from "@bitwarden/common/vault/enums";
+import { CipherView } from "@bitwarden/common/vault/models/view/cipher.view";
 import { FieldView } from "@bitwarden/common/vault/models/view/field.view";
 import {
   DialogService,
@@ -16,6 +19,7 @@ import {
   CardComponent,
   IconButtonModule,
   CheckboxModule,
+  SelectModule,
 } from "@bitwarden/components";
 
 import { CipherFormContainer } from "../../cipher-form-container";
@@ -38,11 +42,12 @@ import { AddCustomFieldDialogComponent } from "./add-custom-field-dialog/add-cus
     CardComponent,
     IconButtonModule,
     CheckboxModule,
+    SelectModule,
   ],
 })
 export class CustomFieldsComponent implements OnInit {
-  /** Initial custom fields associated with the cipher */
-  @Input() initialFields: FieldView[] = [];
+  /** Cipher view that is updated with the user's edits */
+  @Input() updatedCipherView: CipherView | null = null;
 
   customFieldsForm = this.formBuilder.group({
     fields: new FormArray([]),
@@ -51,23 +56,38 @@ export class CustomFieldsComponent implements OnInit {
   /** Reference to the add field dialog */
   dialogRef: DialogRef;
 
+  /** Options for Linked Fields */
+  linkedFieldOptions: { name: string; value: LinkedIdType }[] = [];
+
   FieldType = FieldType;
 
   constructor(
     private dialogService: DialogService,
     private cipherFormContainer: CipherFormContainer,
     private formBuilder: FormBuilder,
+    private i18nService: I18nService,
   ) {
     this.cipherFormContainer.registerChildForm("customFields", this.customFieldsForm);
 
     this.customFieldsForm.valueChanges.pipe(takeUntilDestroyed()).subscribe((values) => {
-      const fields = values.fields.map((field: { type: FieldType; name: string; value: any }) => {
-        const fieldView = new FieldView();
-        fieldView.type = field.type;
-        fieldView.name = field.name;
-        fieldView.value = `${field.value}`; // Use string literal to turn a boolean into a string, no impact to other strings
-        return fieldView;
-      });
+      const fields = values.fields.map(
+        (field: {
+          type: FieldType;
+          name: string;
+          value: string | null;
+          linkedId: LinkedIdType;
+        }) => {
+          // Use string literal to turn a number into a string, no impact to other strings
+          const value = typeof field.value === "number" ? `${field.value}` : field.value;
+
+          const fieldView = new FieldView();
+          fieldView.type = field.type;
+          fieldView.name = field.name;
+          fieldView.value = value;
+          fieldView.linkedId = field.linkedId;
+          return fieldView;
+        },
+      );
 
       this.cipherFormContainer.patchCipher({
         fields,
@@ -81,7 +101,14 @@ export class CustomFieldsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.initialFields?.forEach((field) => {
+    this.linkedFieldOptions = Array.from(this.updatedCipherView.linkedFieldOptions.entries() ?? [])
+      .map(([id, linkedFieldOption]) => ({
+        name: this.i18nService.t(linkedFieldOption.i18nKey),
+        value: id,
+      }))
+      .sort(Utils.getSortFunction(this.i18nService, "name"));
+
+    this.updatedCipherView.fields?.forEach((field) => {
       const value = field.type === FieldType.Boolean ? field.value === "true" : field.value;
 
       this.fields.push(
@@ -89,6 +116,7 @@ export class CustomFieldsComponent implements OnInit {
           type: field.type,
           name: field.name,
           value,
+          linkedId: field.linkedId,
         }),
       );
     });
@@ -107,13 +135,25 @@ export class CustomFieldsComponent implements OnInit {
   addField(type: FieldType, label: string) {
     this.dialogRef.close();
 
-    const value = type === FieldType.Boolean ? false : null;
+    let value = null;
+    let linkedId = null;
+
+    if (type === FieldType.Boolean) {
+      // Default to false for boolean fields
+      value = "false";
+    }
+
+    if (type === FieldType.Linked && this.linkedFieldOptions.length > 0) {
+      // Default to the first linked field option
+      linkedId = this.linkedFieldOptions[0].value;
+    }
 
     this.fields.push(
       this.formBuilder.group({
         type,
         name: label,
         value,
+        linkedId,
       }),
     );
   }

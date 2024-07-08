@@ -40,6 +40,18 @@
           <input bitCheckbox formControlName="value" type="checkbox" />
           <bit-label>{{ field.value.name }}</bit-label>
         </bit-form-control>
+
+        <!-- Linked Field -->
+        <bit-form-field *ngIf="field.value.type === FieldType.Linked">
+          <bit-label>{{ field.value.name }}</bit-label>
+          <bit-select formControlName="linkedId">
+            <bit-option
+              *ngFor="let option of linkedFieldOptions"
+              [value]="option.value"
+              [label]="option.name"
+            ></bit-option>
+          </bit-select>
+        </bit-form-field>
       </ng-container>
 
       <ng-container *ngTemplateOutlet="addTemplate"></ng-container>
