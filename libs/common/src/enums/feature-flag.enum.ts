@@ -22,6 +22,7 @@ export enum FeatureFlag {
   MemberAccessReport = "ac-2059-member-access-report",
   EnableTimeThreshold = "PM-5864-dollar-threshold",
   GroupsComponentRefactor = "groups-component-refactor",
+  ProviderClientVaultPrivacyBanner = "ac-2833-provider-client-vault-privacy-banner",
   AC2828_ProviderPortalMembersPage = "AC-2828_provider-portal-members-page",
 }
 
@@ -55,6 +56,7 @@ export const DefaultFeatureFlagValue = {
   [FeatureFlag.MemberAccessReport]: FALSE,
   [FeatureFlag.EnableTimeThreshold]: FALSE,
   [FeatureFlag.GroupsComponentRefactor]: FALSE,
+  [FeatureFlag.ProviderClientVaultPrivacyBanner]: FALSE,
   [FeatureFlag.AC2828_ProviderPortalMembersPage]: FALSE,
 } satisfies Record<FeatureFlag, AllowedFeatureFlagTypes>;
 
