@@ -43,7 +43,6 @@ export class ReusedPasswordsReportComponent extends CipherReportComponent implem
 
   async setCiphers() {
     const allCiphers = await this.getAllCiphers();
-
     const ciphersWithPasswords: CipherView[] = [];
     this.passwordUseMap = new Map<string, number>();
     this.filterStatus = [0];
