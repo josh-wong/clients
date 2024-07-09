@@ -26,7 +26,7 @@ import {
 } from "./set-password-jit.service.abstraction";
 
 export class DefaultSetPasswordJitService implements SetPasswordJitService {
-  protected orgId: string;
+  orgId: string;
 
   resetPasswordAutoEnroll: boolean;
   masterPasswordPolicyOptions: MasterPasswordPolicyOptions;

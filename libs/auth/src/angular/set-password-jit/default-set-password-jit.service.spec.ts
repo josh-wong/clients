@@ -8,6 +8,7 @@ import {
 import { ApiService } from "@bitwarden/common/abstractions/api.service";
 import { OrganizationApiServiceAbstraction } from "@bitwarden/common/admin-console/abstractions/organization/organization-api.service.abstraction";
 import { OrganizationUserService } from "@bitwarden/common/admin-console/abstractions/organization-user/organization-user.service";
+import { PolicyApiServiceAbstraction } from "@bitwarden/common/admin-console/abstractions/policy/policy-api.service.abstraction";
 import { OrganizationKeysResponse } from "@bitwarden/common/admin-console/models/response/organization-keys.response";
 import { KdfConfigService } from "@bitwarden/common/auth/abstractions/kdf-config.service";
 import { InternalMasterPasswordServiceAbstraction } from "@bitwarden/common/auth/abstractions/master-password.service.abstraction";
@@ -26,6 +27,7 @@ import { MasterKey, UserKey } from "@bitwarden/common/types/key";
 import { PasswordInputResult } from "../input-password/password-input-result";
 
 import { DefaultSetPasswordJitService } from "./default-set-password-jit.service";
+import { SetPasswordCredentials } from "./set-password-jit.service.abstraction";
 
 describe("DefaultSetPasswordJitService", () => {
   let sut: DefaultSetPasswordJitService;
@@ -37,6 +39,7 @@ describe("DefaultSetPasswordJitService", () => {
   let masterPasswordService: MockProxy<InternalMasterPasswordServiceAbstraction>;
   let organizationApiService: MockProxy<OrganizationApiServiceAbstraction>;
   let organizationUserService: MockProxy<OrganizationUserService>;
+  let policyApiService: MockProxy<PolicyApiServiceAbstraction>;
   let userDecryptionOptionsService: MockProxy<InternalUserDecryptionOptionsServiceAbstraction>;
 
   beforeEach(() => {
@@ -57,20 +60,13 @@ describe("DefaultSetPasswordJitService", () => {
       masterPasswordService,
       organizationApiService,
       organizationUserService,
+      policyApiService,
       userDecryptionOptionsService,
     );
   });
 
   it("should instantiate the DefaultSetPasswordJitService", () => {
     expect(sut).not.toBeFalsy();
-  });
-
-  describe("runClientSpecificLogicAfterSetPasswordSuccess", () => {
-    it("should return null", async () => {
-      const result = await sut.runClientSpecificLogicAfterSetPasswordSuccess();
-
-      expect(result).toBeNull();
-    });
   });
 
   describe("setPassword", () => {
@@ -84,15 +80,17 @@ describe("DefaultSetPasswordJitService", () => {
     let orgPublicKey: Uint8Array;
 
     let orgSsoIdentifier: string;
-    let orgId: string;
-    let resetPasswordAutoEnroll: boolean;
     let userId: UserId;
     let passwordInputResult: PasswordInputResult;
+    let credentials: SetPasswordCredentials;
 
     let userDecryptionOptionsSubject: BehaviorSubject<UserDecryptionOptions>;
     let setPasswordRequest: SetPasswordRequest;
 
     beforeEach(() => {
+      sut.orgId = "orgId";
+      sut.resetPasswordAutoEnroll = false;
+
       masterKey = new SymmetricCryptoKey(new Uint8Array(64).buffer as CsprngArray) as MasterKey;
       userKey = new SymmetricCryptoKey(new Uint8Array(64).buffer as CsprngArray) as UserKey;
       userKeyEncString = new EncString("userKeyEncrypted");
@@ -106,8 +104,6 @@ describe("DefaultSetPasswordJitService", () => {
       orgPublicKey = Utils.fromB64ToArray(organizationKeys.publicKey);
 
       orgSsoIdentifier = "orgSsoIdentifier";
-      orgId = "orgId";
-      resetPasswordAutoEnroll = false;
       userId = "userId" as UserId;
 
       passwordInputResult = {
@@ -116,6 +112,12 @@ describe("DefaultSetPasswordJitService", () => {
         localMasterKeyHash: "localMasterKeyHash",
         hint: "hint",
         kdfConfig: DEFAULT_KDF_CONFIG,
+      };
+
+      credentials = {
+        ...passwordInputResult,
+        orgSsoIdentifier,
+        userId,
       };
 
       userDecryptionOptionsSubject = new BehaviorSubject(null);
@@ -177,13 +179,7 @@ describe("DefaultSetPasswordJitService", () => {
       setupSetPasswordMocks();
 
       // Act
-      await sut.setPassword(
-        passwordInputResult,
-        orgSsoIdentifier,
-        orgId,
-        resetPasswordAutoEnroll,
-        userId,
-      );
+      await sut.setPassword(credentials);
 
       // Assert
       expect(apiService.setPassword).toHaveBeenCalledWith(setPasswordRequest);
@@ -194,13 +190,7 @@ describe("DefaultSetPasswordJitService", () => {
       setupSetPasswordMocks(false);
 
       // Act
-      await sut.setPassword(
-        passwordInputResult,
-        orgSsoIdentifier,
-        orgId,
-        resetPasswordAutoEnroll,
-        userId,
-      );
+      await sut.setPassword(credentials);
 
       // Assert
       expect(apiService.setPassword).toHaveBeenCalledWith(setPasswordRequest);
@@ -208,44 +198,30 @@ describe("DefaultSetPasswordJitService", () => {
 
     it("should handle reset password auto enroll", async () => {
       // Arrange
-      resetPasswordAutoEnroll = true;
+      sut.resetPasswordAutoEnroll = true;
 
       setupSetPasswordMocks();
       setupResetPasswordAutoEnrollMocks();
 
       // Act
-      await sut.setPassword(
-        passwordInputResult,
-        orgSsoIdentifier,
-        orgId,
-        resetPasswordAutoEnroll,
-        userId,
-      );
+      await sut.setPassword(credentials);
 
       // Assert
       expect(apiService.setPassword).toHaveBeenCalledWith(setPasswordRequest);
-      expect(organizationApiService.getKeys).toHaveBeenCalledWith(orgId);
+      expect(organizationApiService.getKeys).toHaveBeenCalledWith(sut.orgId);
       expect(cryptoService.rsaEncrypt).toHaveBeenCalledWith(userKey.key, orgPublicKey);
       expect(organizationUserService.putOrganizationUserResetPasswordEnrollment).toHaveBeenCalled();
     });
 
     it("when handling reset password auto enroll, it should throw an error if organization keys are not found", async () => {
       // Arrange
-      resetPasswordAutoEnroll = true;
+      sut.resetPasswordAutoEnroll = true;
 
       setupSetPasswordMocks();
       setupResetPasswordAutoEnrollMocks(false);
 
       // Act and Assert
-      await expect(
-        sut.setPassword(
-          passwordInputResult,
-          orgSsoIdentifier,
-          orgId,
-          resetPasswordAutoEnroll,
-          userId,
-        ),
-      ).rejects.toThrow();
+      await expect(sut.setPassword(credentials)).rejects.toThrow();
       expect(
         organizationUserService.putOrganizationUserResetPasswordEnrollment,
       ).not.toHaveBeenCalled();
