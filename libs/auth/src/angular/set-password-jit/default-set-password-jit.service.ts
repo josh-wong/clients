@@ -5,6 +5,8 @@ import { ApiService } from "@bitwarden/common/abstractions/api.service";
 import { OrganizationApiServiceAbstraction } from "@bitwarden/common/admin-console/abstractions/organization/organization-api.service.abstraction";
 import { OrganizationUserService } from "@bitwarden/common/admin-console/abstractions/organization-user/organization-user.service";
 import { OrganizationUserResetPasswordEnrollmentRequest } from "@bitwarden/common/admin-console/abstractions/organization-user/requests";
+import { PolicyApiServiceAbstraction } from "@bitwarden/common/admin-console/abstractions/policy/policy-api.service.abstraction";
+import { MasterPasswordPolicyOptions } from "@bitwarden/common/admin-console/models/domain/master-password-policy-options";
 import { KdfConfigService } from "@bitwarden/common/auth/abstractions/kdf-config.service";
 import { InternalMasterPasswordServiceAbstraction } from "@bitwarden/common/auth/abstractions/master-password.service.abstraction";
 import { ForceSetPasswordReason } from "@bitwarden/common/auth/models/domain/force-set-password-reason";
@@ -24,6 +26,11 @@ import {
 } from "./set-password-jit.service.abstraction";
 
 export class DefaultSetPasswordJitService implements SetPasswordJitService {
+  protected orgId: string;
+
+  resetPasswordAutoEnroll: boolean;
+  masterPasswordPolicyOptions: MasterPasswordPolicyOptions;
+
   constructor(
     protected apiService: ApiService,
     protected cryptoService: CryptoService,
@@ -32,8 +39,23 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
     protected masterPasswordService: InternalMasterPasswordServiceAbstraction,
     protected organizationApiService: OrganizationApiServiceAbstraction,
     protected organizationUserService: OrganizationUserService,
+    protected policyApiService: PolicyApiServiceAbstraction,
     protected userDecryptionOptionsService: InternalUserDecryptionOptionsServiceAbstraction,
   ) {}
+
+  async resolveOrgAutoEnrollData(orgSsoIdentifier: string): Promise<void> {
+    const autoEnrollStatus =
+      await this.organizationApiService.getAutoEnrollStatus(orgSsoIdentifier);
+
+    if (autoEnrollStatus == null) {
+      throw new Error("autoEnrollStatus not found.");
+    }
+
+    this.orgId = autoEnrollStatus.id;
+    this.resetPasswordAutoEnroll = autoEnrollStatus.resetPasswordEnabled;
+    this.masterPasswordPolicyOptions =
+      await this.policyApiService.getMasterPasswordPolicyOptsForOrgUser(autoEnrollStatus.id);
+  }
 
   async setPassword(credentials: SetPasswordCredentials): Promise<void> {
     const {
@@ -43,8 +65,6 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
       hint,
       kdfConfig,
       orgSsoIdentifier,
-      orgId,
-      resetPasswordAutoEnroll,
       userId,
     } = credentials;
 
@@ -89,9 +109,15 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
 
     await this.masterPasswordService.setMasterKeyHash(localMasterKeyHash, userId);
 
-    if (resetPasswordAutoEnroll) {
-      await this.handleResetPasswordAutoEnroll(masterKeyHash, orgId, userId);
+    if (this.resetPasswordAutoEnroll) {
+      await this.handleResetPasswordAutoEnroll(masterKeyHash, userId);
     }
+  }
+
+  clearOrgData() {
+    this.orgId = null;
+    this.resetPasswordAutoEnroll = null;
+    this.masterPasswordPolicyOptions = null;
   }
 
   private async makeProtectedUserKey(
@@ -127,12 +153,8 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
     await this.cryptoService.setUserKey(protectedUserKey[0], userId);
   }
 
-  private async handleResetPasswordAutoEnroll(
-    masterKeyHash: string,
-    orgId: string,
-    userId: UserId,
-  ) {
-    const organizationKeys = await this.organizationApiService.getKeys(orgId);
+  private async handleResetPasswordAutoEnroll(masterKeyHash: string, userId: UserId) {
+    const organizationKeys = await this.organizationApiService.getKeys(this.orgId);
 
     if (organizationKeys == null) {
       throw new Error(this.i18nService.t("resetPasswordOrgKeysError"));
@@ -154,7 +176,7 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
     resetRequest.resetPasswordKey = encryptedUserKey.encryptedString;
 
     await this.organizationUserService.putOrganizationUserResetPasswordEnrollment(
-      orgId,
+      this.orgId,
       userId,
       resetRequest,
     );

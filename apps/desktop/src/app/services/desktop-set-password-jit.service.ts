@@ -14,7 +14,7 @@ export class DesktopSetPasswordJitService
   messagingService = inject(MessagingService);
 
   override async setPassword(credentials: SetPasswordCredentials) {
-    super.setPassword(credentials);
+    await super.setPassword(credentials);
 
     this.messagingService.send("redrawMenu");
   }

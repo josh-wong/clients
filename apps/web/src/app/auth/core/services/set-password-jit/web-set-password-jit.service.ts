@@ -17,7 +17,7 @@ export class WebSetPasswordJitService
   acceptOrganizationInviteService = inject(AcceptOrganizationInviteService);
 
   override async setPassword(credentials: SetPasswordCredentials) {
-    super.setPassword(credentials);
+    await super.setPassword(credentials);
 
     // SSO JIT accepts org invites when setting their MP, meaning
     // we can clear the deep linked url for accepting it.

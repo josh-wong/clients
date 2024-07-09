@@ -51,7 +51,7 @@ export const DefaultFeatureFlagValue = {
   [FeatureFlag.RestrictProviderAccess]: FALSE,
   [FeatureFlag.UseTreeWalkerApiForPageDetailsCollection]: FALSE,
   [FeatureFlag.BulkDeviceApproval]: FALSE,
-  [FeatureFlag.EmailVerification]: FALSE,
+  [FeatureFlag.EmailVerification]: true,
   [FeatureFlag.InlineMenuFieldQualification]: FALSE,
   [FeatureFlag.MemberAccessReport]: FALSE,
   [FeatureFlag.TwoFactorComponentRefactor]: FALSE,

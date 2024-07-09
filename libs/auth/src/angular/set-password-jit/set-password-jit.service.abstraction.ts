@@ -1,3 +1,4 @@
+import { MasterPasswordPolicyOptions } from "@bitwarden/common/admin-console/models/domain/master-password-policy-options";
 import { PBKDF2KdfConfig } from "@bitwarden/common/auth/models/domain/kdf-config";
 import { UserId } from "@bitwarden/common/types/guid";
 import { MasterKey } from "@bitwarden/common/types/key";
@@ -9,8 +10,6 @@ export interface SetPasswordCredentials {
   kdfConfig: PBKDF2KdfConfig;
   hint: string;
   orgSsoIdentifier: string;
-  orgId: string;
-  resetPasswordAutoEnroll: boolean;
   userId: UserId;
 }
 
@@ -22,10 +21,25 @@ export interface SetPasswordCredentials {
  * the fly ("just-in-time").
  */
 export abstract class SetPasswordJitService {
+  resetPasswordAutoEnroll: boolean;
+  masterPasswordPolicyOptions: MasterPasswordPolicyOptions;
   /**
    * Sets the password for a JIT provisioned user.
    *
    * @param credentials An object of the credentials needed to set the password for a JIT provisioned user
+   * @throws If any property on the `credentials` object is null or undefined, or if a protectedUserKey
+   *         or newKeyPair could not be created.
    */
   setPassword: (credentials: SetPasswordCredentials) => Promise<void>;
+  /**
+   * Gets the auto enroll status of the organization and uses it to set the orgId, resetPasswordAutoEnroll,
+   * and masterPasswordPolicyOptions for use in the service.
+   * @param orgSsoIdentifier The identifier of the SSO organization
+   * @throws If the auto enroll status cannot be found
+   */
+  resolveOrgAutoEnrollData: (orgSsoIdentifier: string) => Promise<void>;
+  /**
+   *  Sets the orgId, resetPasswordAutoEnroll, and masterPasswordPolicyOptions to null.
+   */
+  clearOrgData: () => void;
 }

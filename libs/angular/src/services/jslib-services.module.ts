@@ -1243,6 +1243,7 @@ const safeProviders: SafeProvider[] = [
       InternalMasterPasswordServiceAbstraction,
       OrganizationApiServiceAbstraction,
       OrganizationUserService,
+      PolicyApiServiceAbstraction,
       InternalUserDecryptionOptionsServiceAbstraction,
     ],
   }),
