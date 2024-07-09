@@ -12,7 +12,7 @@
       {{ "checkBreaches" | i18n }}
     </button>
   </form>
-  <div class="mt-4" *ngIf="checkedUsername">
+  <div class="mt-4" *ngIf="!loading && checkedUsername">
     <p *ngIf="error">{{ "reportError" | i18n }}...</p>
     <ng-container *ngIf="!error">
       <app-callout type="success" title="{{ 'goodNews' | i18n }}" *ngIf="!breachedAccounts.length">
