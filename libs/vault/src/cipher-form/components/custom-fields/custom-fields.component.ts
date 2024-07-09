@@ -24,7 +24,10 @@ import {
 
 import { CipherFormContainer } from "../../cipher-form-container";
 
-import { AddCustomFieldDialogComponent } from "./add-custom-field-dialog/add-custom-field-dialog.component";
+import {
+  AddCustomFieldDialogComponent,
+  AddCustomFieldDialogData,
+} from "./add-custom-field-dialog/add-custom-field-dialog.component";
 
 @Component({
   standalone: true,
@@ -122,13 +125,27 @@ export class CustomFieldsComponent implements OnInit {
     });
   }
 
-  /** Opens add custom field dialog */
-  openAddCustomFieldDialog() {
-    this.dialogRef = this.dialogService.open(AddCustomFieldDialogComponent, {
-      data: {
-        addField: this.addField.bind(this),
+  /**
+   * Opens the add/edit custom field dialog
+   *
+   */
+  openAddEditCustomFieldDialog(editLabelConfig?: AddCustomFieldDialogData["editLabelConfig"]) {
+    this.dialogRef = this.dialogService.open<unknown, AddCustomFieldDialogData>(
+      AddCustomFieldDialogComponent,
+      {
+        data: {
+          addField: this.addField.bind(this),
+          updateLabel: this.updateLabel.bind(this),
+          editLabelConfig,
+        },
       },
-    });
+    );
+  }
+
+  /** Updates label for an individual field */
+  updateLabel(index: number, label: string) {
+    this.fields.at(index).patchValue({ name: label });
+    this.dialogRef.close();
   }
 
   /** Adds a new field to the form */

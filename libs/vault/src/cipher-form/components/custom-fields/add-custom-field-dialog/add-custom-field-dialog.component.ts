@@ -10,6 +10,9 @@ import { ButtonModule, DialogModule, FormFieldModule, SelectModule } from "@bitw
 
 export type AddCustomFieldDialogData = {
   addField: (type: FieldType, label: string) => void;
+  updateLabel: (index: number, label: string) => void;
+  /** When provided, dialog will display edit label variants */
+  editLabelConfig?: { index: number; label: string };
 };
 
 @Component({
@@ -27,6 +30,8 @@ export type AddCustomFieldDialogData = {
   ],
 })
 export class AddCustomFieldDialogComponent {
+  variant: "add" | "edit";
+
   customFieldForm = this.formBuilder.group({
     type: FieldType.Text,
     label: [""],
@@ -45,7 +50,14 @@ export class AddCustomFieldDialogComponent {
     @Inject(DIALOG_DATA) private data: AddCustomFieldDialogData,
     private formBuilder: FormBuilder,
     private i18nService: I18nService,
-  ) {}
+  ) {
+    this.variant = data.editLabelConfig ? "edit" : "add";
+
+    if (this.variant === "edit") {
+      this.customFieldForm.controls.label.setValue(data.editLabelConfig.label);
+      this.customFieldForm.controls.type.disable();
+    }
+  }
 
   getTypeHint(): string {
     switch (this.customFieldForm.get("type")?.value) {
@@ -66,5 +78,11 @@ export class AddCustomFieldDialogComponent {
   addField() {
     const { type, label } = this.customFieldForm.value;
     this.data.addField(type, label);
+  }
+
+  /** Invoke the `updateLabel` callback with the new label */
+  updateLabel() {
+    const { label } = this.customFieldForm.value;
+    this.data.updateLabel(this.data.editLabelConfig.index, label);
   }
 }

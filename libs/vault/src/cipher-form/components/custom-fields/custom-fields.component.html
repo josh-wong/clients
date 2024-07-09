@@ -3,7 +3,7 @@
     type="button"
     class="tw-text-primary-600 tw-font-bold tw-flex tw-items-center tw-gap-1"
     bitTypography="body2"
-    (click)="openAddCustomFieldDialog()"
+    (click)="openAddEditCustomFieldDialog()"
   >
     <i class="bwi bwi-plus tw-font-bold" aria-hidden="true"></i>
     {{ "addField" | i18n }}
@@ -20,15 +20,24 @@
   </bit-section-header>
   <form [formGroup]="customFieldsForm">
     <bit-card formArrayName="fields">
-      <ng-container *ngFor="let field of fields.controls; let i = index" [formGroupName]="i">
+      <div
+        *ngFor="let field of fields.controls; let i = index"
+        [formGroupName]="i"
+        class="tw-flex tw-mb-6 tw-gap-4"
+        [ngClass]="{ 'tw-items-center': field.value.type === FieldType.Boolean }"
+      >
         <!-- Text Field -->
-        <bit-form-field *ngIf="field.value.type === FieldType.Text">
+        <bit-form-field *ngIf="field.value.type === FieldType.Text" class="tw-flex-1" disableMargin>
           <bit-label>{{ field.value.name }}</bit-label>
           <input bitInput formControlName="value" data-testid="custom-text-field" />
         </bit-form-field>
 
         <!-- Hidden Field -->
-        <bit-form-field *ngIf="field.value.type === FieldType.Hidden">
+        <bit-form-field
+          *ngIf="field.value.type === FieldType.Hidden"
+          class="tw-flex-1"
+          disableMargin
+        >
           <bit-label>{{ field.value.name }}</bit-label>
           <input
             bitInput
@@ -46,7 +55,11 @@
         </bit-form-field>
 
         <!-- Boolean Field -->
-        <bit-form-control *ngIf="field.value.type === FieldType.Boolean">
+        <bit-form-control
+          *ngIf="field.value.type === FieldType.Boolean"
+          class="tw-flex-1"
+          disableMargin
+        >
           <input
             bitCheckbox
             formControlName="value"
@@ -57,7 +70,11 @@
         </bit-form-control>
 
         <!-- Linked Field -->
-        <bit-form-field *ngIf="field.value.type === FieldType.Linked">
+        <bit-form-field
+          *ngIf="field.value.type === FieldType.Linked"
+          class="tw-flex-1"
+          disableMargin
+        >
           <bit-label>{{ field.value.name }}</bit-label>
           <bit-select formControlName="linkedId" data-testid="custom-linked-field">
             <bit-option
@@ -67,7 +84,15 @@
             ></bit-option>
           </bit-select>
         </bit-form-field>
-      </ng-container>
+
+        <button
+          type="button"
+          (click)="openAddEditCustomFieldDialog({ index: i, label: field.value.name })"
+          [appA11yTitle]="'editField' | i18n"
+          bitIconButton="bwi-pencil-square"
+          class="tw-self-end"
+        ></button>
+      </div>
 
       <ng-container *ngTemplateOutlet="addTemplate"></ng-container>
     </bit-card>

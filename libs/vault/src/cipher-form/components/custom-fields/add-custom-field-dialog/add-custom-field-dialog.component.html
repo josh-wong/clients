@@ -1,7 +1,14 @@
 <bit-dialog>
-  <span bitDialogTitle>{{ "addField" | i18n }}</span>
+  <span bitDialogTitle>
+    <ng-container *ngIf="variant === 'add'; else editTitle">
+      {{ "addField" | i18n }}
+    </ng-container>
+    <ng-template #editTitle>
+      {{ "editField" | i18n }}
+    </ng-template>
+  </span>
   <div bitDialogContent [formGroup]="customFieldForm">
-    <bit-form-field>
+    <bit-form-field *ngIf="variant === 'add'">
       <bit-label>{{ "fieldType" | i18n }}</bit-label>
       <bit-select id="fieldType" formControlName="type">
         <bit-option
@@ -24,8 +31,23 @@
     </bit-form-field>
   </div>
   <div bitDialogFooter class="tw-flex tw-gap-2">
-    <button bitButton buttonType="primary" type="button" (click)="addField()">
+    <button
+      *ngIf="variant === 'add'"
+      bitButton
+      buttonType="primary"
+      type="button"
+      (click)="addField()"
+    >
       {{ "add" | i18n }}
+    </button>
+    <button
+      *ngIf="variant === 'edit'"
+      bitButton
+      buttonType="primary"
+      type="button"
+      (click)="updateLabel()"
+    >
+      {{ "save" | i18n }}
     </button>
     <button bitButton bitDialogClose buttonType="secondary" type="button">
       {{ "cancel" | i18n }}
