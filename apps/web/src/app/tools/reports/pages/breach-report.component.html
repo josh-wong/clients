@@ -24,12 +24,12 @@
   <div class="mt-4" *ngIf="!form.loading && checkedUsername">
     <p *ngIf="error">{{ "reportError" | i18n }}...</p>
     <ng-container *ngIf="!error">
-      <app-callout type="success" title="{{ 'goodNews' | i18n }}" *ngIf="!breachedAccounts.length">
+      <bit-callout type="success" title="{{ 'goodNews' | i18n }}" *ngIf="!breachedAccounts.length">
         {{ "breachUsernameNotFound" | i18n: checkedUsername }}
-      </app-callout>
-      <app-callout type="danger" title="{{ 'breachFound' | i18n }}" *ngIf="breachedAccounts.length">
+      </bit-callout>
+      <bit-callout type="danger" title="{{ 'breachFound' | i18n }}" *ngIf="breachedAccounts.length">
         {{ "breachUsernameFound" | i18n: checkedUsername : breachedAccounts.length }}
-      </app-callout>
+      </bit-callout>
       <ul class="list-group list-group-breach" *ngIf="breachedAccounts.length">
         <li *ngFor="let a of breachedAccounts" class="list-group-item min-height-fix">
           <div class="row">
