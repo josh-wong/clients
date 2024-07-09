@@ -3585,5 +3585,8 @@
         "example": "Visa"
       }
     }
+  },
+  "loading": {
+    "message": "Loading"
   }
 }
