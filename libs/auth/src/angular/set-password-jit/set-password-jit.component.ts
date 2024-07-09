@@ -101,7 +101,6 @@ export class SetPasswordJitComponent implements OnInit {
 
     try {
       await this.setPasswordJitService.setPassword(credentials);
-      await this.setPasswordJitService.runClientSpecificLogicAfterSetPasswordSuccess();
     } catch (e) {
       this.validationService.showError(e);
       this.submitting = false;

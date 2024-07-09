@@ -1,6 +1,10 @@
 import { inject } from "@angular/core";
 
-import { DefaultSetPasswordJitService, SetPasswordJitService } from "@bitwarden/auth/angular";
+import {
+  DefaultSetPasswordJitService,
+  SetPasswordCredentials,
+  SetPasswordJitService,
+} from "@bitwarden/auth/angular";
 import { MessagingService } from "@bitwarden/common/platform/abstractions/messaging.service";
 
 export class DesktopSetPasswordJitService
@@ -9,7 +13,9 @@ export class DesktopSetPasswordJitService
 {
   messagingService = inject(MessagingService);
 
-  override async runClientSpecificLogicAfterSetPasswordSuccess(): Promise<void> {
+  override async setPassword(credentials: SetPasswordCredentials) {
+    super.setPassword(credentials);
+
     this.messagingService.send("redrawMenu");
   }
 }

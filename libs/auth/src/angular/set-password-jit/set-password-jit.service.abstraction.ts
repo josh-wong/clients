@@ -28,12 +28,4 @@ export abstract class SetPasswordJitService {
    * @param credentials An object of the credentials needed to set the password for a JIT provisioned user
    */
   setPassword: (credentials: SetPasswordCredentials) => Promise<void>;
-  /**
-   * Runs client-specific code after the password has been successfully set.
-   * This method is should be overridden in clients that need to run code
-   * after the password has been set.
-   * @see WebSetPasswordJitService
-   * @see DesktopSetPasswordJitService
-   */
-  runClientSpecificLogicAfterSetPasswordSuccess: () => Promise<void> | null;
 }

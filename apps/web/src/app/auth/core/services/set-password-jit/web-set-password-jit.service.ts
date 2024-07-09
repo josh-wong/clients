@@ -1,6 +1,10 @@
 import { inject } from "@angular/core";
 
-import { DefaultSetPasswordJitService, SetPasswordJitService } from "@bitwarden/auth/angular";
+import {
+  DefaultSetPasswordJitService,
+  SetPasswordCredentials,
+  SetPasswordJitService,
+} from "@bitwarden/auth/angular";
 
 import { RouterService } from "../../../../core/router.service";
 import { AcceptOrganizationInviteService } from "../../../organization-invite/accept-organization.service";
@@ -12,7 +16,9 @@ export class WebSetPasswordJitService
   routerService = inject(RouterService);
   acceptOrganizationInviteService = inject(AcceptOrganizationInviteService);
 
-  override async runClientSpecificLogicAfterSetPasswordSuccess(): Promise<void> {
+  override async setPassword(credentials: SetPasswordCredentials) {
+    super.setPassword(credentials);
+
     // SSO JIT accepts org invites when setting their MP, meaning
     // we can clear the deep linked url for accepting it.
     await this.routerService.getAndClearLoginRedirectUrl();

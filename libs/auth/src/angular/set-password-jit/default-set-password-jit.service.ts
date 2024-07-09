@@ -144,9 +144,4 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
       resetRequest,
     );
   }
-
-  async runClientSpecificLogicAfterSetPasswordSuccess(): Promise<void> | null {
-    // override in client-specific service
-    return null;
-  }
 }
