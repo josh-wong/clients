@@ -3,11 +3,11 @@
 <bit-container>
   <p>{{ "breachDesc" | i18n }}</p>
   <form [bitSubmit]="submit" [formGroup]="formGroup">
-    <bit-form-field class="tw-w-1/2">
+    <bit-form-field class="tw-w-1/2" disableMargin>
       <bit-label>{{ "username" | i18n }}</bit-label>
       <input id="username" type="text" formControlName="username" bitInput />
     </bit-form-field>
-    <small class="form-text text-muted tw-mb-1">{{ "breachCheckUsernameEmail" | i18n }}</small>
+    <small class="form-text text-muted tw-mb-4">{{ "breachCheckUsernameEmail" | i18n }}</small>
     <button type="submit" buttonType="primary" bitButton [loading]="loading">
       {{ "checkBreaches" | i18n }}
     </button>
