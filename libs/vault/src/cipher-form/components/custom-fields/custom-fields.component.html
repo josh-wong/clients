@@ -21,30 +21,45 @@
   <form [formGroup]="customFieldsForm">
     <bit-card formArrayName="fields">
       <ng-container *ngFor="let field of fields.controls; let i = index" [formGroupName]="i">
-        {{ field.value.type }}
         <!-- Text Field -->
         <bit-form-field *ngIf="field.value.type === FieldType.Text">
           <bit-label>{{ field.value.name }}</bit-label>
-          <input bitInput formControlName="value" />
+          <input bitInput formControlName="value" data-testid="custom-text-field" />
         </bit-form-field>
 
         <!-- Hidden Field -->
         <bit-form-field *ngIf="field.value.type === FieldType.Hidden">
           <bit-label>{{ field.value.name }}</bit-label>
-          <input bitInput formControlName="value" type="password" />
-          <button type="button" bitIconButton bitSuffix bitPasswordInputToggle></button>
+          <input
+            bitInput
+            formControlName="value"
+            type="password"
+            data-testid="custom-hidden-field"
+          />
+          <button
+            type="button"
+            bitIconButton
+            bitSuffix
+            bitPasswordInputToggle
+            data-testid="visibility-for-custom-hidden-field"
+          ></button>
         </bit-form-field>
 
         <!-- Boolean Field -->
         <bit-form-control *ngIf="field.value.type === FieldType.Boolean">
-          <input bitCheckbox formControlName="value" type="checkbox" />
+          <input
+            bitCheckbox
+            formControlName="value"
+            type="checkbox"
+            data-testid="custom-boolean-field"
+          />
           <bit-label>{{ field.value.name }}</bit-label>
         </bit-form-control>
 
         <!-- Linked Field -->
         <bit-form-field *ngIf="field.value.type === FieldType.Linked">
           <bit-label>{{ field.value.name }}</bit-label>
-          <bit-select formControlName="linkedId">
+          <bit-select formControlName="linkedId" data-testid="custom-linked-field">
             <bit-option
               *ngFor="let option of linkedFieldOptions"
               [value]="option.value"
