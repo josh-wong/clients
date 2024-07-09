@@ -48,11 +48,23 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
       userId,
     } = credentials;
 
+    for (const [key, value] of Object.entries(credentials)) {
+      if (value == null) {
+        throw new Error(`${key} not found. Could not set password.`);
+      }
+    }
+
     const protectedUserKey = await this.makeProtectedUserKey(masterKey, userId);
+    if (protectedUserKey == null) {
+      throw new Error("protectedUserKey not found. Could not set password.");
+    }
 
     // Since this is an existing JIT provisioned user in a MP encryption org setting first password,
     // they will not already have a user asymmetric key pair so we must create it for them.
     const newKeyPair = await this.cryptoService.makeKeyPair(protectedUserKey[0]);
+    if (newKeyPair == null) {
+      throw new Error("newKeyPair not found. Could not set password.");
+    }
     const keysRequest = new KeysRequest(newKeyPair[0], newKeyPair[1].encryptedString);
 
     const request = new SetPasswordRequest(
@@ -73,9 +85,7 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
     // User now has a password so update account decryption options in state
     await this.updateAccountDecryptionProperties(masterKey, kdfConfig, protectedUserKey, userId);
 
-    if (newKeyPair !== null) {
-      await this.cryptoService.setPrivateKey(newKeyPair[1].encryptedString, userId);
-    }
+    await this.cryptoService.setPrivateKey(newKeyPair[1].encryptedString, userId);
 
     await this.masterPasswordService.setMasterKeyHash(localMasterKeyHash, userId);
 
@@ -132,6 +142,11 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
 
     // RSA Encrypt user key with organization public key
     const userKey = await firstValueFrom(this.cryptoService.userKey$(userId));
+
+    if (userKey == null) {
+      throw new Error("userKey not found. Could not handle reset password auto enroll.");
+    }
+
     const encryptedUserKey = await this.cryptoService.rsaEncrypt(userKey.key, publicKey);
 
     const resetRequest = new OrganizationUserResetPasswordEnrollmentRequest();
