@@ -19,12 +19,13 @@
     <h2 bitTypography="h5">{{ "customFields" | i18n }}</h2>
   </bit-section-header>
   <form [formGroup]="customFieldsForm">
-    <bit-card formArrayName="fields">
+    <bit-card formArrayName="fields" cdkDropList (cdkDropListDropped)="drop($event)">
       <div
         *ngFor="let field of fields.controls; let i = index"
         [formGroupName]="i"
-        class="tw-flex tw-mb-6 tw-gap-4"
+        class="tw-flex tw-py-3 tw-gap-4 tw-bg-background tw-rounded-lg"
         [ngClass]="{ 'tw-items-center': field.value.type === FieldType.Boolean }"
+        cdkDrag
       >
         <!-- Text Field -->
         <bit-form-field *ngIf="field.value.type === FieldType.Text" class="tw-flex-1" disableMargin>
@@ -91,6 +92,13 @@
           [appA11yTitle]="'editField' | i18n"
           bitIconButton="bwi-pencil-square"
           class="tw-self-end"
+        ></button>
+
+        <button
+          type="button"
+          bitIconButton="bwi-hamburger"
+          class="tw-self-end"
+          cdkDragHandle
         ></button>
       </div>
 

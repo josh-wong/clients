@@ -1,4 +1,5 @@
 import { DialogRef } from "@angular/cdk/dialog";
+import { CdkDragDrop, DragDropModule, moveItemInArray } from "@angular/cdk/drag-drop";
 import { CommonModule } from "@angular/common";
 import { Component, Input, OnInit } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -46,6 +47,7 @@ import {
     IconButtonModule,
     CheckboxModule,
     SelectModule,
+    DragDropModule,
   ],
 })
 export class CustomFieldsComponent implements OnInit {
@@ -180,5 +182,16 @@ export class CustomFieldsComponent implements OnInit {
         linkedId,
       }),
     );
+  }
+
+  drop(event: CdkDragDrop<HTMLDivElement>) {
+    // Get the current fields array
+    const currentFields = this.fields.value;
+
+    // Alter the order of the fields array in place
+    moveItemInArray(currentFields, event.previousIndex, event.currentIndex);
+
+    // Set the new order of the fields array
+    this.fields.patchValue(currentFields);
   }
 }
