@@ -4,9 +4,17 @@ import { Randomizer } from "./abstractions";
 import { Ascii } from "./data";
 import { CharacterSet, EffWordListRequest, RandomAsciiRequest } from "./types";
 
+/** Generation algorithms that produce randomized secrets */
 export class PasswordRandomizer {
+  /** Instantiates the password randomizer
+   *  @param random data source for random data
+   */
   constructor(private randomizer: Randomizer) {}
 
+  /** create a password from ASCII codepoints
+   *  @param request refines the generated password
+   *  @returns a promise that completes with the generated password
+   */
   async randomAscii(request: RandomAsciiRequest) {
     // randomize character sets
     const sets = toAsciiSets(request);
@@ -20,6 +28,10 @@ export class PasswordRandomizer {
     return result;
   }
 
+  /** create a passphrase from the EFF's "5 dice" word list
+   *  @param request refines the generated passphrase
+   * @returns a promise that completes with the generated passphrase
+   */
   async randomEffLongWords(request: EffWordListRequest) {
     // select which word gets the number, if any
     let luckyNumber = -1;

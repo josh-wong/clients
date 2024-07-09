@@ -1,14 +1,16 @@
 import { SUBADDRESS_PARSER } from "./data";
 
-/**
- * Appends appendText to the subaddress of an email address.
- * @param appendText  The calculation fails if this is shorter than 1 character
- *   long, undefined, or null.
- * @param email the email address to alter.
- * @returns `email` with `appendText` added to its subaddress (the part
- *   following the "+"). If there is no subaddress, a subaddress is created.
- *   If the email address fails to parse, it is returned unaltered.
- */ export class EmailCalculator {
+/** Generation algorithms that produce deterministic email addresses */
+export class EmailCalculator {
+  /**
+   * Appends appendText to the subaddress of an email address.
+   * @param appendText  The calculation fails if this is shorter than 1 character
+   *   long, undefined, or null.
+   * @param email the email address to alter.
+   * @returns `email` with `appendText` added to its subaddress (the part
+   *   following the "+"). If there is no subaddress, a subaddress is created.
+   *   If the email address fails to parse, it is returned unaltered.
+   */
   appendToSubaddress(appendText: string, email: string) {
     let result = (email ?? "").trim();
 
