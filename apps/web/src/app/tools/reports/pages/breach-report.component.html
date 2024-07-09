@@ -5,7 +5,7 @@
   <form [bitSubmit]="submit" [formGroup]="formGroup">
     <bit-form-field class="tw-w-1/2">
       <bit-label>{{ "username" | i18n }}</bit-label>
-      <input id="username" type="email" formControlName="username" bitInput />
+      <input id="username" type="text" formControlName="username" bitInput />
     </bit-form-field>
     <small class="form-text text-muted tw-mb-1">{{ "breachCheckUsernameEmail" | i18n }}</small>
     <button type="submit" buttonType="primary" bitButton [loading]="loading">
