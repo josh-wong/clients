@@ -1,9 +1,5 @@
 import { IntegrationContext, IntegrationId } from "@bitwarden/common/tools/integration";
-import {
-  ApiSettings,
-  RequestOptions,
-  RpcConfiguration,
-} from "@bitwarden/common/tools/integration/rpc";
+import { ApiSettings, IntegrationRequest } from "@bitwarden/common/tools/integration/rpc";
 
 import {
   ForwarderConfiguration,
@@ -12,13 +8,14 @@ import {
   EmailPrefixSettings,
   RequestAccount,
 } from "../engine";
+import { CreateForwardingEmailRpcDef, GetAccountIdRpcDef } from "../engine/forwarder-configuration";
 import { FASTMAIL_BUFFER, FASTMAIL_FORWARDER } from "../strategies/storage";
 import { ApiOptions, EmailPrefixOptions } from "../types";
 
 // integration types
 export type FastmailSettings = ApiSettings & EmailPrefixSettings & EmailDomainSettings;
 export type FastmailOptions = ApiOptions & EmailPrefixOptions & RequestAccount;
-export type FastmailRequest = RequestOptions & RequestAccount;
+export type FastmailRequest = IntegrationRequest & RequestAccount;
 export type FastmailConfiguration = ForwarderConfiguration<
   FastmailSettings,
   FastmailOptions,
@@ -34,8 +31,8 @@ const defaultSettings = Object.freeze({
 
 // supported RPC calls
 const getAccountId = Object.freeze({
-  url(_request: RequestOptions, context: ForwarderContext<FastmailSettings>) {
-    return context.baseUrl(context.settings) + "/.well-known/jmap";
+  url(_request: IntegrationRequest, context: ForwarderContext<FastmailSettings>) {
+    return context.baseUrl() + "/.well-known/jmap";
   },
   hasJsonPayload(response: Response) {
     return response.status === 200;
@@ -45,10 +42,10 @@ const getAccountId = Object.freeze({
 
     return [result, result ?? context.missingAccountIdCause()];
   },
-} as RpcConfiguration<RequestOptions, ForwarderContext<FastmailSettings>>);
+} as GetAccountIdRpcDef<FastmailSettings>);
 
 const createForwardingEmail = Object.freeze({
-  url(_request: RequestOptions, context: ForwarderContext<FastmailSettings>) {
+  url(_request: IntegrationRequest, context: ForwarderContext<FastmailSettings>) {
     return context.baseUrl() + "/jmap/api/";
   },
   body(request: FastmailRequest, context: ForwarderContext<FastmailSettings>) {
@@ -99,7 +96,7 @@ const createForwardingEmail = Object.freeze({
       }
     }
   },
-} as RpcConfiguration<FastmailRequest, ForwarderContext<FastmailSettings>>);
+} as CreateForwardingEmailRpcDef<FastmailSettings, FastmailRequest>);
 
 // forwarder configuration
 const forwarder = Object.freeze({

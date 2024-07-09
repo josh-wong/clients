@@ -1,6 +1,6 @@
 import { UserKeyDefinition } from "@bitwarden/common/platform/state";
 import { IntegrationConfiguration } from "@bitwarden/common/tools/integration/integration-configuration";
-import { RequestOptions } from "@bitwarden/common/tools/integration/rpc/request-options";
+import { IntegrationRequest } from "@bitwarden/common/tools/integration/rpc/integration-request";
 import { RpcConfiguration } from "@bitwarden/common/tools/integration/rpc/rpc-definition";
 import { BufferedKeyDefinition } from "@bitwarden/common/tools/state/buffered-key-definition";
 
@@ -11,11 +11,23 @@ export type RequestAccount = {
   accountId: string;
 };
 
+/** definition of the create forwarding request api call for an integration */
+export type CreateForwardingEmailRpcDef<
+  Settings,
+  Request extends IntegrationRequest = IntegrationRequest,
+> = RpcConfiguration<Request, ForwarderContext<Settings>, string>;
+
+/** definition of the get account id api call for an integration */
+export type GetAccountIdRpcDef<
+  Settings,
+  Request extends IntegrationRequest = IntegrationRequest,
+> = RpcConfiguration<Request, ForwarderContext<Settings>, string>;
+
 /** Forwarder-specific static definition */
 export type ForwarderConfiguration<
   Settings,
   LegacyFormat extends Settings = Settings,
-  Request extends RequestOptions = RequestOptions,
+  Request extends IntegrationRequest = IntegrationRequest,
 > = IntegrationConfiguration & {
   /** forwarder endpoint definition */
   forwarder: {
@@ -29,11 +41,11 @@ export type ForwarderConfiguration<
     importBuffer?: BufferedKeyDefinition<LegacyFormat>;
 
     /** createForwardingEmail RPC definition */
-    createForwardingEmail: RpcConfiguration<Request, ForwarderContext<Settings>>;
+    createForwardingEmail: CreateForwardingEmailRpcDef<Settings, Request>;
 
     /** getAccountId RPC definition; the response updates `accountId` which has a
      *  structural mixin type `RequestAccount`.
      */
-    getAccountId?: RpcConfiguration<Request, ForwarderContext<Settings>>;
+    getAccountId?: GetAccountIdRpcDef<Settings, Request>;
   };
 };

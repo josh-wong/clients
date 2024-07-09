@@ -1,11 +1,8 @@
 import { IntegrationContext, IntegrationId } from "@bitwarden/common/tools/integration";
-import {
-  ApiSettings,
-  RequestOptions,
-  RpcConfiguration,
-} from "@bitwarden/common/tools/integration/rpc";
+import { ApiSettings, IntegrationRequest } from "@bitwarden/common/tools/integration/rpc";
 
 import { ForwarderConfiguration, ForwarderContext } from "../engine";
+import { CreateForwardingEmailRpcDef } from "../engine/forwarder-configuration";
 import { DUCK_DUCK_GO_BUFFER, DUCK_DUCK_GO_FORWARDER } from "../strategies/storage";
 import { ApiOptions } from "../types";
 
@@ -21,10 +18,10 @@ const defaultSettings = Object.freeze({
 
 // supported RPC calls
 const createForwardingEmail = Object.freeze({
-  url(_request: RequestOptions, context: ForwarderContext<DuckDuckGoSettings>) {
-    return context.baseUrl(context.settings) + "/email/addresses";
+  url(_request: IntegrationRequest, context: ForwarderContext<DuckDuckGoSettings>) {
+    return context.baseUrl() + "/email/addresses";
   },
-  body(_request: RequestOptions, _context: ForwarderContext<DuckDuckGoSettings>) {
+  body(_request: IntegrationRequest, _context: ForwarderContext<DuckDuckGoSettings>) {
     return undefined;
   },
   hasJsonPayload(response: Response) {
@@ -33,7 +30,7 @@ const createForwardingEmail = Object.freeze({
   processJson(json: any) {
     return [`${json.address}@duck.com`];
   },
-} as RpcConfiguration<RequestOptions, ForwarderContext<DuckDuckGoSettings>>);
+} as CreateForwardingEmailRpcDef<DuckDuckGoSettings>);
 
 // forwarder configuration
 const forwarder = Object.freeze({

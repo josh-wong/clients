@@ -113,7 +113,7 @@ export const FORWARD_EMAIL_FORWARDER = new UserKeyDefinition<ApiOptions & EmailD
   },
 );
 
-/** backing store configuration for {@link forwarders.SimpleLogin} */
+/** backing store configuration for {@link Forwarders.SimpleLogin} */
 export const SIMPLE_LOGIN_FORWARDER = new UserKeyDefinition<SelfHostedApiOptions>(
   GENERATOR_DISK,
   "simpleLoginForwarder",
@@ -173,7 +173,7 @@ export const FORWARD_EMAIL_BUFFER = new BufferedKeyDefinition<ApiOptions & Email
   },
 );
 
-/** backing store configuration for {@link forwarders.SimpleLogin} */
+/** backing store configuration for {@link Forwarders.SimpleLogin} */
 export const SIMPLE_LOGIN_BUFFER = new BufferedKeyDefinition<SelfHostedApiOptions>(
   GENERATOR_DISK,
   "simpleLoginBuffer",

@@ -1,11 +1,8 @@
 import { IntegrationContext, IntegrationId } from "@bitwarden/common/tools/integration";
-import {
-  ApiSettings,
-  RequestOptions,
-  RpcConfiguration,
-} from "@bitwarden/common/tools/integration/rpc";
+import { ApiSettings, IntegrationRequest } from "@bitwarden/common/tools/integration/rpc";
 
 import { ForwarderConfiguration, ForwarderContext } from "../engine";
+import { CreateForwardingEmailRpcDef } from "../engine/forwarder-configuration";
 import { FIREFOX_RELAY_BUFFER, FIREFOX_RELAY_FORWARDER } from "../strategies/storage";
 import { ApiOptions } from "../types";
 
@@ -24,10 +21,10 @@ const defaultSettings = Object.freeze({
 
 // supported RPC calls
 const createForwardingEmail = Object.freeze({
-  url(_request: RequestOptions, context: ForwarderContext<FirefoxRelaySettings>) {
-    return context.baseUrl(context.settings) + "/v1/relayaddresses/";
+  url(_request: IntegrationRequest, context: ForwarderContext<FirefoxRelaySettings>) {
+    return context.baseUrl() + "/v1/relayaddresses/";
   },
-  body(request: RequestOptions, context: ForwarderContext<FirefoxRelaySettings>) {
+  body(request: IntegrationRequest, context: ForwarderContext<FirefoxRelaySettings>) {
     return {
       enabled: true,
       generated_for: context.website(request),
@@ -40,7 +37,7 @@ const createForwardingEmail = Object.freeze({
   processJson(json: any) {
     return [json.full_address];
   },
-} as RpcConfiguration<RequestOptions, ForwarderContext<FirefoxRelaySettings>>);
+} as CreateForwardingEmailRpcDef<FirefoxRelaySettings>);
 
 // forwarder configuration
 const forwarder = Object.freeze({

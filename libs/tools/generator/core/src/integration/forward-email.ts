@@ -1,11 +1,8 @@
 import { IntegrationContext, IntegrationId } from "@bitwarden/common/tools/integration";
-import {
-  ApiSettings,
-  RequestOptions,
-  RpcConfiguration,
-} from "@bitwarden/common/tools/integration/rpc";
+import { ApiSettings, IntegrationRequest } from "@bitwarden/common/tools/integration/rpc";
 
 import { ForwarderConfiguration, ForwarderContext, EmailDomainSettings } from "../engine";
+import { CreateForwardingEmailRpcDef } from "../engine/forwarder-configuration";
 import { FORWARD_EMAIL_BUFFER, FORWARD_EMAIL_FORWARDER } from "../strategies/storage";
 import { ApiOptions, EmailDomainOptions } from "../types";
 
@@ -25,11 +22,11 @@ const defaultSettings = Object.freeze({
 
 // supported RPC calls
 const createForwardingEmail = Object.freeze({
-  url(_request: RequestOptions, context: ForwarderContext<ForwardEmailSettings>) {
+  url(_request: IntegrationRequest, context: ForwarderContext<ForwardEmailSettings>) {
     const domain = context.emailDomain(context.settings);
-    return context.baseUrl(context.settings) + `/v1/domains/${domain}/aliases`;
+    return context.baseUrl() + `/v1/domains/${domain}/aliases`;
   },
-  body(request: RequestOptions, context: ForwarderContext<ForwardEmailSettings>) {
+  body(request: IntegrationRequest, context: ForwarderContext<ForwardEmailSettings>) {
     return {
       labels: context.website(request),
       description: context.generatedBy(request),
@@ -43,7 +40,7 @@ const createForwardingEmail = Object.freeze({
     const domainPart = domain?.name ?? context.emailDomain(context.settings);
     return [`${name}@${domainPart}`];
   },
-} as RpcConfiguration<RequestOptions, ForwarderContext<ForwardEmailSettings>>);
+} as CreateForwardingEmailRpcDef<ForwardEmailSettings>);
 
 // forwarder configuration
 const forwarder = Object.freeze({

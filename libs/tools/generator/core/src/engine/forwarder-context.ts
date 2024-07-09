@@ -8,14 +8,14 @@ export class ForwarderContext<Settings> extends IntegrationContext {
   constructor(
     readonly configuration: ForwarderConfiguration<Settings>,
     readonly settings: Settings,
-    i18nService: I18nService,
+    i18n: I18nService,
   ) {
-    super(configuration, i18nService);
+    super(configuration, i18n);
   }
 
   emailDomain(settings: EmailDomainSettings) {
     if (!settings.domain || settings.domain === "") {
-      const error = this.i18nService.t("forwarderNoDomain", this.configuration.name);
+      const error = this.i18n.t("forwarderNoDomain", this.configuration.name);
       throw error;
     }
 
@@ -24,7 +24,7 @@ export class ForwarderContext<Settings> extends IntegrationContext {
 
   emailPrefix(settings: EmailPrefixSettings) {
     if (!settings.prefix || settings.prefix === "") {
-      const error = this.i18nService.t("forwarderNoPrefix", this.configuration.name);
+      const error = this.i18n.t("forwarderNoPrefix", this.configuration.name);
       throw error;
     }
 
@@ -32,6 +32,6 @@ export class ForwarderContext<Settings> extends IntegrationContext {
   }
 
   missingAccountIdCause() {
-    return this.i18nService.t("forwarderNoAccountId", this.configuration.name);
+    return this.i18n.t("forwarderNoAccountId", this.configuration.name);
   }
 }

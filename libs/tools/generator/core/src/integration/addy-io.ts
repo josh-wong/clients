@@ -1,12 +1,12 @@
 import { IntegrationContext, IntegrationId } from "@bitwarden/common/tools/integration";
 import {
   ApiSettings,
-  RequestOptions,
-  RpcConfiguration,
+  IntegrationRequest,
   SelfHostedApiSettings,
 } from "@bitwarden/common/tools/integration/rpc";
 
 import { ForwarderConfiguration, ForwarderContext, EmailDomainSettings } from "../engine";
+import { CreateForwardingEmailRpcDef } from "../engine/forwarder-configuration";
 import { ADDY_IO_BUFFER, ADDY_IO_FORWARDER } from "../strategies/storage";
 import { EmailDomainOptions, SelfHostedApiOptions } from "../types";
 
@@ -23,10 +23,10 @@ const defaultSettings = Object.freeze({
 
 // supported RPC calls
 const createForwardingEmail = Object.freeze({
-  url(_request: RequestOptions, context: ForwarderContext<AddyIoSettings>) {
+  url(_request: IntegrationRequest, context: ForwarderContext<AddyIoSettings>) {
     return context.baseUrl(context.settings) + "/api/v1/aliases";
   },
-  body(request: RequestOptions, context: ForwarderContext<AddyIoSettings>) {
+  body(request: IntegrationRequest, context: ForwarderContext<AddyIoSettings>) {
     return {
       domain: context.emailDomain(context.settings),
       description: context.generatedBy(request),
@@ -38,7 +38,7 @@ const createForwardingEmail = Object.freeze({
   processJson(response: any) {
     return [response?.data?.email];
   },
-} as RpcConfiguration<RequestOptions, ForwarderContext<AddyIoSettings>>);
+} as CreateForwardingEmailRpcDef<AddyIoSettings>);
 
 // forwarder configuration
 const forwarder = Object.freeze({

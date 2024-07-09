@@ -1,12 +1,12 @@
 import { IntegrationContext, IntegrationId } from "@bitwarden/common/tools/integration";
 import {
   ApiSettings,
-  RequestOptions,
-  RpcConfiguration,
+  IntegrationRequest,
   SelfHostedApiSettings,
 } from "@bitwarden/common/tools/integration/rpc";
 
 import { ForwarderConfiguration, ForwarderContext } from "../engine";
+import { CreateForwardingEmailRpcDef } from "../engine/forwarder-configuration";
 import { SIMPLE_LOGIN_BUFFER, SIMPLE_LOGIN_FORWARDER } from "../strategies/storage";
 import { SelfHostedApiOptions } from "../types";
 
@@ -26,14 +26,14 @@ const defaultSettings = Object.freeze({
 
 // supported RPC calls
 const createForwardingEmail = Object.freeze({
-  url(request: RequestOptions, context: ForwarderContext<SimpleLoginSettings>) {
+  url(request: IntegrationRequest, context: ForwarderContext<SimpleLoginSettings>) {
     const endpoint = context.baseUrl(context.settings) + "/api/alias/random/new";
     const hostname = context.website(request);
     const url = hostname !== "" ? `${endpoint}?hostname=${hostname}` : endpoint;
 
     return url;
   },
-  body(request: RequestOptions, context: ForwarderContext<SimpleLoginSettings>) {
+  body(request: IntegrationRequest, context: ForwarderContext<SimpleLoginSettings>) {
     return { note: context.generatedBy(request) };
   },
   hasJsonPayload(response: Response) {
@@ -42,7 +42,7 @@ const createForwardingEmail = Object.freeze({
   processJson(json: any) {
     return [json?.alias];
   },
-} as RpcConfiguration<RequestOptions, ForwarderContext<SimpleLoginSettings>>);
+} as CreateForwardingEmailRpcDef<SimpleLoginSettings>);
 
 // forwarder configuration
 const forwarder = Object.freeze({

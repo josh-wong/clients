@@ -1,5 +1,5 @@
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
-import { ApiSettings, RequestOptions } from "@bitwarden/common/tools/integration/rpc";
+import { ApiSettings } from "@bitwarden/common/tools/integration/rpc";
 
 import { ForwarderConfiguration } from "../forwarder-configuration";
 import { ForwarderContext } from "../forwarder-context";
@@ -22,7 +22,7 @@ export class ForwarderRequestBuilder {
     settings: Settings,
   ) {
     const context = this.createContext(configuration, settings);
-    const rpc = new CreateForwardingAddressRpc<RequestOptions, Settings>(configuration, context);
+    const rpc = new CreateForwardingAddressRpc<Settings>(configuration, context);
     return rpc;
   }
 
@@ -38,7 +38,7 @@ export class ForwarderRequestBuilder {
       return null;
     }
 
-    const rpc = new GetAccountIdRpc<RequestOptions, Settings>(configuration, context);
+    const rpc = new GetAccountIdRpc<Settings>(configuration, context);
 
     return rpc;
   }

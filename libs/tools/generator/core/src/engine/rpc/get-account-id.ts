@@ -1,9 +1,11 @@
-import { JsonRpc, RequestOptions } from "@bitwarden/common/tools/integration/rpc";
+import { JsonRpc, IntegrationRequest } from "@bitwarden/common/tools/integration/rpc";
 
 import { ForwarderConfiguration } from "../forwarder-configuration";
 import { ForwarderContext } from "../forwarder-context";
 
-export class GetAccountIdRpc<Req extends RequestOptions, Settings> implements JsonRpc<Req, string> {
+export class GetAccountIdRpc<Settings, Req extends IntegrationRequest = IntegrationRequest>
+  implements JsonRpc<Req, string>
+{
   constructor(
     readonly requestor: ForwarderConfiguration<Settings>,
     readonly context: ForwarderContext<Settings>,
