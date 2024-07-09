@@ -8,7 +8,7 @@ import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.servic
 import { FieldType } from "@bitwarden/common/vault/enums";
 import { ButtonModule, DialogModule, FormFieldModule, SelectModule } from "@bitwarden/components";
 
-export type AddCustomFieldDialogData = {
+export type AddEditCustomFieldDialogData = {
   addField: (type: FieldType, label: string) => void;
   updateLabel: (index: number, label: string) => void;
   /** When provided, dialog will display edit label variants */
@@ -17,8 +17,8 @@ export type AddCustomFieldDialogData = {
 
 @Component({
   standalone: true,
-  selector: "vault-add-custom-field-dialog",
-  templateUrl: "./add-custom-field-dialog.component.html",
+  selector: "vault-add-edit-custom-field-dialog",
+  templateUrl: "./add-edit-custom-field-dialog.component.html",
   imports: [
     CommonModule,
     JslibModule,
@@ -29,7 +29,7 @@ export type AddCustomFieldDialogData = {
     ReactiveFormsModule,
   ],
 })
-export class AddCustomFieldDialogComponent {
+export class AddEditCustomFieldDialogComponent {
   variant: "add" | "edit";
 
   customFieldForm = this.formBuilder.group({
@@ -47,7 +47,7 @@ export class AddCustomFieldDialogComponent {
   FieldType = FieldType;
 
   constructor(
-    @Inject(DIALOG_DATA) private data: AddCustomFieldDialogData,
+    @Inject(DIALOG_DATA) private data: AddEditCustomFieldDialogData,
     private formBuilder: FormBuilder,
     private i18nService: I18nService,
   ) {

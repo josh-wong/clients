@@ -25,9 +25,9 @@ import {
 import { CipherFormContainer } from "../../cipher-form-container";
 
 import {
-  AddCustomFieldDialogComponent,
-  AddCustomFieldDialogData,
-} from "./add-custom-field-dialog/add-custom-field-dialog.component";
+  AddEditCustomFieldDialogComponent,
+  AddEditCustomFieldDialogData,
+} from "./add-edit-custom-field-dialog/add-edit-custom-field-dialog.component";
 
 @Component({
   standalone: true,
@@ -129,9 +129,9 @@ export class CustomFieldsComponent implements OnInit {
    * Opens the add/edit custom field dialog
    *
    */
-  openAddEditCustomFieldDialog(editLabelConfig?: AddCustomFieldDialogData["editLabelConfig"]) {
-    this.dialogRef = this.dialogService.open<unknown, AddCustomFieldDialogData>(
-      AddCustomFieldDialogComponent,
+  openAddEditCustomFieldDialog(editLabelConfig?: AddEditCustomFieldDialogData["editLabelConfig"]) {
+    this.dialogRef = this.dialogService.open<unknown, AddEditCustomFieldDialogData>(
+      AddEditCustomFieldDialogComponent,
       {
         data: {
           addField: this.addField.bind(this),
