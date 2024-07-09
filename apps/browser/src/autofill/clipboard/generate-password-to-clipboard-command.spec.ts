@@ -3,7 +3,7 @@ import { firstValueFrom, Subscription } from "rxjs";
 
 import { AutofillSettingsService } from "@bitwarden/common/autofill/services/autofill-settings.service";
 import { ScheduledTaskNames } from "@bitwarden/common/platform/scheduling";
-import { PasswordGenerationServiceAbstraction } from "@bitwarden/common/tools/generator/password";
+import { PasswordGenerationServiceAbstraction } from "@bitwarden/generator-legacy";
 
 import { BrowserApi } from "../../platform/browser/browser-api";
 import { BrowserTaskSchedulerService } from "../../platform/services/abstractions/browser-task-scheduler.service";
