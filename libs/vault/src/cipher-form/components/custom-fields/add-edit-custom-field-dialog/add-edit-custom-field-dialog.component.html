@@ -30,7 +30,7 @@
       </bit-hint>
     </bit-form-field>
   </div>
-  <div bitDialogFooter class="tw-flex tw-gap-2">
+  <div bitDialogFooter class="tw-flex tw-gap-2 tw-w-full">
     <button
       *ngIf="variant === 'add'"
       bitButton
@@ -52,5 +52,15 @@
     <button bitButton bitDialogClose buttonType="secondary" type="button">
       {{ "cancel" | i18n }}
     </button>
+
+    <button
+      *ngIf="variant === 'edit'"
+      type="button"
+      buttonType="danger"
+      class="tw-border-0 tw-ml-auto"
+      bitIconButton="bwi-trash"
+      [appA11yTitle]="'deleteCustomField' | i18n: customFieldForm.value.label"
+      (click)="removeField()"
+    ></button>
   </div>
 </bit-dialog>

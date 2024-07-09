@@ -6,11 +6,18 @@ import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { JslibModule } from "@bitwarden/angular/jslib.module";
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
 import { FieldType } from "@bitwarden/common/vault/enums";
-import { ButtonModule, DialogModule, FormFieldModule, SelectModule } from "@bitwarden/components";
+import {
+  ButtonModule,
+  DialogModule,
+  FormFieldModule,
+  IconButtonModule,
+  SelectModule,
+} from "@bitwarden/components";
 
 export type AddEditCustomFieldDialogData = {
   addField: (type: FieldType, label: string) => void;
   updateLabel: (index: number, label: string) => void;
+  removeField: (index: number) => void;
   /** When provided, dialog will display edit label variants */
   editLabelConfig?: { index: number; label: string };
 };
@@ -27,6 +34,7 @@ export type AddEditCustomFieldDialogData = {
     FormFieldModule,
     SelectModule,
     ReactiveFormsModule,
+    IconButtonModule,
   ],
 })
 export class AddEditCustomFieldDialogComponent {
@@ -84,5 +92,10 @@ export class AddEditCustomFieldDialogComponent {
   updateLabel() {
     const { label } = this.customFieldForm.value;
     this.data.updateLabel(this.data.editLabelConfig.index, label);
+  }
+
+  /** Invoke the `removeField` callback */
+  removeField() {
+    this.data.removeField(this.data.editLabelConfig.index);
   }
 }

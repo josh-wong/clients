@@ -136,6 +136,7 @@ export class CustomFieldsComponent implements OnInit {
         data: {
           addField: this.addField.bind(this),
           updateLabel: this.updateLabel.bind(this),
+          removeField: this.removeField.bind(this),
           editLabelConfig,
         },
       },
@@ -145,6 +146,12 @@ export class CustomFieldsComponent implements OnInit {
   /** Updates label for an individual field */
   updateLabel(index: number, label: string) {
     this.fields.at(index).patchValue({ name: label });
+    this.dialogRef.close();
+  }
+
+  /** Removes an individual field at a specific index */
+  removeField(index: number) {
+    this.fields.removeAt(index);
     this.dialogRef.close();
   }
 
