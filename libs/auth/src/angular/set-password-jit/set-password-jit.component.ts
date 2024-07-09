@@ -17,7 +17,10 @@ import { ToastService } from "../../../../components/src/toast";
 import { InputPasswordComponent } from "../input-password/input-password.component";
 import { PasswordInputResult } from "../input-password/password-input-result";
 
-import { SetPasswordJitService } from "./set-password-jit.service.abstraction";
+import {
+  SetPasswordCredentials,
+  SetPasswordJitService,
+} from "./set-password-jit.service.abstraction";
 
 @Component({
   standalone: true,
@@ -88,17 +91,20 @@ export class SetPasswordJitComponent implements OnInit {
   protected async handlePasswordFormSubmit(passwordInputResult: PasswordInputResult) {
     this.submitting = true;
 
+    const credentials: SetPasswordCredentials = {
+      ...passwordInputResult,
+      orgSsoIdentifier: this.orgSsoIdentifier,
+      orgId: this.orgId,
+      resetPasswordAutoEnroll: this.resetPasswordAutoEnroll,
+      userId: this.userId,
+    };
+
     try {
-      await this.setPasswordJitService.setPassword(
-        passwordInputResult,
-        this.orgSsoIdentifier,
-        this.orgId,
-        this.resetPasswordAutoEnroll,
-        this.userId,
-      );
+      await this.setPasswordJitService.setPassword(credentials);
       await this.setPasswordJitService.runClientSpecificLogicAfterSetPasswordSuccess();
     } catch (e) {
       this.validationService.showError(e);
+      this.submitting = false;
       return;
     }
 

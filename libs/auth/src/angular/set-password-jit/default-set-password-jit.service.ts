@@ -18,9 +18,10 @@ import { EncString } from "@bitwarden/common/platform/models/domain/enc-string";
 import { UserId } from "@bitwarden/common/types/guid";
 import { MasterKey, UserKey } from "@bitwarden/common/types/key";
 
-import { PasswordInputResult } from "../input-password/password-input-result";
-
-import { SetPasswordJitService } from "./set-password-jit.service.abstraction";
+import {
+  SetPasswordCredentials,
+  SetPasswordJitService,
+} from "./set-password-jit.service.abstraction";
 
 export class DefaultSetPasswordJitService implements SetPasswordJitService {
   constructor(
@@ -34,14 +35,18 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
     protected userDecryptionOptionsService: InternalUserDecryptionOptionsServiceAbstraction,
   ) {}
 
-  async setPassword(
-    passwordInputResult: PasswordInputResult,
-    orgSsoIdentifier: string,
-    orgId: string,
-    resetPasswordAutoEnroll: boolean,
-    userId: UserId,
-  ): Promise<void> {
-    const { masterKey, masterKeyHash, localMasterKeyHash, hint, kdfConfig } = passwordInputResult;
+  async setPassword(credentials: SetPasswordCredentials): Promise<void> {
+    const {
+      masterKey,
+      masterKeyHash,
+      localMasterKeyHash,
+      hint,
+      kdfConfig,
+      orgSsoIdentifier,
+      orgId,
+      resetPasswordAutoEnroll,
+      userId,
+    } = credentials;
 
     const protectedUserKey = await this.makeProtectedUserKey(masterKey, userId);
 
