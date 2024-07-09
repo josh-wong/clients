@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { FormBuilder, Validators } from "@angular/forms";
 import { firstValueFrom, map } from "rxjs";
 
 import { AuditService } from "@bitwarden/common/abstractions/audit.service";
@@ -11,46 +10,32 @@ import { BreachAccountResponse } from "@bitwarden/common/models/response/breach-
   templateUrl: "breach-report.component.html",
 })
 export class BreachReportComponent implements OnInit {
-  loading = false;
   error = false;
+  username: string;
   checkedUsername: string;
   breachedAccounts: BreachAccountResponse[] = [];
-  formGroup = this.formBuilder.group({
-    username: ["", { validators: [Validators.required, Validators.email], updateOn: "change" }],
-  });
+  formPromise: Promise<BreachAccountResponse[]>;
 
   constructor(
     private auditService: AuditService,
     private accountService: AccountService,
-    private formBuilder: FormBuilder,
   ) {}
 
   async ngOnInit() {
-    this.formGroup
-      .get("username")
-      .setValue(
-        await firstValueFrom(this.accountService.activeAccount$.pipe(map((a) => a?.email))),
-      );
+    this.username = await firstValueFrom(
+      this.accountService.activeAccount$.pipe(map((a) => a?.email)),
+    );
   }
 
-  submit = async () => {
-    this.formGroup.markAsTouched();
-
-    if (this.formGroup.invalid) {
-      return;
-    }
-
+  async submit() {
     this.error = false;
-    this.loading = true;
-    const username = this.formGroup.value.username;
+    this.username = this.username.toLowerCase();
     try {
-      this.breachedAccounts = await this.auditService.breachedAccounts(username);
+      this.formPromise = this.auditService.breachedAccounts(this.username);
+      this.breachedAccounts = await this.formPromise;
     } catch {
       this.error = true;
-    } finally {
-      this.loading = false;
     }
-
-    this.checkedUsername = username;
-  };
+    this.checkedUsername = this.username;
+  }
 }
