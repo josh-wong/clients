@@ -275,6 +275,11 @@ export class LoginStrategyService implements LoginStrategyServiceAbstraction {
 
   private async startSessionTimeout(): Promise<void> {
     await this.clearSessionTimeout();
+
+    // This Login Strategy Cache Expiration State value set here is used to clear the cache on re-init
+    // of the application in the case where the timeout is terminated due to a closure of the application
+    // window. The browser extension popup in particular is susceptible to this concern, as the user
+    // is almost always likely to close the popup window before the session timeout is reached.
     await this.loginStrategyCacheExpirationState.update(
       (_) => new Date(Date.now() + sessionTimeoutLength),
     );
@@ -294,6 +299,9 @@ export class LoginStrategyService implements LoginStrategyServiceAbstraction {
     if (cache == null) {
       return false;
     }
+
+    // If the Login Strategy Cache Expiration State value is less than the current
+    // datetime stamp, then the cache is invalid and should be cleared.
     const expiration = await firstValueFrom(this.loginStrategyCacheExpirationState.state$);
     if (expiration != null && expiration < new Date()) {
       await this.clearCache();
