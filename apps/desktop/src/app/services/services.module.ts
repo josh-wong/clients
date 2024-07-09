@@ -13,7 +13,6 @@ import {
   SUPPORTS_SECURE_STORAGE,
   SYSTEM_THEME_OBSERVABLE,
   SafeInjectionToken,
-  STATE_FACTORY,
   DEFAULT_VAULT_TIMEOUT,
   INTRAPROCESS_MESSAGING_SUBJECT,
   CLIENT_TYPE,
@@ -36,7 +35,6 @@ import {
   KdfConfigService as KdfConfigServiceAbstraction,
 } from "@bitwarden/common/auth/abstractions/kdf-config.service";
 import { InternalMasterPasswordServiceAbstraction } from "@bitwarden/common/auth/abstractions/master-password.service.abstraction";
-import { TokenService } from "@bitwarden/common/auth/abstractions/token.service";
 import { AutofillSettingsServiceAbstraction } from "@bitwarden/common/autofill/services/autofill-settings.service";
 import { ClientType } from "@bitwarden/common/enums";
 import { CryptoFunctionService as CryptoFunctionServiceAbstraction } from "@bitwarden/common/platform/abstractions/crypto-function.service";
@@ -45,7 +43,6 @@ import {
   CryptoService as CryptoServiceAbstraction,
 } from "@bitwarden/common/platform/abstractions/crypto.service";
 import { EncryptService } from "@bitwarden/common/platform/abstractions/encrypt.service";
-import { EnvironmentService } from "@bitwarden/common/platform/abstractions/environment.service";
 import { FileDownloadService } from "@bitwarden/common/platform/abstractions/file-download/file-download.service";
 import { I18nService as I18nServiceAbstraction } from "@bitwarden/common/platform/abstractions/i18n.service";
 import { KeyGenerationService as KeyGenerationServiceAbstraction } from "@bitwarden/common/platform/abstractions/key-generation.service";
@@ -59,13 +56,10 @@ import { StateService as StateServiceAbstraction } from "@bitwarden/common/platf
 import { AbstractStorageService } from "@bitwarden/common/platform/abstractions/storage.service";
 import { SystemService as SystemServiceAbstraction } from "@bitwarden/common/platform/abstractions/system.service";
 import { BiometricStateService } from "@bitwarden/common/platform/biometrics/biometric-state.service";
-import { StateFactory } from "@bitwarden/common/platform/factories/state-factory";
 import { Message, MessageListener, MessageSender } from "@bitwarden/common/platform/messaging";
 // eslint-disable-next-line no-restricted-imports -- Used for dependency injection
 import { SubjectMessageSender } from "@bitwarden/common/platform/messaging/internal";
-import { GlobalState } from "@bitwarden/common/platform/models/domain/global-state";
 import { MemoryStorageService } from "@bitwarden/common/platform/services/memory-storage.service";
-import { MigrationRunner } from "@bitwarden/common/platform/services/migration-runner";
 import { SystemService } from "@bitwarden/common/platform/services/system.service";
 import { GlobalStateProvider, StateProvider } from "@bitwarden/common/platform/state";
 // eslint-disable-next-line import/no-restricted-paths -- Implementation for memory storage
@@ -76,7 +70,6 @@ import { DialogService } from "@bitwarden/components";
 import { PasswordGenerationServiceAbstraction } from "@bitwarden/generator-legacy";
 
 import { DesktopAutofillSettingsService } from "../../autofill/services/desktop-autofill-settings.service";
-import { Account } from "../../models/account";
 import { DesktopSettingsService } from "../../platform/services/desktop-settings.service";
 import { ElectronCryptoService } from "../../platform/services/electron-crypto.service";
 import { ElectronLogRendererService } from "../../platform/services/electron-log.renderer.service";
@@ -87,7 +80,6 @@ import {
 import { ElectronRendererMessageSender } from "../../platform/services/electron-renderer-message.sender";
 import { ElectronRendererSecureStorageService } from "../../platform/services/electron-renderer-secure-storage.service";
 import { ElectronRendererStorageService } from "../../platform/services/electron-renderer-storage.service";
-import { ElectronStateService } from "../../platform/services/electron-state.service";
 import { I18nRendererService } from "../../platform/services/i18n.renderer.service";
 import { fromIpcMessaging } from "../../platform/utils/from-ipc-messaging";
 import { fromIpcSystemTheme } from "../../platform/utils/from-ipc-system-theme";
@@ -104,11 +96,6 @@ import { RendererCryptoFunctionService } from "./renderer-crypto-function.servic
 
 const RELOAD_CALLBACK = new SafeInjectionToken<() => any>("RELOAD_CALLBACK");
 
-// Desktop has its own Account definition which must be used in its StateService
-const DESKTOP_STATE_FACTORY = new SafeInjectionToken<StateFactory<GlobalState, Account>>(
-  "DESKTOP_STATE_FACTORY",
-);
-
 /**
  * Provider definitions used in the ngModule.
  * Add your provider definition here using the safeProvider function as a wrapper. This will give you type safety.
@@ -124,14 +111,6 @@ const safeProviders: SafeProvider[] = [
     useFactory: (initService: InitService) => initService.init(),
     deps: [InitService],
     multi: true,
-  }),
-  safeProvider({
-    provide: DESKTOP_STATE_FACTORY,
-    useValue: new StateFactory(GlobalState, Account),
-  }),
-  safeProvider({
-    provide: STATE_FACTORY,
-    useValue: null,
   }),
   safeProvider({
     provide: RELOAD_CALLBACK,
@@ -208,26 +187,10 @@ const safeProviders: SafeProvider[] = [
       MessagingServiceAbstraction,
       PlatformUtilsServiceAbstraction,
       RELOAD_CALLBACK,
-      StateServiceAbstraction,
       AutofillSettingsServiceAbstraction,
       VaultTimeoutSettingsService,
       BiometricStateService,
       AccountServiceAbstraction,
-    ],
-  }),
-  safeProvider({
-    provide: StateServiceAbstraction,
-    useClass: ElectronStateService,
-    deps: [
-      AbstractStorageService,
-      SECURE_STORAGE,
-      MEMORY_STORAGE,
-      LogService,
-      DESKTOP_STATE_FACTORY,
-      AccountServiceAbstraction,
-      EnvironmentService,
-      TokenService,
-      MigrationRunner,
     ],
   }),
   safeProvider({

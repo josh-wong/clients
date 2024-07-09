@@ -1,7 +1,12 @@
 import { ErrorHandler, LOCALE_ID, NgModule } from "@angular/core";
 import { Subject } from "rxjs";
 
-import { SetPasswordJitService, DefaultSetPasswordJitService } from "@bitwarden/auth/angular";
+import {
+  SetPasswordJitService,
+  DefaultSetPasswordJitService,
+  RegistrationFinishService as RegistrationFinishServiceAbstraction,
+  DefaultRegistrationFinishService,
+} from "@bitwarden/auth/angular";
 import {
   AuthRequestServiceAbstraction,
   AuthRequestService,
@@ -15,6 +20,7 @@ import {
   UserDecryptionOptionsService,
   UserDecryptionOptionsServiceAbstraction,
   LogoutReason,
+  RegisterRouteService,
 } from "@bitwarden/auth/common";
 import { ApiService as ApiServiceAbstraction } from "@bitwarden/common/abstractions/api.service";
 import { AuditService as AuditServiceAbstraction } from "@bitwarden/common/abstractions/audit.service";
@@ -725,6 +731,10 @@ const safeProviders: SafeProvider[] = [
     deps: [StateProvider],
   }),
   safeProvider({
+    provide: STATE_FACTORY,
+    useValue: new StateFactory(GlobalState, Account),
+  }),
+  safeProvider({
     provide: StateServiceAbstraction,
     useClass: StateService,
     deps: [
@@ -1235,6 +1245,16 @@ const safeProviders: SafeProvider[] = [
       OrganizationUserService,
       InternalUserDecryptionOptionsServiceAbstraction,
     ],
+  }),
+  safeProvider({
+    provide: RegisterRouteService,
+    useClass: RegisterRouteService,
+    deps: [ConfigService],
+  }),
+  safeProvider({
+    provide: RegistrationFinishServiceAbstraction,
+    useClass: DefaultRegistrationFinishService,
+    deps: [CryptoServiceAbstraction, AccountApiServiceAbstraction],
   }),
 ];
 
