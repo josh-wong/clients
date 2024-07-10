@@ -61,7 +61,7 @@ const routes: Routes = [
       },
       {
         path: "reporting/reports",
-        canActivate: [AuthGuard, organizationPermissionsGuard((org) => org.canAccessReports)],
+        canActivate: [authGuard, organizationPermissionsGuard((org) => org.canAccessReports)],
         children: [
           {
             path: "member-access-report",
