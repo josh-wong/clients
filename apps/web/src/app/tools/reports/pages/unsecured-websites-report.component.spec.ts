@@ -81,7 +81,7 @@ describe("UnsecuredWebsitesReportComponent", () => {
     expect(component.ciphers[1].edit).toEqual(true);
   });
 
-  it("should calls fullSync method of syncService", () => {
+  it("should call fullSync method of syncService", () => {
     expect(syncServiceMock.fullSync).toHaveBeenCalledWith(false);
   });
 });
