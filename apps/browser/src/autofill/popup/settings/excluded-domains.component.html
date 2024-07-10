@@ -37,20 +37,20 @@
               [(ngModel)]="excludedDomainsState[i]"
             />
             <div *ngIf="i < fieldsEditThreshold">{{ domain }}</div>
-            <button
-              *ngIf="i < fieldsEditThreshold"
-              appA11yTitle="{{ 'remove' | i18n }}"
-              bitIconButton="bwi-minus-circle"
-              buttonType="danger"
-              size="small"
-              slot="end"
-              type="button"
-              (click)="removeDomain(i)"
-            ></button>
           </bit-item-content>
+          <button
+            *ngIf="i < fieldsEditThreshold"
+            appA11yTitle="{{ 'remove' | i18n }}"
+            bitIconButton="bwi-minus-circle"
+            buttonType="danger"
+            size="small"
+            slot="end"
+            type="button"
+            (click)="removeDomain(i)"
+          ></button>
         </bit-item>
       </ng-container>
-      <button bitLink class="tw-pt-2" type="button" [linkType]="primary" (click)="addNewDomain()">
+      <button bitLink class="tw-pt-2" type="button" linkType="primary" (click)="addNewDomain()">
         <i class="bwi bwi-plus-circle bwi-fw" aria-hidden="true"></i> {{ "addDomain" | i18n }}
       </button>
     </bit-section>
