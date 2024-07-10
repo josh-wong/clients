@@ -17,12 +17,11 @@ import { CipherService } from "@bitwarden/common/vault/services/cipher.service";
 import { FolderService } from "@bitwarden/common/vault/services/folder/folder.service";
 
 import { BrowserApi } from "../../platform/browser/browser-api";
-import { DefaultBrowserStateService } from "../../platform/services/default-browser-state.service";
 import { NotificationQueueMessageType } from "../enums/notification-queue-message-type.enum";
 import { FormData } from "../services/abstractions/autofill.service";
 import AutofillService from "../services/autofill.service";
 import { createAutofillPageDetailsMock, createChromeTabMock } from "../spec/autofill-mocks";
-import { flushPromises, sendExtensionRuntimeMessage } from "../spec/testing-utils";
+import { flushPromises, sendMockExtensionMessage } from "../spec/testing-utils";
 
 import {
   AddChangePasswordQueueMessage,
@@ -49,7 +48,6 @@ describe("NotificationBackground", () => {
   const authService = mock<AuthService>();
   const policyService = mock<PolicyService>();
   const folderService = mock<FolderService>();
-  const stateService = mock<DefaultBrowserStateService>();
   const userNotificationSettingsService = mock<UserNotificationSettingsService>();
   const domainSettingsService = mock<DomainSettingsService>();
   const environmentService = mock<EnvironmentService>();
@@ -64,7 +62,6 @@ describe("NotificationBackground", () => {
       authService,
       policyService,
       folderService,
-      stateService,
       userNotificationSettingsService,
       domainSettingsService,
       environmentService,
@@ -143,7 +140,7 @@ describe("NotificationBackground", () => {
       const message: NotificationBackgroundExtensionMessage = { command: "unknown" };
       jest.spyOn(notificationBackground as any, "handleSaveCipherMessage");
 
-      sendExtensionRuntimeMessage(message);
+      sendMockExtensionMessage(message);
 
       expect(notificationBackground["handleSaveCipherMessage"]).not.toHaveBeenCalled();
     });
@@ -159,7 +156,7 @@ describe("NotificationBackground", () => {
         };
         jest.spyOn(BrowserApi, "tabSendMessageData").mockImplementation();
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(BrowserApi.tabSendMessageData).toHaveBeenCalledWith(
@@ -178,7 +175,7 @@ describe("NotificationBackground", () => {
         };
         jest.spyOn(notificationBackground as any, "handleSaveCipherMessage").mockImplementation();
 
-        sendExtensionRuntimeMessage(message);
+        sendMockExtensionMessage(message);
         await flushPromises();
 
         expect(notificationBackground["handleSaveCipherMessage"]).toHaveBeenCalledWith(
@@ -198,7 +195,7 @@ describe("NotificationBackground", () => {
         jest.spyOn(notificationBackground as any, "getFolderData");
         (firstValueFrom as jest.Mock).mockResolvedValueOnce(folderViews);
 
-        sendExtensionRuntimeMessage(message);
+        sendMockExtensionMessage(message);
         await flushPromises();
 
         expect(notificationBackground["getFolderData"]).toHaveBeenCalled();
@@ -214,7 +211,7 @@ describe("NotificationBackground", () => {
         };
         jest.spyOn(BrowserApi, "tabSendMessageData").mockImplementation();
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(BrowserApi.tabSendMessageData).toHaveBeenCalledWith(
@@ -233,7 +230,7 @@ describe("NotificationBackground", () => {
         };
         jest.spyOn(BrowserApi, "tabSendMessageData").mockImplementation();
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(BrowserApi.tabSendMessageData).toHaveBeenCalledWith(
@@ -281,7 +278,7 @@ describe("NotificationBackground", () => {
         };
         getAuthStatusSpy.mockResolvedValueOnce(AuthenticationStatus.LoggedOut);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -296,7 +293,7 @@ describe("NotificationBackground", () => {
         };
         getAuthStatusSpy.mockResolvedValueOnce(AuthenticationStatus.Locked);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -312,7 +309,7 @@ describe("NotificationBackground", () => {
         getAuthStatusSpy.mockResolvedValueOnce(AuthenticationStatus.Locked);
         getEnableAddedLoginPromptSpy.mockReturnValueOnce(false);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -331,7 +328,7 @@ describe("NotificationBackground", () => {
         getEnableAddedLoginPromptSpy.mockReturnValueOnce(false);
         getAllDecryptedForUrlSpy.mockResolvedValueOnce([]);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -353,7 +350,7 @@ describe("NotificationBackground", () => {
           mock<CipherView>({ login: { username: "test", password: "oldPassword" } }),
         ]);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -375,7 +372,7 @@ describe("NotificationBackground", () => {
           mock<CipherView>({ login: { username: "test", password: "password" } }),
         ]);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -391,7 +388,7 @@ describe("NotificationBackground", () => {
         getAuthStatusSpy.mockResolvedValueOnce(AuthenticationStatus.Locked);
         getEnableAddedLoginPromptSpy.mockReturnValueOnce(true);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -411,7 +408,7 @@ describe("NotificationBackground", () => {
           mock<CipherView>({ login: { username: "anotherTestUsername", password: "password" } }),
         ]);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -431,7 +428,7 @@ describe("NotificationBackground", () => {
           }),
         ]);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(pushChangePasswordToQueueSpy).toHaveBeenCalledWith(
@@ -467,7 +464,7 @@ describe("NotificationBackground", () => {
           data: { newPassword: "newPassword", currentPassword: "currentPassword", url: "" },
         };
 
-        sendExtensionRuntimeMessage(message);
+        sendMockExtensionMessage(message);
         await flushPromises();
 
         expect(pushChangePasswordToQueueSpy).not.toHaveBeenCalled();
@@ -484,7 +481,7 @@ describe("NotificationBackground", () => {
         };
         getAuthStatusSpy.mockResolvedValueOnce(AuthenticationStatus.Locked);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -511,7 +508,7 @@ describe("NotificationBackground", () => {
           mock<CipherView>({ login: { username: "test", password: "password" } }),
         ]);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -534,7 +531,7 @@ describe("NotificationBackground", () => {
           mock<CipherView>({ login: { username: "test2", password: "password" } }),
         ]);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -559,7 +556,7 @@ describe("NotificationBackground", () => {
           }),
         ]);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(pushChangePasswordToQueueSpy).toHaveBeenCalledWith(
@@ -584,7 +581,7 @@ describe("NotificationBackground", () => {
           mock<CipherView>({ login: { username: "test2", password: "password" } }),
         ]);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -608,7 +605,7 @@ describe("NotificationBackground", () => {
           }),
         ]);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(pushChangePasswordToQueueSpy).toHaveBeenCalledWith(
@@ -644,7 +641,7 @@ describe("NotificationBackground", () => {
           thirdQueueMessage,
         ];
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(removeTabFromNotificationQueueSpy).toHaveBeenCalledWith(tab);
@@ -677,7 +674,7 @@ describe("NotificationBackground", () => {
         };
         getAuthStatusSpy.mockResolvedValueOnce(AuthenticationStatus.Locked);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -744,7 +741,7 @@ describe("NotificationBackground", () => {
             }),
           ];
 
-          sendExtensionRuntimeMessage(message, sender);
+          sendMockExtensionMessage(message, sender);
           await flushPromises();
 
           expect(updatePasswordSpy).not.toHaveBeenCalled();
@@ -767,7 +764,7 @@ describe("NotificationBackground", () => {
             }),
           ];
 
-          sendExtensionRuntimeMessage(message, sender);
+          sendMockExtensionMessage(message, sender);
           await flushPromises();
 
           expect(updatePasswordSpy).not.toHaveBeenCalled();
@@ -791,7 +788,7 @@ describe("NotificationBackground", () => {
             }),
           ];
 
-          sendExtensionRuntimeMessage(message, sender);
+          sendMockExtensionMessage(message, sender);
           expect(updatePasswordSpy).not.toHaveBeenCalled();
           expect(editItemSpy).not.toHaveBeenCalled();
           expect(createWithServerSpy).not.toHaveBeenCalled();
@@ -815,7 +812,7 @@ describe("NotificationBackground", () => {
           const cipherView = mock<CipherView>();
           getDecryptedCipherByIdSpy.mockResolvedValueOnce(cipherView);
 
-          sendExtensionRuntimeMessage(message, sender);
+          sendMockExtensionMessage(message, sender);
           await flushPromises();
 
           expect(editItemSpy).not.toHaveBeenCalled();
@@ -854,7 +851,7 @@ describe("NotificationBackground", () => {
           });
           getAllDecryptedForUrlSpy.mockResolvedValueOnce([cipherView]);
 
-          sendExtensionRuntimeMessage(message, sender);
+          sendMockExtensionMessage(message, sender);
           await flushPromises();
 
           expect(updatePasswordSpy).toHaveBeenCalledWith(
@@ -887,7 +884,7 @@ describe("NotificationBackground", () => {
           setAddEditCipherInfoSpy.mockResolvedValue(undefined);
           openAddEditVaultItemPopoutSpy.mockResolvedValue(undefined);
 
-          sendExtensionRuntimeMessage(message, sender);
+          sendMockExtensionMessage(message, sender);
           await flushPromises();
 
           expect(updatePasswordSpy).toHaveBeenCalledWith(
@@ -937,7 +934,7 @@ describe("NotificationBackground", () => {
           convertAddLoginQueueMessageToCipherViewSpy.mockReturnValueOnce(cipherView);
           editItemSpy.mockResolvedValueOnce(undefined);
 
-          sendExtensionRuntimeMessage(message, sender);
+          sendMockExtensionMessage(message, sender);
           await flushPromises();
 
           expect(updatePasswordSpy).not.toHaveBeenCalled();
@@ -976,7 +973,7 @@ describe("NotificationBackground", () => {
           convertAddLoginQueueMessageToCipherViewSpy.mockReturnValueOnce(cipherView);
           editItemSpy.mockResolvedValueOnce(undefined);
 
-          sendExtensionRuntimeMessage(message, sender);
+          sendMockExtensionMessage(message, sender);
           await flushPromises();
 
           expect(convertAddLoginQueueMessageToCipherViewSpy).toHaveBeenCalledWith(
@@ -1019,7 +1016,7 @@ describe("NotificationBackground", () => {
             throw new Error(errorMessage);
           });
 
-          sendExtensionRuntimeMessage(message, sender);
+          sendMockExtensionMessage(message, sender);
           await flushPromises();
 
           expect(cipherEncryptSpy).toHaveBeenCalledWith(cipherView);
@@ -1058,7 +1055,7 @@ describe("NotificationBackground", () => {
             throw new Error(errorMessage);
           });
 
-          sendExtensionRuntimeMessage(message, sender);
+          sendMockExtensionMessage(message, sender);
           await flushPromises();
 
           expect(updateWithServerSpy).toThrow(errorMessage);
@@ -1093,7 +1090,7 @@ describe("NotificationBackground", () => {
           }),
         ];
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(tabSendMessageDataSpy).not.toHaveBeenCalled();
@@ -1107,7 +1104,7 @@ describe("NotificationBackground", () => {
           mock<AddUnlockVaultQueueMessage>({ type: NotificationQueueMessageType.UnlockVault, tab }),
         ];
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(tabSendMessageDataSpy).not.toHaveBeenCalled();
@@ -1125,7 +1122,7 @@ describe("NotificationBackground", () => {
           }),
         ];
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(tabSendMessageDataSpy).not.toHaveBeenCalled();
@@ -1149,7 +1146,7 @@ describe("NotificationBackground", () => {
         jest.spyOn(cipherService, "saveNeverDomain").mockImplementation();
         jest.spyOn(BrowserApi, "tabSendMessageData").mockImplementation();
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(tabSendMessageDataSpy).toHaveBeenCalledWith(tab, "closeNotificationBar");
@@ -1171,7 +1168,7 @@ describe("NotificationBackground", () => {
           sender: "not-notificationBar",
         };
 
-        sendExtensionRuntimeMessage(message);
+        sendMockExtensionMessage(message);
         await flushPromises();
 
         expect(tabSendMessageDataSpy).not.toHaveBeenCalled();
@@ -1188,7 +1185,7 @@ describe("NotificationBackground", () => {
         const formData = [mock<FormData>()];
         jest.spyOn(autofillService, "getFormsWithPasswordFields").mockReturnValueOnce(formData);
 
-        sendExtensionRuntimeMessage(message);
+        sendMockExtensionMessage(message);
         await flushPromises();
 
         expect(tabSendMessageDataSpy).toHaveBeenCalledWith(
@@ -1222,7 +1219,7 @@ describe("NotificationBackground", () => {
           data: { skipNotification: true },
         };
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).not.toHaveBeenCalled();
@@ -1237,7 +1234,7 @@ describe("NotificationBackground", () => {
         };
         getAuthStatusSpy.mockResolvedValueOnce(AuthenticationStatus.LoggedOut);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(getAuthStatusSpy).toHaveBeenCalled();
@@ -1253,7 +1250,7 @@ describe("NotificationBackground", () => {
         getAuthStatusSpy.mockResolvedValueOnce(AuthenticationStatus.Locked);
         notificationBackground["notificationQueue"] = [mock<AddLoginQueueMessage>()];
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(pushUnlockVaultToQueueSpy).not.toHaveBeenCalled();
@@ -1267,7 +1264,7 @@ describe("NotificationBackground", () => {
         };
         getAuthStatusSpy.mockResolvedValueOnce(AuthenticationStatus.Locked);
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(pushUnlockVaultToQueueSpy).toHaveBeenCalledWith("example.com", sender.tab);
@@ -1292,7 +1289,7 @@ describe("NotificationBackground", () => {
         };
         notificationBackground["notificationQueue"] = [];
 
-        sendExtensionRuntimeMessage(message);
+        sendMockExtensionMessage(message);
         await flushPromises();
 
         expect(doNotificationQueueCheckSpy).not.toHaveBeenCalled();
@@ -1309,7 +1306,7 @@ describe("NotificationBackground", () => {
           mock<AddLoginQueueMessage>({ tab: createChromeTabMock({ id: 2 }) }),
         ];
 
-        sendExtensionRuntimeMessage(message, sender);
+        sendMockExtensionMessage(message, sender);
         await flushPromises();
 
         expect(doNotificationQueueCheckSpy).toHaveBeenCalledWith(tab);
@@ -1325,7 +1322,7 @@ describe("NotificationBackground", () => {
         ];
         getTabFromCurrentWindowSpy.mockResolvedValueOnce(currenTab);
 
-        sendExtensionRuntimeMessage(message, mock<chrome.runtime.MessageSender>({ tab: null }));
+        sendMockExtensionMessage(message, mock<chrome.runtime.MessageSender>({ tab: null }));
         await flushPromises();
 
         expect(getTabFromCurrentWindowSpy).toHaveBeenCalledWith();
@@ -1340,7 +1337,7 @@ describe("NotificationBackground", () => {
         };
         const openUnlockWindowSpy = jest.spyOn(notificationBackground as any, "openUnlockPopout");
 
-        sendExtensionRuntimeMessage(message);
+        sendMockExtensionMessage(message);
         await flushPromises();
 
         expect(openUnlockWindowSpy).toHaveBeenCalled();
@@ -1363,7 +1360,7 @@ describe("NotificationBackground", () => {
           .spyOn(environmentService as any, "environment$", "get")
           .mockReturnValue(new BehaviorSubject(env).asObservable());
 
-        sendExtensionRuntimeMessage(message);
+        sendMockExtensionMessage(message);
         await flushPromises();
 
         expect(environmentServiceSpy).toHaveBeenCalled();
