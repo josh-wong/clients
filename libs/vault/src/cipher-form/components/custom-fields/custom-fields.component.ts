@@ -86,6 +86,9 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
   /** Options for Linked Fields */
   linkedFieldOptions: { name: string; value: LinkedIdType }[] = [];
 
+  /** True when edit/reorder toggles should be hidden based on partial-edit */
+  isPartialEdit: boolean;
+
   /** Emits when a new custom field should be focused */
   private focusOnNewInput$ = new Subject<void>();
 
@@ -140,6 +143,13 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
         }),
       );
     });
+
+    // Disable the form if in partial-edit mode
+    // Must happen after the initial fields are populated
+    if (this.cipherFormContainer.config.mode === "partial-edit") {
+      this.isPartialEdit = true;
+      this.customFieldsForm.disable();
+    }
   }
 
   ngAfterViewInit(): void {

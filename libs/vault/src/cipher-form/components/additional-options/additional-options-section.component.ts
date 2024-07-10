@@ -50,6 +50,8 @@ export class AdditionalOptionsSectionComponent implements OnInit {
     shareReplay({ refCount: false, bufferSize: 1 }),
   );
 
+  hasCustomFields = false;
+
   constructor(
     private cipherFormContainer: CipherFormContainer,
     private formBuilder: FormBuilder,
@@ -77,5 +79,7 @@ export class AdditionalOptionsSectionComponent implements OnInit {
     if (this.cipherFormContainer.config.mode === "partial-edit") {
       this.additionalOptionsForm.disable();
     }
+
+    this.hasCustomFields = (this.updatedCipherView?.fields?.length ?? 0) > 0;
   }
 }

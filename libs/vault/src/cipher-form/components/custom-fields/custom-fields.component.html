@@ -4,6 +4,7 @@
     class="tw-text-primary-600 tw-font-bold tw-flex tw-items-center tw-gap-1"
     bitTypography="body2"
     (click)="openAddEditCustomFieldDialog()"
+    *ngIf="!isPartialEdit"
   >
     <i class="bwi bwi-plus tw-font-bold" aria-hidden="true"></i>
     {{ "addField" | i18n }}
@@ -96,6 +97,7 @@
           bitIconButton="bwi-pencil-square"
           class="tw-self-end"
           data-testid="edit-custom-field-button"
+          *ngIf="!isPartialEdit"
         ></button>
 
         <button
@@ -106,6 +108,7 @@
           [appA11yTitle]="'reorderToggleButton' | i18n"
           (keydown)="handleKeyDown($event, field.value.name, i)"
           data-testid="reorder-toggle-button"
+          *ngIf="!isPartialEdit"
         ></button>
       </div>
 
