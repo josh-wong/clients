@@ -42,6 +42,14 @@ import {
   AddEditCustomFieldDialogData,
 } from "./add-edit-custom-field-dialog/add-edit-custom-field-dialog.component";
 
+/** Attributes associated with each individual FormGroup within the FormArray */
+type CustomField = {
+  type: FieldType;
+  name: string;
+  value: string | boolean | null;
+  linkedId: LinkedIdType;
+};
+
 @Component({
   standalone: true,
   selector: "vault-custom-fields",
@@ -95,28 +103,7 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
     this.cipherFormContainer.registerChildForm("customFields", this.customFieldsForm);
 
     this.customFieldsForm.valueChanges.pipe(takeUntilDestroyed()).subscribe((values) => {
-      const fields = values.fields.map(
-        (field: {
-          type: FieldType;
-          name: string;
-          value: string | null;
-          linkedId: LinkedIdType;
-        }) => {
-          // Use string literal to turn a number into a string, no impact to other strings
-          const value = typeof field.value === "number" ? `${field.value}` : field.value;
-
-          const fieldView = new FieldView();
-          fieldView.type = field.type;
-          fieldView.name = field.name;
-          fieldView.value = value;
-          fieldView.linkedId = field.linkedId;
-          return fieldView;
-        },
-      );
-
-      this.cipherFormContainer.patchCipher({
-        fields,
-      });
+      this.updateCipher(values.fields);
     });
   }
 
@@ -134,13 +121,17 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
       .sort(Utils.getSortFunction(this.i18nService, "name"));
 
     this.updatedCipherView.fields?.forEach((field) => {
-      const value = field.type === FieldType.Boolean ? field.value === "true" : field.value;
+      let value: string | boolean = field.value;
+
+      if (field.type === FieldType.Boolean) {
+        value = field.value === "true" ? true : false;
+      }
 
       this.fields.push(
-        this.formBuilder.group({
+        this.formBuilder.group<CustomField>({
           type: field.type,
           name: field.name,
-          value,
+          value: value,
           linkedId: field.linkedId,
         }),
       );
@@ -207,7 +198,7 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
 
     if (type === FieldType.Boolean) {
       // Default to false for boolean fields
-      value = "false";
+      value = false;
     }
 
     if (type === FieldType.Linked && this.linkedFieldOptions.length > 0) {
@@ -216,7 +207,7 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
     }
 
     this.fields.push(
-      this.formBuilder.group({
+      this.formBuilder.group<CustomField>({
         type,
         name: label,
         value,
@@ -228,14 +219,69 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
     this.focusOnNewInput$.next();
   }
 
+  /** Reorder the controls to match the new order after a "drop" event */
   drop(event: CdkDragDrop<HTMLDivElement>) {
-    // Get the current fields array
-    const currentFields = this.fields.value;
-
     // Alter the order of the fields array in place
-    moveItemInArray(currentFields, event.previousIndex, event.currentIndex);
+    moveItemInArray(this.fields.controls, event.previousIndex, event.currentIndex);
 
-    // Set the new order of the fields array
-    this.fields.patchValue(currentFields);
+    this.updateCipher(this.fields.controls.map((control) => control.value));
+  }
+
+  /** Move a custom field up or down in the list order */
+  async handleKeyDown(event: KeyboardEvent, label: string, index: number) {
+    if (event.key === "ArrowUp" && index !== 0) {
+      event.preventDefault();
+
+      const currentIndex = index - 1;
+      this.drop({ previousIndex: index, currentIndex } as CdkDragDrop<HTMLDivElement>);
+      await this.liveAnnouncer.announce(
+        this.i18nService.t("reorderFieldUp", label, currentIndex + 1, this.fields.length),
+        "assertive",
+      );
+
+      // Refocus the button after the reorder
+      // Angular re-renders the list when moving an item up which causes the focus to be lost
+      // Wait for the next tick to ensure the button is rendered before focusing
+      setTimeout(() => {
+        (event.target as HTMLButtonElement).focus();
+      });
+    }
+
+    if (event.key === "ArrowDown" && index !== this.fields.length - 1) {
+      event.preventDefault();
+
+      const currentIndex = index + 1;
+      this.drop({ previousIndex: index, currentIndex } as CdkDragDrop<HTMLDivElement>);
+      await this.liveAnnouncer.announce(
+        this.i18nService.t("reorderFieldDown", label, currentIndex + 1, this.fields.length),
+        "assertive",
+      );
+    }
+  }
+
+  /** Create `FieldView` from the form objects and update the cipher */
+  private updateCipher(fields: CustomField[]) {
+    const newFields = fields.map((field: CustomField) => {
+      let value: string;
+
+      if (typeof field.value === "number") {
+        value = `${field.value}`;
+      } else if (typeof field.value === "boolean") {
+        value = field.value ? "true" : "false";
+      } else {
+        value = field.value;
+      }
+
+      const fieldView = new FieldView();
+      fieldView.type = field.type;
+      fieldView.name = field.name;
+      fieldView.value = value;
+      fieldView.linkedId = field.linkedId;
+      return fieldView;
+    });
+
+    this.cipherFormContainer.patchCipher({
+      fields: newFields,
+    });
   }
 }
