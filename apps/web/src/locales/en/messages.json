@@ -8544,5 +8544,8 @@
   },
   "sponsored": {
     "message": "Sponsored"
+  },
+  "purchasedSeatsRemoved": {
+    "message": "purchased seats removed"
   }
 }
