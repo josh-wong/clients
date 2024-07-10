@@ -3665,7 +3665,13 @@
     "message": "Enter the the field's html id, name, aria-label, or placeholder."
   },
   "editField": {
-    "message": "Edit field"
+    "message": "Edit $LABEL$",
+    "placeholders": {
+      "label": {
+        "content": "$1",
+        "example": "Custom field"
+      }
+    }
   },
   "deleteCustomField": {
     "message": "Delete $LABEL$",
@@ -3686,7 +3692,13 @@
     }
   },
   "reorderToggleButton": {
-    "message": "Reorder, Use arrow key to move item up or down."
+    "message": "Reorder $LABEL$. Use arrow key to move item up or down.",
+    "placeholders": {
+      "label": {
+        "content": "$1",
+        "example": "Custom field"
+      }
+    }
   },
   "reorderFieldUp":{
     "message": "$LABEL$ moved up, position $INDEX$ of $LENGTH$",
