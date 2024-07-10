@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, DoCheck, Input, OnInit } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { shareReplay } from "rxjs";
@@ -38,7 +38,7 @@ import { CustomFieldsComponent } from "../custom-fields/custom-fields.component"
     CustomFieldsComponent,
   ],
 })
-export class AdditionalOptionsSectionComponent implements OnInit {
+export class AdditionalOptionsSectionComponent implements OnInit, DoCheck {
   @Input({ required: true }) updatedCipherView: CipherView | null = null;
 
   additionalOptionsForm = this.formBuilder.group({
@@ -80,6 +80,12 @@ export class AdditionalOptionsSectionComponent implements OnInit {
       this.additionalOptionsForm.disable();
     }
 
+    this.hasCustomFields = (this.updatedCipherView?.fields?.length ?? 0) > 0;
+  }
+
+  // Because `updatedCipherView` always refers to the same object `ngOnChanges` doesn't fire when an underlying property changes.
+  // `ngDoCheck` is needed to update `hasCustomFields` when the fields change.
+  ngDoCheck(): void {
     this.hasCustomFields = (this.updatedCipherView?.fields?.length ?? 0) > 0;
   }
 }
