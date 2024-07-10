@@ -15,7 +15,7 @@ import { MasterPasswordPolicyOptions } from "@bitwarden/common/admin-console/mod
 import { OrganizationResponse } from "@bitwarden/common/admin-console/models/response/organization.response";
 import { PolicyResponse } from "@bitwarden/common/admin-console/models/response/policy.response";
 import { OrganizationBillingServiceAbstraction } from "@bitwarden/common/billing/abstractions/organization-billing.service";
-import { ProductType } from "@bitwarden/common/enums";
+import { ProductTierType } from "@bitwarden/common/billing/enums";
 import { ListResponse } from "@bitwarden/common/models/response/list.response";
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
 import { LogService } from "@bitwarden/common/platform/abstractions/log.service";
@@ -213,18 +213,43 @@ describe("FinishSignUpComponent", () => {
 
     describe("planType", () => {
       describe("SecretsManager", () => {
-        [ProductType.Free, ProductType.Families, ProductType.Teams, ProductType.Enterprise].forEach(
+        [
+          ProductTierType.Free,
+          ProductTierType.Families,
+          ProductTierType.Teams,
+          ProductTierType.Enterprise,
+        ].forEach((planType) => {
+          describe(`${ProductTierType[planType]}`, () => {
+            it("sets `planType` attribute", async () => {
+              mockQueryParams.next({ product: Product.SecretsManager, planType });
+              await component.ngOnInit();
+
+              expect(component.planType).toBe(planType);
+            });
+
+            it("shows the trial stepper", async () => {
+              mockQueryParams.next({ product: Product.SecretsManager, planType });
+              await component.ngOnInit();
+
+              expect(component.useTrialStepper).toBe(true);
+            });
+          });
+        });
+      });
+
+      describe("PasswordManager", () => {
+        [ProductTierType.Families, ProductTierType.Teams, ProductTierType.Enterprise].forEach(
           (planType) => {
-            describe(`${ProductType[planType]}`, () => {
+            describe(`${ProductTierType[planType]}`, () => {
               it("sets `planType` attribute", async () => {
-                mockQueryParams.next({ product: Product.SecretsManager, planType });
+                mockQueryParams.next({ product: Product.PasswordManager, planType });
                 await component.ngOnInit();
 
                 expect(component.planType).toBe(planType);
               });
 
               it("shows the trial stepper", async () => {
-                mockQueryParams.next({ product: Product.SecretsManager, planType });
+                mockQueryParams.next({ product: Product.PasswordManager, planType });
                 await component.ngOnInit();
 
                 expect(component.useTrialStepper).toBe(true);
@@ -232,41 +257,27 @@ describe("FinishSignUpComponent", () => {
             });
           },
         );
-      });
 
-      describe("PasswordManager", () => {
-        [ProductType.Families, ProductType.Teams, ProductType.Enterprise].forEach((planType) => {
-          describe(`${ProductType[planType]}`, () => {
-            it("sets `planType` attribute", async () => {
-              mockQueryParams.next({ product: Product.PasswordManager, planType });
-              await component.ngOnInit();
-
-              expect(component.planType).toBe(planType);
-            });
-
-            it("shows the trial stepper", async () => {
-              mockQueryParams.next({ product: Product.PasswordManager, planType });
-              await component.ngOnInit();
-
-              expect(component.useTrialStepper).toBe(true);
-            });
-          });
-        });
-
-        describe(`${ProductType[ProductType.Free]}`, () => {
+        describe(`${ProductTierType[ProductTierType.Free]}`, () => {
           beforeEach(() => {
             component.planType = undefined;
           });
 
           it("does not set `planType` attribute", async () => {
-            mockQueryParams.next({ product: Product.PasswordManager, planType: ProductType.Free });
+            mockQueryParams.next({
+              product: Product.PasswordManager,
+              planType: ProductTierType.Free,
+            });
             await component.ngOnInit();
 
             expect(component.planType).toBe(undefined);
           });
 
           it("does not show the trial stepper", async () => {
-            mockQueryParams.next({ product: Product.PasswordManager, planType: ProductType.Free });
+            mockQueryParams.next({
+              product: Product.PasswordManager,
+              planType: ProductTierType.Free,
+            });
             await component.ngOnInit();
 
             expect(component.useTrialStepper).toBe(false);
@@ -312,7 +323,7 @@ describe("FinishSignUpComponent", () => {
     });
 
     it("on step 2 should show organization copy text", () => {
-      component.planType = ProductType.Families;
+      component.planType = ProductTierType.Families;
       component.stepSelectionChange({
         selectedIndex: 1,
         previouslySelectedIndex: 0,
@@ -353,26 +364,28 @@ describe("FinishSignUpComponent", () => {
         component.product = Product.SecretsManager;
       });
 
-      [ProductType.Families, ProductType.Teams, ProductType.Enterprise].forEach((planType) => {
-        describe(`${ProductType[planType]}`, () => {
-          it("navigates to the next step", async () => {
-            component.planType = planType;
-            await component.conditionallyCreateOrganization();
+      [ProductTierType.Families, ProductTierType.Teams, ProductTierType.Enterprise].forEach(
+        (planType) => {
+          describe(`${ProductTierType[planType]}`, () => {
+            it("navigates to the next step", async () => {
+              component.planType = planType;
+              await component.conditionallyCreateOrganization();
 
-            expect(component.verticalStepper.next).toHaveBeenCalled();
-            expect(organizationBillingMock.startFree).not.toHaveBeenCalled();
+              expect(component.verticalStepper.next).toHaveBeenCalled();
+              expect(organizationBillingMock.startFree).not.toHaveBeenCalled();
+            });
           });
-        });
-      });
+        },
+      );
 
-      describe(`${ProductType[ProductType.Free]}`, () => {
+      describe(`${ProductTierType[ProductTierType.Free]}`, () => {
         it("creates an organization", async () => {
           component.orgInfoFormGroup = formBuilder.group({
             name: ["Ron Burgundy"],
             email: ["ron@channel4.com"],
           });
 
-          component.planType = ProductType.Free;
+          component.planType = ProductTierType.Free;
           await component.conditionallyCreateOrganization();
 
           expect(organizationBillingMock.startFree).toHaveBeenCalledWith({
@@ -383,7 +396,7 @@ describe("FinishSignUpComponent", () => {
             plan: {
               isFromSecretsManagerTrial: true,
               subscribeToSecretsManager: true,
-              type: ProductType.Free,
+              type: ProductTierType.Free,
             },
           });
 

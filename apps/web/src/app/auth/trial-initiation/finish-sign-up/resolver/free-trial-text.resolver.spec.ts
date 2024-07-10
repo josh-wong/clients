@@ -1,6 +1,6 @@
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from "@angular/router";
 
-import { ProductType } from "@bitwarden/common/enums";
+import { ProductTierType } from "@bitwarden/common/billing/enums";
 
 import { freeTrialTextResolver } from "./free-trial-text.resolver";
 
@@ -22,19 +22,19 @@ describe("freeTrialTextResolver", () => {
       });
 
       it("returns teams trial text", () => {
-        route.queryParams.planType = ProductType.Teams;
+        route.queryParams.planType = ProductTierType.Teams;
 
         expect(freeTrialTextResolver(route, routerStateSnapshot)).toBe(`${keyBase}ForTeams`);
       });
 
       it("returns enterprise trial text", () => {
-        route.queryParams.planType = ProductType.Enterprise;
+        route.queryParams.planType = ProductTierType.Enterprise;
 
         expect(freeTrialTextResolver(route, routerStateSnapshot)).toBe(`${keyBase}ForEnterprise`);
       });
 
       it("returns families trial text", () => {
-        route.queryParams.planType = ProductType.Families;
+        route.queryParams.planType = ProductTierType.Families;
 
         expect(freeTrialTextResolver(route, routerStateSnapshot)).toBe(`${keyBase}ForFamilies`);
       });

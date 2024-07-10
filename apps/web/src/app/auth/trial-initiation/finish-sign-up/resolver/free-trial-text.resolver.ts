@@ -1,6 +1,6 @@
 import { ActivatedRouteSnapshot, ResolveFn } from "@angular/router";
 
-import { ProductType } from "@bitwarden/common/enums";
+import { ProductTierType } from "@bitwarden/common/billing/enums";
 
 import { Product } from "../enums/product";
 
@@ -12,9 +12,9 @@ export const freeTrialTextResolver: ResolveFn<string | null> = (
 
   const onlyPasswordManager = products.length === 1 && products[0] === Product.PasswordManager;
   const onlySecretsManager = products.length === 1 && products[0] === Product.SecretsManager;
-  const forTeams = parseInt(planType) === ProductType.Teams;
-  const forEnterprise = parseInt(planType) === ProductType.Enterprise;
-  const forFamilies = parseInt(planType) === ProductType.Families;
+  const forTeams = parseInt(planType) === ProductTierType.Teams;
+  const forEnterprise = parseInt(planType) === ProductTierType.Enterprise;
+  const forFamilies = parseInt(planType) === ProductTierType.Families;
 
   switch (true) {
     case onlyPasswordManager && forTeams:
