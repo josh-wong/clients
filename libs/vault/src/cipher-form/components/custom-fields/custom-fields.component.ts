@@ -43,7 +43,7 @@ import {
 } from "./add-edit-custom-field-dialog/add-edit-custom-field-dialog.component";
 
 /** Attributes associated with each individual FormGroup within the FormArray */
-type CustomField = {
+export type CustomField = {
   type: FieldType;
   name: string;
   value: string | boolean | null;
@@ -113,14 +113,18 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.linkedFieldOptions = Array.from(this.updatedCipherView.linkedFieldOptions.entries() ?? [])
+    // Populate options for linked custom fields
+    this.linkedFieldOptions = Array.from(
+      this.updatedCipherView?.linkedFieldOptions?.entries() ?? [],
+    )
       .map(([id, linkedFieldOption]) => ({
         name: this.i18nService.t(linkedFieldOption.i18nKey),
         value: id,
       }))
       .sort(Utils.getSortFunction(this.i18nService, "name"));
 
-    this.updatedCipherView.fields?.forEach((field) => {
+    // Populate the form with the existing fields
+    this.updatedCipherView?.fields?.forEach((field) => {
       let value: string | boolean = field.value;
 
       if (field.type === FieldType.Boolean) {
@@ -180,18 +184,18 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
   /** Updates label for an individual field */
   updateLabel(index: number, label: string) {
     this.fields.at(index).patchValue({ name: label });
-    this.dialogRef.close();
+    this.dialogRef?.close();
   }
 
   /** Removes an individual field at a specific index */
   removeField(index: number) {
     this.fields.removeAt(index);
-    this.dialogRef.close();
+    this.dialogRef?.close();
   }
 
   /** Adds a new field to the form */
   addField(type: FieldType, label: string) {
-    this.dialogRef.close();
+    this.dialogRef?.close();
 
     let value = null;
     let linkedId = null;

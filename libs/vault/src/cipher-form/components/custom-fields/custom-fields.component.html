@@ -95,6 +95,7 @@
           [appA11yTitle]="'editField' | i18n"
           bitIconButton="bwi-pencil-square"
           class="tw-self-end"
+          data-testid="edit-custom-field-button"
         ></button>
 
         <button
@@ -104,6 +105,7 @@
           cdkDragHandle
           [appA11yTitle]="'reorderToggleButton' | i18n"
           (keydown)="handleKeyDown($event, field.value.name, i)"
+          data-testid="reorder-toggle-button"
         ></button>
       </div>
 
