@@ -6,7 +6,7 @@ import {
   ForwarderContext,
   EmailDomainSettings,
   EmailPrefixSettings,
-  RequestAccount,
+  AccountRequest,
 } from "../engine";
 import { CreateForwardingEmailRpcDef, GetAccountIdRpcDef } from "../engine/forwarder-configuration";
 import { FASTMAIL_BUFFER, FASTMAIL_FORWARDER } from "../strategies/storage";
@@ -14,8 +14,8 @@ import { ApiOptions, EmailPrefixOptions } from "../types";
 
 // integration types
 export type FastmailSettings = ApiSettings & EmailPrefixSettings & EmailDomainSettings;
-export type FastmailOptions = ApiOptions & EmailPrefixOptions & RequestAccount;
-export type FastmailRequest = IntegrationRequest & RequestAccount;
+export type FastmailOptions = ApiOptions & EmailPrefixOptions & AccountRequest;
+export type FastmailRequest = IntegrationRequest & AccountRequest;
 export type FastmailConfiguration = ForwarderConfiguration<
   FastmailSettings,
   FastmailOptions,
@@ -40,7 +40,7 @@ const getAccountId = Object.freeze({
   processJson(json: any, context: ForwarderContext<FastmailSettings>) {
     const result = json.primaryAccounts?.["https://www.fastmail.com/dev/maskedemail"] ?? undefined;
 
-    return [result, result ?? context.missingAccountIdCause()];
+    return [result, result ? undefined : context.missingAccountIdCause()];
   },
 } as GetAccountIdRpcDef<FastmailSettings>);
 
@@ -70,12 +70,12 @@ const createForwardingEmail = Object.freeze({
       ],
     };
 
-    return JSON.stringify(body);
+    return body;
   },
   hasJsonPayload(response: Response) {
     return response.status === 200;
   },
-  processJson(json: any) {
+  processJson(json: any): [string?, string?] {
     if (
       json.methodResponses != null &&
       json.methodResponses.length > 0 &&
@@ -83,16 +83,17 @@ const createForwardingEmail = Object.freeze({
     ) {
       if (json.methodResponses[0][0] === "MaskedEmail/set") {
         if (json.methodResponses[0][1]?.created?.["new-masked-email"] != null) {
-          return [json.methodResponses[0][1]?.created?.["new-masked-email"]?.email] as const;
+          const email: string = json.methodResponses[0][1]?.created?.["new-masked-email"]?.email;
+          return [email];
         }
         if (json.methodResponses[0][1]?.notCreated?.["new-masked-email"] != null) {
-          const errorDescription =
+          const errorDescription: string =
             json.methodResponses[0][1]?.notCreated?.["new-masked-email"]?.description;
-          return [undefined, errorDescription] as const;
+          return [undefined, errorDescription];
         }
       } else if (json.methodResponses[0][0] === "error") {
-        const errorDescription = json.methodResponses[0][1]?.description;
-        return [undefined, errorDescription] as const;
+        const errorDescription: string = json.methodResponses[0][1]?.description;
+        return [undefined, errorDescription];
       }
     }
   },

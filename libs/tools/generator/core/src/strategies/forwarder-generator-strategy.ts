@@ -3,12 +3,13 @@ import { map } from "rxjs";
 import { PolicyType } from "@bitwarden/common/admin-console/enums";
 import { CryptoService } from "@bitwarden/common/platform/abstractions/crypto.service";
 import { EncryptService } from "@bitwarden/common/platform/abstractions/encrypt.service";
+import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
+import { SingleUserState, StateProvider } from "@bitwarden/common/platform/state";
 import {
-  SingleUserState,
-  StateProvider,
-  UserKeyDefinition,
-} from "@bitwarden/common/platform/state";
-import { BufferedKeyDefinition } from "@bitwarden/common/tools/state/buffered-key-definition";
+  ApiSettings,
+  IntegrationRequest,
+  RestClient,
+} from "@bitwarden/common/tools/integration/rpc";
 import { BufferedState } from "@bitwarden/common/tools/state/buffered-state";
 import { PaddedDataPacker } from "@bitwarden/common/tools/state/padded-data-packer";
 import { SecretClassifier } from "@bitwarden/common/tools/state/secret-classifier";
@@ -18,6 +19,9 @@ import { UserKeyEncryptor } from "@bitwarden/common/tools/state/user-key-encrypt
 import { UserId } from "@bitwarden/common/types/guid";
 
 import { GeneratorStrategy } from "../abstractions";
+import { ForwarderConfiguration, AccountRequest, ForwarderContext } from "../engine";
+import { CreateForwardingAddressRpc } from "../engine/rpc/create-forwarding-address";
+import { GetAccountIdRpc } from "../engine/rpc/get-account-id";
 import { newDefaultEvaluator } from "../rx";
 import { ApiOptions, NoPolicy } from "../types";
 import { clone$PerUserId, sharedByUserId } from "../util";
@@ -25,34 +29,56 @@ import { clone$PerUserId, sharedByUserId } from "../util";
 const OPTIONS_FRAME_SIZE = 512;
 
 /** An email forwarding service configurable through an API. */
-export abstract class ForwarderGeneratorStrategy<
-  Options extends ApiOptions,
-> extends GeneratorStrategy<Options, NoPolicy> {
+export class ForwarderGeneratorStrategy<Options extends ApiOptions> extends GeneratorStrategy<
+  Options,
+  NoPolicy
+> {
   /** Initializes the generator strategy
    *  @param encryptService protects sensitive forwarder options
    *  @param keyService looks up the user key when protecting data.
    *  @param stateProvider creates the durable state for options storage
    */
   constructor(
+    private readonly configuration: ForwarderConfiguration<Options>,
+    private client: RestClient,
+    private i18nService: I18nService,
     private readonly encryptService: EncryptService,
     private readonly keyService: CryptoService,
     private stateProvider: StateProvider,
-    private readonly defaultOptions: Options,
   ) {
     super();
   }
 
-  /** configures forwarder secret storage  */
-  protected abstract readonly key: UserKeyDefinition<Options>;
-
-  /** configures forwarder import buffer */
-  protected abstract readonly rolloverKey: BufferedKeyDefinition<Options, Options>;
-
   // configuration
   readonly policy = PolicyType.PasswordGenerator;
-  defaults$ = clone$PerUserId(this.defaultOptions);
+  defaults$ = clone$PerUserId(this.forwarder.defaultSettings);
   toEvaluator = newDefaultEvaluator<Options>();
   durableState = sharedByUserId((userId) => this.getUserSecrets(userId));
+
+  private get key() {
+    return this.configuration.forwarder.settings;
+  }
+
+  private get rolloverKey() {
+    return this.configuration.forwarder.importBuffer;
+  }
+
+  private get forwarder() {
+    return this.configuration.forwarder;
+  }
+
+  generate = async (options: Options) => {
+    const requestOptions: IntegrationRequest & AccountRequest = { website: options.website };
+
+    const getAccount = await this.getAccountId(this.configuration, options);
+    if (getAccount) {
+      requestOptions.accountId = await this.client.fetchJson(getAccount, requestOptions);
+    }
+
+    const create = this.createForwardingAddress(this.configuration, options);
+    const result = await this.client.fetchJson(create, options);
+    return result;
+  };
 
   // per-user encrypted state
   private getUserSecrets(userId: UserId): SingleUserState<Options> {
@@ -91,5 +117,35 @@ export abstract class ForwarderGeneratorStrategy<
     );
 
     return rolloverState;
+  }
+
+  private createContext<Settings>(
+    configuration: ForwarderConfiguration<Settings>,
+    settings: Settings,
+  ) {
+    return new ForwarderContext(configuration, settings, this.i18nService);
+  }
+
+  createForwardingAddress<Settings extends ApiSettings>(
+    configuration: ForwarderConfiguration<Settings>,
+    settings: Settings,
+  ) {
+    const context = this.createContext(configuration, settings);
+    const rpc = new CreateForwardingAddressRpc<Settings>(configuration, context);
+    return rpc;
+  }
+
+  getAccountId<Settings extends ApiSettings>(
+    configuration: ForwarderConfiguration<Settings>,
+    settings: Settings,
+  ) {
+    if (!configuration.forwarder.getAccountId) {
+      return null;
+    }
+
+    const context = this.createContext(configuration, settings);
+    const rpc = new GetAccountIdRpc<Settings>(configuration, context);
+
+    return rpc;
   }
 }

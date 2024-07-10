@@ -8,14 +8,14 @@ import {
 import { UserId } from "@bitwarden/common/types/guid";
 
 /** construct a method that outputs a copy of `defaultValue` as an observable. */
-export function clone$PerUserId<Value>(defaultValue: Value) {
+export function clone$PerUserId<Value>(defaultValue: Partial<Value>) {
   const _subjects = new Map<UserId, BehaviorSubject<Value>>();
 
   return (key: UserId) => {
     let value = _subjects.get(key);
 
     if (value === undefined) {
-      value = new BehaviorSubject({ ...defaultValue });
+      value = new BehaviorSubject({ ...defaultValue } as Value);
       _subjects.set(key, value);
     }
 

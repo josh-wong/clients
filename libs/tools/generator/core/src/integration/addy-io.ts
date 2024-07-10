@@ -35,8 +35,8 @@ const createForwardingEmail = Object.freeze({
   hasJsonPayload(response: Response) {
     return response.status === 200 || response.status === 201;
   },
-  processJson(response: any) {
-    return [response?.data?.email];
+  processJson(json: any) {
+    return [json?.data?.email];
   },
 } as CreateForwardingEmailRpcDef<AddyIoSettings>);
 

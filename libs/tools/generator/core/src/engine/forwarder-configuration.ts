@@ -7,8 +7,8 @@ import { BufferedKeyDefinition } from "@bitwarden/common/tools/state/buffered-ke
 import { ForwarderContext } from "./forwarder-context";
 
 /** RequestOptions mixin for transmitting `getAccountId` result. */
-export type RequestAccount = {
-  accountId: string;
+export type AccountRequest = {
+  accountId?: string;
 };
 
 /** definition of the create forwarding request api call for an integration */
