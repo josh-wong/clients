@@ -99,7 +99,7 @@ describe("FidoAuthenticatorService", () => {
           try {
             await authenticator.makeCredential(p, tab);
             // eslint-disable-next-line no-empty
-          } catch { }
+          } catch {}
         }
         expect(userInterfaceSession.confirmNewCredential).not.toHaveBeenCalled();
       });
@@ -140,7 +140,7 @@ describe("FidoAuthenticatorService", () => {
         try {
           await authenticator.makeCredential(params, tab);
           // eslint-disable-next-line no-empty
-        } catch { }
+        } catch {}
 
         expect(userInterfaceSession.informExcludedCredential).toHaveBeenCalled();
       });
@@ -162,7 +162,7 @@ describe("FidoAuthenticatorService", () => {
         try {
           await authenticator.makeCredential(params, tab);
           // eslint-disable-next-line no-empty
-        } catch { }
+        } catch {}
 
         expect(userInterfaceSession.informExcludedCredential).not.toHaveBeenCalled();
       });
@@ -175,7 +175,7 @@ describe("FidoAuthenticatorService", () => {
           try {
             await authenticator.makeCredential(p, tab);
             // eslint-disable-next-line no-empty
-          } catch { }
+          } catch {}
         }
         expect(userInterfaceSession.informExcludedCredential).not.toHaveBeenCalled();
       });
@@ -480,7 +480,7 @@ describe("FidoAuthenticatorService", () => {
         try {
           await authenticator.getAssertion(params, tab);
           // eslint-disable-next-line no-empty
-        } catch { }
+        } catch {}
 
         expect(userInterfaceSession.informCredentialNotFound).toHaveBeenCalled();
       });
@@ -495,7 +495,7 @@ describe("FidoAuthenticatorService", () => {
         try {
           await authenticator.getAssertion(params, tab);
           // eslint-disable-next-line no-empty
-        } catch { }
+        } catch {}
 
         expect(userInterfaceSession.informCredentialNotFound).toHaveBeenCalled();
       });
