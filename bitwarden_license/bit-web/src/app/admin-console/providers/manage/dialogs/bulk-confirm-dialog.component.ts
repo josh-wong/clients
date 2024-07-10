@@ -16,7 +16,7 @@ import { CryptoService } from "@bitwarden/common/platform/abstractions/crypto.se
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
 import { SymmetricCryptoKey } from "@bitwarden/common/platform/models/domain/symmetric-crypto-key";
 import { DialogService } from "@bitwarden/components";
-import { BaseBulkConfirmComponent } from "@bitwarden/web-vault/app/admin-console/organizations/members/components/bulk/base.bulk-confirm.component";
+import { BaseBulkConfirmComponent } from "@bitwarden/web-vault/app/admin-console/organizations/members/components/bulk/base-bulk-confirm.component";
 import { BulkUserDetails } from "@bitwarden/web-vault/app/admin-console/organizations/members/components/bulk/bulk-status.component";
 
 type BulkConfirmDialogParams = {
@@ -25,11 +25,11 @@ type BulkConfirmDialogParams = {
 };
 
 @Component({
-  templateUrl: "bulk-confirm-dialog.component.html",
+  templateUrl:
+    "../../../../../../../../apps/web/src/app/admin-console/organizations/members/components/bulk/bulk-confirm.component.html",
 })
 export class BulkConfirmDialogComponent extends BaseBulkConfirmComponent {
   providerId: string;
-  users: BulkUserDetails[];
 
   constructor(
     private apiService: ApiService,
@@ -41,17 +41,6 @@ export class BulkConfirmDialogComponent extends BaseBulkConfirmComponent {
 
     this.providerId = dialogParams.providerId;
     this.users = dialogParams.users;
-
-    this.excludedUsers = this.users.filter(
-      (user) => user.status !== ProviderUserStatusType.Accepted,
-    );
-    this.filteredUsers = this.users.filter(
-      (user) => user.status === ProviderUserStatusType.Accepted,
-    );
-
-    if (this.filteredUsers.length <= 0) {
-      this.done = true;
-    }
 
     this.loading = false;
   }

@@ -16,6 +16,8 @@ import { BulkUserDetails } from "./bulk-status.component";
 
 @Directive()
 export abstract class BaseBulkConfirmComponent implements OnInit {
+  protected users: BulkUserDetails[];
+
   protected excludedUsers: BulkUserDetails[];
   protected filteredUsers: BulkUserDetails[];
 
@@ -33,6 +35,13 @@ export abstract class BaseBulkConfirmComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.excludedUsers = this.users.filter((user) => !this.isAccepted(user));
+    this.filteredUsers = this.users.filter((user) => this.isAccepted(user));
+
+    if (this.filteredUsers.length <= 0) {
+      this.done = true;
+    }
+
     const publicKeysResponse = await this.getPublicKeys();
 
     for (const entry of publicKeysResponse.data) {

@@ -7,7 +7,6 @@ import { OrganizationUserStatusType } from "@bitwarden/common/admin-console/enum
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
 import { DialogService } from "@bitwarden/components";
 
-import { BaseBulkRemoveComponent } from "./base.bulk-remove.component";
 import { BulkUserDetails } from "./bulk-status.component";
 
 type BulkRemoveDialogData = {
@@ -19,9 +18,16 @@ type BulkRemoveDialogData = {
   selector: "app-bulk-remove",
   templateUrl: "bulk-remove.component.html",
 })
-export class BulkRemoveComponent extends BaseBulkRemoveComponent {
+export class BulkRemoveComponent {
   organizationId: string;
   users: BulkUserDetails[];
+
+  statuses: Map<string, string> = new Map();
+
+  loading = false;
+  done = false;
+  error: string;
+  showNoMasterPasswordWarning = false;
 
   constructor(
     @Inject(DIALOG_DATA) protected data: BulkRemoveDialogData,
@@ -29,14 +35,29 @@ export class BulkRemoveComponent extends BaseBulkRemoveComponent {
     protected i18nService: I18nService,
     private organizationUserService: OrganizationUserService,
   ) {
-    super(i18nService);
-
     this.organizationId = data.organizationId;
     this.users = data.users;
     this.showNoMasterPasswordWarning = this.users.some(
       (u) => u.status > OrganizationUserStatusType.Invited && u.hasMasterPassword === false,
     );
   }
+
+  submit = async () => {
+    this.loading = true;
+    try {
+      const response = await this.deleteUsers();
+
+      response.data.forEach((entry) => {
+        const error = entry.error !== "" ? entry.error : this.i18nService.t("bulkRemovedMessage");
+        this.statuses.set(entry.id, error);
+      });
+      this.done = true;
+    } catch (e) {
+      this.error = e.message;
+    }
+
+    this.loading = false;
+  };
 
   protected async deleteUsers() {
     return await this.organizationUserService.deleteManyOrganizationUsers(
