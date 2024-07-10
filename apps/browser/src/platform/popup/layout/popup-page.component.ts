@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, inject } from "@angular/core";
 
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
 
@@ -12,13 +12,9 @@ import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.servic
   },
   imports: [CommonModule],
 })
-export class PopupPageComponent implements OnInit {
-  constructor(protected i18nService: I18nService) {}
+export class PopupPageComponent {
+  protected i18nService = inject(I18nService);
 
   @Input() loading = false;
-  @Input() loadingText?: string;
-
-  ngOnInit() {
-    this.loadingText = this.loadingText ?? this.i18nService.t("loading");
-  }
+  @Input() loadingText?: string = this.i18nService.t("loading");
 }
