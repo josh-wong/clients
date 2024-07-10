@@ -21,30 +21,33 @@
         <bit-item
           *ngFor="let domain of excludedDomainsState; let i = index; trackBy: trackByFunction"
         >
-          <div bit-item-content>
-            <bit-label>{{ "websiteItemLabel" | i18n: i + 1 }}</bit-label>
+          <bit-item-content>
+            <bit-label *ngIf="i >= fieldsEditThreshold">{{
+              "websiteItemLabel" | i18n: i + 1
+            }}</bit-label>
             <input
+              *ngIf="i >= fieldsEditThreshold"
               appInputVerbatim
               bitInput
               id="excludedDomain{{ i }}"
               inputmode="url"
               name="excludedDomain{{ i }}"
               type="text"
-              (blur)="fieldBlur()"
               (change)="fieldChange()"
-              (focus)="fieldFocus(i)"
               [(ngModel)]="excludedDomainsState[i]"
             />
-          </div>
-          <button
-            appA11yTitle="{{ 'remove' | i18n }}"
-            bitIconButton="bwi-minus-circle"
-            buttonType="danger"
-            size="small"
-            slot="end"
-            type="button"
-            (click)="removeDomain(i)"
-          ></button>
+            <div *ngIf="i < fieldsEditThreshold">{{ domain }}</div>
+            <button
+              *ngIf="i < fieldsEditThreshold"
+              appA11yTitle="{{ 'remove' | i18n }}"
+              bitIconButton="bwi-minus-circle"
+              buttonType="danger"
+              size="small"
+              slot="end"
+              type="button"
+              (click)="removeDomain(i)"
+            ></button>
+          </bit-item-content>
         </bit-item>
       </ng-container>
       <button bitLink class="tw-pt-2" type="button" [linkType]="primary" (click)="addNewDomain()">

@@ -59,8 +59,9 @@ export class ExcludedDomainsComponent implements OnInit, OnDestroy {
   accountSwitcherEnabled = false;
   dataIsPristine = true;
   excludedDomainsState: string[] = [];
-  focusedField: number | null = null;
   storedExcludedDomains: string[] = [];
+  // How many fields should be non-editable before editable fields
+  fieldsEditThreshold: number = 0;
 
   constructor(
     private domainSettingsService: DomainSettingsService,
@@ -79,7 +80,10 @@ export class ExcludedDomainsComponent implements OnInit, OnDestroy {
       this.storedExcludedDomains = Object.keys(neverDomains);
     }
 
-    this.excludedDomainsState = this.storedExcludedDomains;
+    this.excludedDomainsState = [...this.storedExcludedDomains];
+
+    // Do not allow the first x (pre-existing) fields to be edited
+    this.fieldsEditThreshold = this.storedExcludedDomains.length;
   }
 
   ngOnDestroy() {
@@ -96,15 +100,12 @@ export class ExcludedDomainsComponent implements OnInit, OnDestroy {
   async removeDomain(i: number) {
     this.excludedDomainsState.splice(i, 1);
 
+    // if a pre-existing field was dropped, lower the edit threshold
+    if (i < this.fieldsEditThreshold) {
+      this.fieldsEditThreshold--;
+    }
+
     await this.fieldChange();
-  }
-
-  async fieldBlur() {
-    this.focusedField = null;
-  }
-
-  async fieldFocus(fieldIndex: number) {
-    this.focusedField = fieldIndex;
   }
 
   async fieldChange() {
