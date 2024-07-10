@@ -3,6 +3,7 @@ import { NgModule } from "@angular/core";
 import {
   PasswordCalloutComponent,
   UserVerificationFormInputComponent,
+  VaultTimeoutInputComponent,
 } from "@bitwarden/auth/angular";
 import { LayoutComponent, NavigationModule } from "@bitwarden/components";
 
@@ -21,7 +22,6 @@ import { VerifyRecoverDeleteProviderComponent } from "../admin-console/providers
 import { SponsoredFamiliesComponent } from "../admin-console/settings/sponsored-families.component";
 import { SponsoringOrgRowComponent } from "../admin-console/settings/sponsoring-org-row.component";
 import { HintComponent } from "../auth/hint.component";
-import { LockComponent } from "../auth/lock.component";
 import { RecoverDeleteComponent } from "../auth/recover-delete.component";
 import { RecoverTwoFactorComponent } from "../auth/recover-two-factor.component";
 import { RegisterFormModule } from "../auth/register-form/register-form.module";
@@ -70,7 +70,6 @@ import { ProductSwitcherModule } from "../layouts/product-switcher/product-switc
 import { UserLayoutComponent } from "../layouts/user-layout.component";
 import { DomainRulesComponent } from "../settings/domain-rules.component";
 import { PreferencesComponent } from "../settings/preferences.component";
-import { VaultTimeoutInputComponent } from "../settings/vault-timeout-input.component";
 import { GeneratorComponent } from "../tools/generator.component";
 import { PasswordGeneratorHistoryComponent } from "../tools/password-generator-history.component";
 import { AddEditComponent as SendAddEditComponent } from "../tools/send/add-edit.component";
@@ -116,6 +115,7 @@ import { SharedModule } from "./shared.module";
     UserLayoutComponent,
     PaymentMethodWarningsModule,
     VerifyRecoverDeleteOrgComponent,
+    VaultTimeoutInputComponent,
   ],
   declarations: [
     AcceptFamilySponsorshipComponent,
@@ -140,7 +140,6 @@ import { SharedModule } from "./shared.module";
     FolderAddEditComponent,
     FrontendLayoutComponent,
     HintComponent,
-    LockComponent,
     OrgAddEditComponent,
     OrgAttachmentsComponent,
     OrgCollectionsComponent,
@@ -183,7 +182,6 @@ import { SharedModule } from "./shared.module";
     TwoFactorYubiKeyComponent,
     UpdatePasswordComponent,
     UpdateTempPasswordComponent,
-    VaultTimeoutInputComponent,
     VerifyEmailTokenComponent,
     VerifyRecoverDeleteComponent,
     VerifyRecoverDeleteProviderComponent,
@@ -213,7 +211,6 @@ import { SharedModule } from "./shared.module";
     FolderAddEditComponent,
     FrontendLayoutComponent,
     HintComponent,
-    LockComponent,
     OrgAddEditComponent,
     OrganizationLayoutComponent,
     OrgAttachmentsComponent,
@@ -258,7 +255,6 @@ import { SharedModule } from "./shared.module";
     UpdatePasswordComponent,
     UpdateTempPasswordComponent,
     UserLayoutComponent,
-    VaultTimeoutInputComponent,
     VerifyEmailTokenComponent,
     VerifyRecoverDeleteComponent,
     VerifyRecoverDeleteProviderComponent,

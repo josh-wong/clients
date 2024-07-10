@@ -4,6 +4,8 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 import {
   AddAccountCreditDialogComponent,
+  InvoicesComponent,
+  NoInvoicesComponent,
   ManageTaxInformationComponent,
   SelectPaymentMethodComponent,
   VerifyBankAccountComponent,
@@ -15,12 +17,18 @@ import {
   CheckboxModule,
   DialogModule,
   FormFieldModule,
+  IconButtonModule,
+  IconModule,
+  LinkModule,
+  MenuModule,
   RadioButtonModule,
   SelectModule,
+  TableModule,
   ToastModule,
   TypographyModule,
 } from "@bitwarden/components";
 
+import { TwoFactorIconComponent } from "./auth/components/two-factor-icon.component";
 import { CalloutComponent } from "./components/callout.component";
 import { A11yInvalidDirective } from "./directives/a11y-invalid.directive";
 import { A11yTitleDirective } from "./directives/a11y-title.directive";
@@ -66,6 +74,12 @@ import { IconComponent } from "./vault/components/icon.component";
     CheckboxModule,
     DialogModule,
     TypographyModule,
+    TableModule,
+    MenuModule,
+    IconButtonModule,
+    IconModule,
+    LinkModule,
+    IconModule,
   ],
   declarations: [
     A11yInvalidDirective,
@@ -96,9 +110,12 @@ import { IconComponent } from "./vault/components/icon.component";
     IfFeatureDirective,
     FingerprintPipe,
     AddAccountCreditDialogComponent,
+    InvoicesComponent,
+    NoInvoicesComponent,
     ManageTaxInformationComponent,
     SelectPaymentMethodComponent,
     VerifyBankAccountComponent,
+    TwoFactorIconComponent,
   ],
   exports: [
     A11yInvalidDirective,
@@ -130,9 +147,12 @@ import { IconComponent } from "./vault/components/icon.component";
     IfFeatureDirective,
     FingerprintPipe,
     AddAccountCreditDialogComponent,
+    InvoicesComponent,
+    NoInvoicesComponent,
     ManageTaxInformationComponent,
     SelectPaymentMethodComponent,
     VerifyBankAccountComponent,
+    TwoFactorIconComponent,
   ],
   providers: [
     CreditCardNumberPipe,

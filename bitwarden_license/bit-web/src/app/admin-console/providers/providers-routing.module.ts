@@ -9,15 +9,15 @@ import { FrontendLayoutComponent } from "@bitwarden/web-vault/app/layouts/fronte
 import { UserLayoutComponent } from "@bitwarden/web-vault/app/layouts/user-layout.component";
 
 import {
-  ManageClientOrganizationsComponent,
+  ManageClientsComponent,
   ProviderSubscriptionComponent,
   hasConsolidatedBilling,
-  ProviderPaymentMethodComponent,
+  ProviderBillingHistoryComponent,
 } from "../../billing/providers";
 
 import { ClientsComponent } from "./clients/clients.component";
 import { CreateOrganizationComponent } from "./clients/create-organization.component";
-import { ProviderPermissionsGuard } from "./guards/provider-permissions.guard";
+import { providerPermissionsGuard } from "./guards/provider-permissions.guard";
 import { AcceptProviderComponent } from "./manage/accept-provider.component";
 import { EventsComponent } from "./manage/events.component";
 import { PeopleComponent } from "./manage/people.component";
@@ -76,7 +76,7 @@ const routes: Routes = [
       {
         path: ":providerId",
         component: ProvidersLayoutComponent,
-        canActivate: [ProviderPermissionsGuard],
+        canActivate: [providerPermissionsGuard()],
         children: [
           { path: "", pathMatch: "full", redirectTo: "clients" },
           { path: "clients/create", component: CreateOrganizationComponent },
@@ -84,7 +84,7 @@ const routes: Routes = [
           {
             path: "manage-client-organizations",
             canActivate: [hasConsolidatedBilling],
-            component: ManageClientOrganizationsComponent,
+            component: ManageClientsComponent,
             data: { titleId: "clients" },
           },
           {
@@ -98,19 +98,21 @@ const routes: Routes = [
               {
                 path: "people",
                 component: PeopleComponent,
-                canActivate: [ProviderPermissionsGuard],
+                canActivate: [
+                  providerPermissionsGuard((provider: Provider) => provider.canManageUsers),
+                ],
                 data: {
                   titleId: "people",
-                  providerPermissions: (provider: Provider) => provider.canManageUsers,
                 },
               },
               {
                 path: "events",
                 component: EventsComponent,
-                canActivate: [ProviderPermissionsGuard],
+                canActivate: [
+                  providerPermissionsGuard((provider: Provider) => provider.canAccessEventLogs),
+                ],
                 data: {
                   titleId: "eventLogs",
-                  providerPermissions: (provider: Provider) => provider.canAccessEventLogs,
                 },
               },
             ],
@@ -118,7 +120,6 @@ const routes: Routes = [
           {
             path: "billing",
             canActivate: [hasConsolidatedBilling],
-            data: { providerPermissions: (provider: Provider) => provider.isProviderAdmin },
             children: [
               {
                 path: "",
@@ -128,15 +129,17 @@ const routes: Routes = [
               {
                 path: "subscription",
                 component: ProviderSubscriptionComponent,
+                canActivate: [providerPermissionsGuard()],
                 data: {
                   titleId: "subscription",
                 },
               },
               {
-                path: "payment-method",
-                component: ProviderPaymentMethodComponent,
+                path: "history",
+                component: ProviderBillingHistoryComponent,
+                canActivate: [providerPermissionsGuard()],
                 data: {
-                  titleId: "paymentMethod",
+                  titleId: "billingHistory",
                 },
               },
             ],
@@ -152,10 +155,11 @@ const routes: Routes = [
               {
                 path: "account",
                 component: AccountComponent,
-                canActivate: [ProviderPermissionsGuard],
+                canActivate: [
+                  providerPermissionsGuard((provider: Provider) => provider.isProviderAdmin),
+                ],
                 data: {
                   titleId: "myProvider",
-                  providerPermissions: (provider: Provider) => provider.isProviderAdmin,
                 },
               },
             ],

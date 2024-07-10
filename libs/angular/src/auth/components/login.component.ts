@@ -8,6 +8,7 @@ import {
   LoginStrategyServiceAbstraction,
   LoginEmailServiceAbstraction,
   PasswordLoginCredentials,
+  RegisterRouteService,
 } from "@bitwarden/auth/common";
 import { DevicesApiServiceAbstraction } from "@bitwarden/common/auth/abstractions/devices-api.service.abstraction";
 import { SsoLoginServiceAbstraction } from "@bitwarden/common/auth/abstractions/sso-login.service.abstraction";
@@ -22,7 +23,7 @@ import { LogService } from "@bitwarden/common/platform/abstractions/log.service"
 import { PlatformUtilsService } from "@bitwarden/common/platform/abstractions/platform-utils.service";
 import { StateService } from "@bitwarden/common/platform/abstractions/state.service";
 import { Utils } from "@bitwarden/common/platform/misc/utils";
-import { PasswordGenerationServiceAbstraction } from "@bitwarden/common/tools/generator/password";
+import { PasswordGenerationServiceAbstraction } from "@bitwarden/generator-legacy";
 
 import {
   AllValidationErrors,
@@ -45,6 +46,10 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit,
   validatedEmail = false;
   paramEmailSet = false;
 
+  get emailFormControl() {
+    return this.formGroup.controls.email;
+  }
+
   formGroup = this.formBuilder.group({
     email: ["", [Validators.required, Validators.email]],
     masterPassword: [
@@ -56,6 +61,8 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit,
 
   protected twoFactorRoute = "2fa";
   protected successRoute = "vault";
+  // TODO: remove when email verification flag is removed
+  protected registerRoute$ = this.registerRouteService.registerRoute$();
   protected forcePasswordResetRoute = "update-temp-password";
 
   protected destroy$ = new Subject<void>();
@@ -83,6 +90,7 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit,
     protected loginEmailService: LoginEmailServiceAbstraction,
     protected ssoLoginService: SsoLoginServiceAbstraction,
     protected webAuthnLoginService: WebAuthnLoginServiceAbstraction,
+    protected registerRouteService: RegisterRouteService,
   ) {
     super(environmentService, i18nService, platformUtilsService);
   }
@@ -108,7 +116,7 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit,
 
     let rememberEmail = this.loginEmailService.getRememberEmail();
 
-    if (rememberEmail == null) {
+    if (!rememberEmail) {
       rememberEmail = (await firstValueFrom(this.loginEmailService.storedEmail$)) != null;
     }
 
@@ -263,8 +271,8 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit,
 
   async validateEmail() {
     this.formGroup.controls.email.markAsTouched();
-    const emailInvalid = this.formGroup.get("email").invalid;
-    if (!emailInvalid) {
+    const emailValid = this.formGroup.get("email").valid;
+    if (emailValid) {
       this.toggleValidateEmail(true);
       await this.getLoginWithDevice(this.loggedEmail);
     }

@@ -8,8 +8,19 @@ import {
   tdeDecryptionRequiredGuard,
   unauthGuardFn,
 } from "@bitwarden/angular/auth/guards";
-import { AnonLayoutWrapperComponent, AnonLayoutWrapperData } from "@bitwarden/auth/angular";
+import { canAccessFeature } from "@bitwarden/angular/platform/guard/feature-flag.guard";
+import {
+  AnonLayoutWrapperComponent,
+  AnonLayoutWrapperData,
+  RegistrationFinishComponent,
+  RegistrationStartComponent,
+  RegistrationStartSecondaryComponent,
+  RegistrationStartSecondaryComponentData,
+  LockIcon,
+} from "@bitwarden/auth/angular";
+import { FeatureFlag } from "@bitwarden/common/enums/feature-flag.enum";
 
+import { twofactorRefactorSwap } from "../../../../libs/angular/src/utils/two-factor-component-refactor-route-swap";
 import { flagEnabled, Flags } from "../utils/flags";
 
 import { VerifyRecoverDeleteOrgComponent } from "./admin-console/organizations/manage/verify-recover-delete-org.component";
@@ -36,6 +47,7 @@ import { EmergencyAccessViewComponent } from "./auth/settings/emergency-access/v
 import { SecurityRoutingModule } from "./auth/settings/security/security-routing.module";
 import { SsoComponent } from "./auth/sso.component";
 import { TrialInitiationComponent } from "./auth/trial-initiation/trial-initiation.component";
+import { TwoFactorAuthComponent } from "./auth/two-factor-auth.component";
 import { TwoFactorComponent } from "./auth/two-factor.component";
 import { UpdatePasswordComponent } from "./auth/update-password.component";
 import { UpdateTempPasswordComponent } from "./auth/update-temp-password.component";
@@ -101,17 +113,6 @@ const routes: Routes = [
         component: SetPasswordComponent,
         data: { titleId: "setMasterPassword" } satisfies DataProperties,
       },
-      {
-        path: "hint",
-        component: HintComponent,
-        canActivate: [unauthGuardFn()],
-        data: { titleId: "passwordHint" } satisfies DataProperties,
-      },
-      {
-        path: "lock",
-        component: LockComponent,
-        canActivate: [deepLinkGuard(), lockGuard()],
-      },
       { path: "verify-email", component: VerifyEmailTokenComponent },
       {
         path: "accept-organization",
@@ -126,12 +127,6 @@ const routes: Routes = [
         data: { titleId: "acceptFamilySponsorship", doNotSaveUrl: false } satisfies DataProperties,
       },
       { path: "recover", pathMatch: "full", redirectTo: "recover-2fa" },
-      {
-        path: "verify-recover-delete",
-        component: VerifyRecoverDeleteComponent,
-        canActivate: [unauthGuardFn()],
-        data: { titleId: "deleteAccount" } satisfies DataProperties,
-      },
       {
         path: "verify-recover-delete-org",
         component: VerifyRecoverDeleteOrgComponent,
@@ -175,16 +170,51 @@ const routes: Routes = [
     component: AnonLayoutWrapperComponent,
     children: [
       {
+        path: "signup",
+        canActivate: [canAccessFeature(FeatureFlag.EmailVerification), unauthGuardFn()],
+        data: { pageTitle: "createAccount", titleId: "createAccount" } satisfies DataProperties &
+          AnonLayoutWrapperData,
+        children: [
+          {
+            path: "",
+            component: RegistrationStartComponent,
+          },
+          {
+            path: "",
+            component: RegistrationStartSecondaryComponent,
+            outlet: "secondary",
+            data: {
+              loginRoute: "/login",
+            } satisfies RegistrationStartSecondaryComponentData,
+          },
+        ],
+      },
+      {
+        path: "finish-signup",
+        canActivate: [canAccessFeature(FeatureFlag.EmailVerification), unauthGuardFn()],
+        data: {
+          pageTitle: "setAStrongPassword",
+          pageSubtitle: "finishCreatingYourAccountBySettingAPassword",
+          titleId: "setAStrongPassword",
+        } satisfies DataProperties & AnonLayoutWrapperData,
+        children: [
+          {
+            path: "",
+            component: RegistrationFinishComponent,
+          },
+        ],
+      },
+      {
         path: "sso",
         canActivate: [unauthGuardFn()],
+        data: {
+          pageTitle: "enterpriseSingleSignOn",
+          titleId: "enterpriseSingleSignOn",
+        } satisfies DataProperties & AnonLayoutWrapperData,
         children: [
           {
             path: "",
             component: SsoComponent,
-            data: {
-              pageTitle: "enterpriseSingleSignOn",
-              titleId: "enterpriseSingleSignOn",
-            } satisfies DataProperties & AnonLayoutWrapperData,
           },
           {
             path: "",
@@ -212,12 +242,36 @@ const routes: Routes = [
         },
       },
       {
+        path: "lock",
+        canActivate: [deepLinkGuard(), lockGuard()],
+        children: [
+          {
+            path: "",
+            component: LockComponent,
+          },
+        ],
+        data: {
+          pageTitle: "yourVaultIsLockedV2",
+          pageIcon: LockIcon,
+          showReadonlyHostname: true,
+        } satisfies AnonLayoutWrapperData,
+      },
+      {
         path: "2fa",
-        component: TwoFactorComponent,
         canActivate: [unauthGuardFn()],
+        children: [
+          ...twofactorRefactorSwap(TwoFactorComponent, TwoFactorAuthComponent, {
+            path: "",
+          }),
+          {
+            path: "",
+            component: EnvironmentSelectorComponent,
+            outlet: "environment-selector",
+          },
+        ],
         data: {
           pageTitle: "verifyIdentity",
-        },
+        } satisfies DataProperties & AnonLayoutWrapperData,
       },
       {
         path: "recover-2fa",
@@ -241,14 +295,14 @@ const routes: Routes = [
       {
         path: "accept-emergency",
         canActivate: [deepLinkGuard()],
+        data: {
+          pageTitle: "emergencyAccess",
+          titleId: "acceptEmergency",
+          doNotSaveUrl: false,
+        } satisfies DataProperties & AnonLayoutWrapperData,
         children: [
           {
             path: "",
-            data: {
-              pageTitle: "emergencyAccess",
-              titleId: "acceptEmergency",
-              doNotSaveUrl: false,
-            } satisfies DataProperties & AnonLayoutWrapperData,
             loadComponent: () =>
               import("./auth/emergency-access/accept/accept-emergency.component").then(
                 (mod) => mod.AcceptEmergencyComponent,
@@ -259,14 +313,47 @@ const routes: Routes = [
       {
         path: "recover-delete",
         canActivate: [unauthGuardFn()],
+        data: {
+          pageTitle: "deleteAccount",
+          titleId: "deleteAccount",
+        } satisfies DataProperties & AnonLayoutWrapperData,
         children: [
           {
             path: "",
             component: RecoverDeleteComponent,
-            data: {
-              pageTitle: "deleteAccount",
-              titleId: "deleteAccount",
-            } satisfies DataProperties & AnonLayoutWrapperData,
+          },
+          {
+            path: "",
+            component: EnvironmentSelectorComponent,
+            outlet: "environment-selector",
+          },
+        ],
+      },
+      {
+        path: "verify-recover-delete",
+        canActivate: [unauthGuardFn()],
+        data: {
+          pageTitle: "deleteAccount",
+          titleId: "deleteAccount",
+        } satisfies DataProperties & AnonLayoutWrapperData,
+        children: [
+          {
+            path: "",
+            component: VerifyRecoverDeleteComponent,
+          },
+        ],
+      },
+      {
+        path: "hint",
+        canActivate: [unauthGuardFn()],
+        data: {
+          pageTitle: "passwordHint",
+          titleId: "passwordHint",
+        } satisfies DataProperties & AnonLayoutWrapperData,
+        children: [
+          {
+            path: "",
+            component: HintComponent,
           },
           {
             path: "",
@@ -372,8 +459,13 @@ const routes: Routes = [
           },
           {
             path: "export",
-            loadChildren: () =>
-              import("./tools/vault-export/export.module").then((m) => m.ExportModule),
+            loadComponent: () =>
+              import("./tools/vault-export/export-web.component").then(
+                (mod) => mod.ExportWebComponent,
+              ),
+            data: {
+              titleId: "exportVault",
+            } satisfies DataProperties,
           },
           {
             path: "generator",
