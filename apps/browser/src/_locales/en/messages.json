@@ -3668,7 +3668,16 @@
     "message": "Edit field"
   },
   "deleteCustomField": {
-    "message": "Delete $LABEL$ custom field",
+    "message": "Delete $LABEL$",
+    "placeholders": {
+      "label": {
+        "content": "$1",
+        "example": "Custom field"
+      }
+    }
+  },
+  "fieldAdded": {
+    "message": "$LABEL$ added",
     "placeholders": {
       "label": {
         "content": "$1",

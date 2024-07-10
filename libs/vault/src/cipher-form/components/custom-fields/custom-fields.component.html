@@ -23,9 +23,12 @@
       <div
         *ngFor="let field of fields.controls; let i = index"
         [formGroupName]="i"
-        class="tw-flex tw-py-3 tw-gap-4 tw-bg-background tw-rounded-lg"
-        [ngClass]="{ 'tw-items-center': field.value.type === FieldType.Boolean }"
+        class="tw-flex tw-p-3 -tw-mx-3 tw-gap-4 tw-bg-background tw-rounded-lg first:-tw-mt-3 last-of-type:tw-mb-3"
+        [ngClass]="{
+          'tw-items-center': field.value.type === FieldType.Boolean
+        }"
         cdkDrag
+        #customFieldRow
       >
         <!-- Text Field -->
         <bit-form-field *ngIf="field.value.type === FieldType.Text" class="tw-flex-1" disableMargin>

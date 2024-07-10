@@ -1,9 +1,21 @@
+import { LiveAnnouncer } from "@angular/cdk/a11y";
 import { DialogRef } from "@angular/cdk/dialog";
 import { CdkDragDrop, DragDropModule, moveItemInArray } from "@angular/cdk/drag-drop";
 import { CommonModule } from "@angular/common";
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  Input,
+  OnInit,
+  QueryList,
+  ViewChildren,
+  inject,
+} from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormArray, FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { Subject, switchMap, take } from "rxjs";
 
 import { JslibModule } from "@bitwarden/angular/jslib.module";
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
@@ -50,7 +62,9 @@ import {
     DragDropModule,
   ],
 })
-export class CustomFieldsComponent implements OnInit {
+export class CustomFieldsComponent implements OnInit, AfterViewInit {
+  @ViewChildren("customFieldRow") customFieldRows: QueryList<ElementRef<HTMLDivElement>>;
+
   /** Cipher view that is updated with the user's edits */
   @Input() updatedCipherView: CipherView | null = null;
 
@@ -64,6 +78,10 @@ export class CustomFieldsComponent implements OnInit {
   /** Options for Linked Fields */
   linkedFieldOptions: { name: string; value: LinkedIdType }[] = [];
 
+  /** Emits when a new custom field should be focused */
+  private focusOnNewInput$ = new Subject<void>();
+
+  destroyed$: DestroyRef;
   FieldType = FieldType;
 
   constructor(
@@ -71,7 +89,9 @@ export class CustomFieldsComponent implements OnInit {
     private cipherFormContainer: CipherFormContainer,
     private formBuilder: FormBuilder,
     private i18nService: I18nService,
+    private liveAnnouncer: LiveAnnouncer,
   ) {
+    this.destroyed$ = inject(DestroyRef);
     this.cipherFormContainer.registerChildForm("customFields", this.customFieldsForm);
 
     this.customFieldsForm.valueChanges.pipe(takeUntilDestroyed()).subscribe((values) => {
@@ -127,10 +147,31 @@ export class CustomFieldsComponent implements OnInit {
     });
   }
 
-  /**
-   * Opens the add/edit custom field dialog
-   *
-   */
+  ngAfterViewInit(): void {
+    // Focus on the new input field when it is added
+    // This is done after the view is initialized to ensure the input is rendered
+    this.focusOnNewInput$
+      .pipe(
+        takeUntilDestroyed(this.destroyed$),
+        // QueryList changes are emitted after the view is updated
+        switchMap(() => this.customFieldRows.changes.pipe(take(1))),
+      )
+      .subscribe(() => {
+        const input =
+          this.customFieldRows.last.nativeElement.querySelector<HTMLInputElement>("input");
+        const label = document.querySelector(`label[for="${input.id}"]`).textContent.trim();
+
+        // Focus the input after the announcement element is added to the DOM,
+        // this should stop the announcement from being cut off by the "focus" event.
+        void this.liveAnnouncer
+          .announce(this.i18nService.t("fieldAdded", label), "polite")
+          .then(() => {
+            input.focus();
+          });
+      });
+  }
+
+  /** Opens the add/edit custom field dialog */
   openAddEditCustomFieldDialog(editLabelConfig?: AddEditCustomFieldDialogData["editLabelConfig"]) {
     this.dialogRef = this.dialogService.open<unknown, AddEditCustomFieldDialogData>(
       AddEditCustomFieldDialogComponent,
@@ -182,6 +223,9 @@ export class CustomFieldsComponent implements OnInit {
         linkedId,
       }),
     );
+
+    // Trigger focus on the new input field
+    this.focusOnNewInput$.next();
   }
 
   drop(event: CdkDragDrop<HTMLDivElement>) {
