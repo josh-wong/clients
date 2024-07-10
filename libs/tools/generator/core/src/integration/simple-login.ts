@@ -27,7 +27,7 @@ const defaultSettings = Object.freeze({
 // supported RPC calls
 const createForwardingEmail = Object.freeze({
   url(request: IntegrationRequest, context: ForwarderContext<SimpleLoginSettings>) {
-    const endpoint = context.baseUrl(context.settings) + "/api/alias/random/new";
+    const endpoint = context.baseUrl() + "/api/alias/random/new";
     const hostname = context.website(request);
     const url = hostname !== "" ? `${endpoint}?hostname=${hostname}` : endpoint;
 
@@ -59,8 +59,8 @@ export const SimpleLogin = Object.freeze({
   selfHost: "maybe",
   extends: ["forwarder"],
   baseUrl: "https://app.simplelogin.io",
-  authenticate(settings: ApiSettings, context: IntegrationContext) {
-    return { Authentication: context.authenticationToken(settings) };
+  authenticate(_request: IntegrationRequest, context: IntegrationContext<ApiSettings>) {
+    return { Authentication: context.authenticationToken() };
   },
   forwarder,
 } as SimpleLoginConfiguration);

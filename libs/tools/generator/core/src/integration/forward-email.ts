@@ -23,7 +23,7 @@ const defaultSettings = Object.freeze({
 // supported RPC calls
 const createForwardingEmail = Object.freeze({
   url(_request: IntegrationRequest, context: ForwarderContext<ForwardEmailSettings>) {
-    const domain = context.emailDomain(context.settings);
+    const domain = context.emailDomain();
     return context.baseUrl() + `/v1/domains/${domain}/aliases`;
   },
   body(request: IntegrationRequest, context: ForwarderContext<ForwardEmailSettings>) {
@@ -37,7 +37,7 @@ const createForwardingEmail = Object.freeze({
   },
   processJson(json: any, context: ForwarderContext<ForwardEmailSettings>) {
     const { name, domain } = json;
-    const domainPart = domain?.name ?? context.emailDomain(context.settings);
+    const domainPart = domain?.name ?? context.emailDomain();
     return [`${name}@${domainPart}`];
   },
 } as CreateForwardingEmailRpcDef<ForwardEmailSettings>);
@@ -59,8 +59,8 @@ export const ForwardEmail = Object.freeze({
   // service provider
   selfHost: "never",
   baseUrl: "https://api.forwardemail.net",
-  authenticate(settings: ApiSettings, context: IntegrationContext) {
-    return { Authorization: "Basic " + context.authenticationToken(settings, { base64: true }) };
+  authenticate(_request: IntegrationRequest, context: IntegrationContext<ApiSettings>) {
+    return { Authorization: "Basic " + context.authenticationToken({ base64: true }) };
   },
 
   // specialized configurations

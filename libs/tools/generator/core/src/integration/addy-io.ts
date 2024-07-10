@@ -24,11 +24,11 @@ const defaultSettings = Object.freeze({
 // supported RPC calls
 const createForwardingEmail = Object.freeze({
   url(_request: IntegrationRequest, context: ForwarderContext<AddyIoSettings>) {
-    return context.baseUrl(context.settings) + "/api/v1/aliases";
+    return context.baseUrl() + "/api/v1/aliases";
   },
   body(request: IntegrationRequest, context: ForwarderContext<AddyIoSettings>) {
     return {
-      domain: context.emailDomain(context.settings),
+      domain: context.emailDomain(),
       description: context.generatedBy(request),
     };
   },
@@ -55,8 +55,8 @@ export const AddyIo = Object.freeze({
   baseUrl: "https://app.addy.io",
   selfHost: "maybe",
   extends: ["forwarder"],
-  authenticate(settings: ApiSettings, context: IntegrationContext) {
-    return { Authorization: "Bearer " + context.authenticationToken(settings) };
+  authenticate(_request: IntegrationRequest, context: IntegrationContext<ApiSettings>) {
+    return { Authorization: "Bearer " + context.authenticationToken() };
   },
   forwarder,
 } as AddyIoConfiguration);

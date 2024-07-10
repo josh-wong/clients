@@ -5,13 +5,14 @@ import { IntegrationMetadata } from "./integration-metadata";
 import { ApiSettings, SelfHostedApiSettings, IntegrationRequest } from "./rpc";
 
 /** Utilities for processing integration settings */
-export class IntegrationContext {
+export class IntegrationContext<Settings extends object> {
   /** Instantiates an integration context
    *  @param metadata - defines integration capabilities
    *  @param i18n - localizes error messages
    */
   constructor(
     readonly metadata: IntegrationMetadata,
+    protected settings: Settings,
     protected i18n: I18nService,
   ) {}
 
@@ -23,9 +24,10 @@ export class IntegrationContext {
    *  @throws a localized error message when a base URL is neither defined by the metadata or
    *   supplied by an argument.
    */
-  baseUrl(settings?: SelfHostedApiSettings) {
+  baseUrl(): Settings extends SelfHostedApiSettings ? string : never {
     // normalize baseUrl
-    const setting = settings && "baseUrl" in settings ? settings.baseUrl : "";
+    const setting =
+      this.settings && "baseUrl" in this.settings ? (this.settings.baseUrl as string) : "";
     let result = "";
 
     // look up definition
@@ -43,7 +45,7 @@ export class IntegrationContext {
       throw error;
     }
 
-    return result;
+    return result as any;
   }
 
   /** look up a service API's authentication token
@@ -52,13 +54,16 @@ export class IntegrationContext {
    *  @returns the user's authentication token
    *  @throws a localized error message when the token is invalid.
    */
-  authenticationToken(settings: ApiSettings, options: { base64?: boolean } = null) {
-    if (!settings.token || settings.token === "") {
+  authenticationToken(
+    options: { base64?: boolean } = null,
+  ): Settings extends ApiSettings ? string : never {
+    let token = "token" in this.settings ? (this.settings?.token as string) ?? "" : "";
+
+    if (token === "") {
       const error = this.i18n.t("forwaderInvalidToken", this.metadata.name);
       throw error;
     }
 
-    let token = settings.token;
     if (options?.base64) {
       token = Utils.fromUtf8ToB64(token);
     }

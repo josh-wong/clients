@@ -13,19 +13,19 @@ export type AccountRequest = {
 
 /** definition of the create forwarding request api call for an integration */
 export type CreateForwardingEmailRpcDef<
-  Settings,
+  Settings extends object,
   Request extends IntegrationRequest = IntegrationRequest,
 > = RpcConfiguration<Request, ForwarderContext<Settings>, string>;
 
 /** definition of the get account id api call for an integration */
 export type GetAccountIdRpcDef<
-  Settings,
+  Settings extends object,
   Request extends IntegrationRequest = IntegrationRequest,
 > = RpcConfiguration<Request, ForwarderContext<Settings>, string>;
 
 /** Forwarder-specific static definition */
 export type ForwarderConfiguration<
-  Settings,
+  Settings extends object,
   LegacyFormat extends Settings = Settings,
   Request extends IntegrationRequest = IntegrationRequest,
 > = IntegrationConfiguration & {

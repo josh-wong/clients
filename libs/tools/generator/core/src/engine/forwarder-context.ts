@@ -4,31 +4,33 @@ import { IntegrationContext } from "@bitwarden/common/tools/integration/integrat
 import { ForwarderConfiguration } from "./forwarder-configuration";
 import { EmailDomainSettings, EmailPrefixSettings } from "./settings";
 
-export class ForwarderContext<Settings> extends IntegrationContext {
+export class ForwarderContext<Settings extends object> extends IntegrationContext<Settings> {
   constructor(
     readonly configuration: ForwarderConfiguration<Settings>,
-    readonly settings: Settings,
+    settings: Settings,
     i18n: I18nService,
   ) {
-    super(configuration, i18n);
+    super(configuration, settings, i18n);
   }
 
-  emailDomain(settings: EmailDomainSettings) {
-    if (!settings.domain || settings.domain === "") {
+  emailDomain(): Settings extends EmailDomainSettings ? string : never {
+    const domain = "domain" in this.settings ? this.settings?.domain ?? "" : "";
+    if (domain === "") {
       const error = this.i18n.t("forwarderNoDomain", this.configuration.name);
       throw error;
     }
 
-    return settings.domain;
+    return domain as any;
   }
 
-  emailPrefix(settings: EmailPrefixSettings) {
-    if (!settings.prefix || settings.prefix === "") {
+  emailPrefix(): Settings extends EmailPrefixSettings ? string : never {
+    const prefix = "prefix" in this.settings ? this.settings?.prefix ?? "" : "";
+    if (prefix === "") {
       const error = this.i18n.t("forwarderNoPrefix", this.configuration.name);
       throw error;
     }
 
-    return settings.prefix;
+    return prefix as any;
   }
 
   missingAccountIdCause() {

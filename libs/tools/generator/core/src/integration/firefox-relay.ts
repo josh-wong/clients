@@ -54,8 +54,8 @@ export const FirefoxRelay = Object.freeze({
   baseUrl: "https://relay.firefox.com/api",
   selfHost: "never",
   extends: ["forwarder"],
-  authenticate(settings: ApiSettings, context: IntegrationContext) {
-    return { Authorization: "Token " + context.authenticationToken(settings) };
+  authenticate(_request: IntegrationRequest, context: IntegrationContext<ApiSettings>) {
+    return { Authorization: "Token " + context.authenticationToken() };
   },
   forwarder,
 } as FirefoxRelayConfiguration);

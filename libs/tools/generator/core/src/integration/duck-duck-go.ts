@@ -47,8 +47,8 @@ export const DuckDuckGo = Object.freeze({
   baseUrl: "https://quack.duckduckgo.com/api",
   selfHost: "never",
   extends: ["forwarder"],
-  authenticate(settings: ApiSettings, context: IntegrationContext) {
-    return { Authorization: "Bearer " + context.authenticationToken(settings) };
+  authenticate(_request: IntegrationRequest, context: IntegrationContext<ApiSettings>) {
+    return { Authorization: "Bearer " + context.authenticationToken() };
   },
   forwarder,
 } as DuckDuckGoConfiguration);

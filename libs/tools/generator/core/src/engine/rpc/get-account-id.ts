@@ -1,10 +1,13 @@
-import { JsonRpc, IntegrationRequest } from "@bitwarden/common/tools/integration/rpc";
+import { IntegrationContext } from "@bitwarden/common/tools/integration";
+import { JsonRpc, IntegrationRequest, ApiSettings } from "@bitwarden/common/tools/integration/rpc";
 
 import { ForwarderConfiguration } from "../forwarder-configuration";
 import { ForwarderContext } from "../forwarder-context";
 
-export class GetAccountIdRpc<Settings, Req extends IntegrationRequest = IntegrationRequest>
-  implements JsonRpc<Req, string>
+export class GetAccountIdRpc<
+  Settings extends ApiSettings,
+  Req extends IntegrationRequest = IntegrationRequest,
+> implements JsonRpc<Req, string>
 {
   constructor(
     readonly requestor: ForwarderConfiguration<Settings>,
@@ -19,10 +22,10 @@ export class GetAccountIdRpc<Settings, Req extends IntegrationRequest = Integrat
     return this.requestor.forwarder.getAccountId.processJson(json, this.context);
   }
 
-  private body(req: Req, settings: Settings) {
+  private body(req: Req) {
     const body = this.requestor.forwarder.getAccountId.body(req, this.context);
     if (body) {
-      const b = body(req, settings, this.context);
+      const b = body(req, this.context);
       return b && JSON.stringify(b);
     }
 
@@ -31,8 +34,8 @@ export class GetAccountIdRpc<Settings, Req extends IntegrationRequest = Integrat
 
   toRequest(req: Req) {
     const url = this.requestor.forwarder.getAccountId.url(req, this.context);
-    const token = this.requestor.authenticate(this.context.settings, this.context);
-    const body = this.body(req, this.context.settings);
+    const token = this.requestor.authenticate(req, this.context as IntegrationContext<Settings>);
+    const body = this.body(req);
 
     const request = new Request(url, {
       redirect: "manual",

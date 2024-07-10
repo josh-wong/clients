@@ -61,7 +61,7 @@ const createForwardingEmail = Object.freeze({
                 state: "enabled",
                 description: "",
                 forDomain: context.website(request),
-                emailPrefix: context.emailPrefix(context.settings),
+                emailPrefix: context.emailPrefix(),
               },
             },
           },
@@ -115,8 +115,8 @@ export const Fastmail = Object.freeze({
   baseUrl: "https://api.fastmail.com",
   selfHost: "maybe",
   extends: ["forwarder"],
-  authenticate(settings: ApiSettings, context: IntegrationContext) {
-    return { Authorization: "Bearer " + context.authenticationToken(settings) };
+  authenticate(_request: IntegrationRequest, context: IntegrationContext<ApiSettings>) {
+    return { Authorization: "Bearer " + context.authenticationToken() };
   },
   forwarder,
 } as FastmailConfiguration);
