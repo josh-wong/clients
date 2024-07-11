@@ -12,6 +12,7 @@ import { CipherView } from "@bitwarden/common/vault/models/view/cipher.view";
 import { FieldView } from "@bitwarden/common/vault/models/view/field.view";
 import { DialogService } from "@bitwarden/components";
 
+import { BitPasswordInputToggleDirective } from "../../../../../components/src/form-field/password-input-toggle.directive";
 import { CipherFormContainer } from "../../cipher-form-container";
 
 import { CustomField, CustomFieldsComponent } from "./custom-fields.component";
@@ -22,6 +23,8 @@ const mockFieldViews = [
   { type: FieldType.Boolean, name: "boolean label", value: "true" },
   { type: FieldType.Linked, name: "linked label", value: null, linkedId: 1 },
 ] as FieldView[];
+
+const originalCipherView: CipherView | null = {} as CipherView;
 
 describe("CustomFieldsComponent", () => {
   let component: CustomFieldsComponent;
@@ -44,7 +47,7 @@ describe("CustomFieldsComponent", () => {
         },
         {
           provide: CipherFormContainer,
-          useValue: mock<CipherFormContainer>({ patchCipher }),
+          useValue: mock<CipherFormContainer>({ patchCipher, originalCipherView }),
         },
         {
           provide: LiveAnnouncer,
@@ -90,11 +93,44 @@ describe("CustomFieldsComponent", () => {
       component.ngOnInit();
 
       expect(component.fields.value).toEqual([
-        { linkedId: null, name: "text label", type: FieldType.Text, value: "text value" },
-        { linkedId: null, name: "hidden label", type: FieldType.Hidden, value: "hidden value" },
-        { linkedId: null, name: "boolean label", type: FieldType.Boolean, value: true },
-        { linkedId: 1, name: "linked label", type: FieldType.Linked, value: null },
+        {
+          linkedId: null,
+          name: "text label",
+          type: FieldType.Text,
+          value: "text value",
+          newField: false,
+        },
+        {
+          linkedId: null,
+          name: "hidden label",
+          type: FieldType.Hidden,
+          value: "hidden value",
+          newField: false,
+        },
+        {
+          linkedId: null,
+          name: "boolean label",
+          type: FieldType.Boolean,
+          value: true,
+          newField: false,
+        },
+        { linkedId: 1, name: "linked label", type: FieldType.Linked, value: null, newField: false },
       ]);
+    });
+
+    it("forbids a user to view hidden fields when the cipher `viewPassword` is false", () => {
+      originalCipherView.viewPassword = false;
+      component.updatedCipherView = {
+        fields: mockFieldViews,
+      } as CipherView;
+
+      component.ngOnInit();
+
+      fixture.detectChanges();
+
+      const button = fixture.debugElement.query(By.directive(BitPasswordInputToggleDirective));
+
+      expect(button.nativeElement.disabled).toBe(true);
     });
   });
 
@@ -116,7 +152,13 @@ describe("CustomFieldsComponent", () => {
       component.addField(FieldType.Boolean, "bool label");
 
       expect(component.fields.value).toEqual([
-        { linkedId: null, name: "bool label", type: FieldType.Boolean, value: false },
+        {
+          linkedId: null,
+          name: "bool label",
+          type: FieldType.Boolean,
+          value: false,
+          newField: true,
+        },
       ]);
     });
 
@@ -134,6 +176,7 @@ describe("CustomFieldsComponent", () => {
           name: "linked label",
           type: FieldType.Linked,
           value: null,
+          newField: true,
         },
       ]);
     });
@@ -142,7 +185,7 @@ describe("CustomFieldsComponent", () => {
       component.addField(FieldType.Text, "text label");
 
       expect(component.fields.value).toEqual([
-        { linkedId: null, name: "text label", type: FieldType.Text, value: null },
+        { linkedId: null, name: "text label", type: FieldType.Text, value: null, newField: true },
       ]);
     });
 
@@ -150,7 +193,13 @@ describe("CustomFieldsComponent", () => {
       component.addField(FieldType.Hidden, "hidden label");
 
       expect(component.fields.value).toEqual([
-        { linkedId: null, name: "hidden label", type: FieldType.Hidden, value: null },
+        {
+          linkedId: null,
+          name: "hidden label",
+          type: FieldType.Hidden,
+          value: null,
+          newField: true,
+        },
       ]);
     });
 
@@ -160,6 +209,17 @@ describe("CustomFieldsComponent", () => {
       fixture.detectChanges();
 
       expect(announce).toHaveBeenCalledWith("fieldAdded text label 2", "polite");
+    });
+
+    it("allows a user to view hidden fields when the cipher `viewPassword` is false", () => {
+      originalCipherView.viewPassword = false;
+      component.addField(FieldType.Hidden, "Hidden label");
+
+      fixture.detectChanges();
+
+      const button = fixture.debugElement.query(By.directive(BitPasswordInputToggleDirective));
+
+      expect(button.nativeElement.disabled).toBe(false);
     });
   });
 

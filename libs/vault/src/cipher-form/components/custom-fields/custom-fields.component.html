@@ -56,6 +56,7 @@
             bitSuffix
             bitPasswordInputToggle
             data-testid="visibility-for-custom-hidden-field"
+            [disabled]="!canViewPasswords(i)"
           ></button>
         </bit-form-field>
 

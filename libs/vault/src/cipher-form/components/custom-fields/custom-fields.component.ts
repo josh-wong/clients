@@ -48,6 +48,7 @@ export type CustomField = {
   name: string;
   value: string | boolean | null;
   linkedId: LinkedIdType;
+  newField: boolean;
 };
 
 @Component({
@@ -140,6 +141,7 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
           name: field.name,
           value: value,
           linkedId: field.linkedId,
+          newField: false,
         }),
       );
     });
@@ -191,6 +193,18 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
     );
   }
 
+  /** Returns true when the user has permission to view passwords for the individual cipher */
+  canViewPasswords(index: number) {
+    if (this.cipherFormContainer.originalCipherView === null) {
+      return true;
+    }
+
+    return (
+      this.cipherFormContainer.originalCipherView.viewPassword ||
+      this.fields.at(index).value.newField
+    );
+  }
+
   /** Updates label for an individual field */
   updateLabel(index: number, label: string) {
     this.fields.at(index).patchValue({ name: label });
@@ -226,6 +240,7 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
         name: label,
         value,
         linkedId,
+        newField: true,
       }),
     );
 
