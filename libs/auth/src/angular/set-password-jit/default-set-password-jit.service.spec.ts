@@ -8,7 +8,6 @@ import {
 import { ApiService } from "@bitwarden/common/abstractions/api.service";
 import { OrganizationApiServiceAbstraction } from "@bitwarden/common/admin-console/abstractions/organization/organization-api.service.abstraction";
 import { OrganizationUserService } from "@bitwarden/common/admin-console/abstractions/organization-user/organization-user.service";
-import { PolicyApiServiceAbstraction } from "@bitwarden/common/admin-console/abstractions/policy/policy-api.service.abstraction";
 import { OrganizationKeysResponse } from "@bitwarden/common/admin-console/models/response/organization-keys.response";
 import { KdfConfigService } from "@bitwarden/common/auth/abstractions/kdf-config.service";
 import { InternalMasterPasswordServiceAbstraction } from "@bitwarden/common/auth/abstractions/master-password.service.abstraction";
@@ -39,7 +38,6 @@ describe("DefaultSetPasswordJitService", () => {
   let masterPasswordService: MockProxy<InternalMasterPasswordServiceAbstraction>;
   let organizationApiService: MockProxy<OrganizationApiServiceAbstraction>;
   let organizationUserService: MockProxy<OrganizationUserService>;
-  let policyApiService: MockProxy<PolicyApiServiceAbstraction>;
   let userDecryptionOptionsService: MockProxy<InternalUserDecryptionOptionsServiceAbstraction>;
 
   beforeEach(() => {
@@ -60,7 +58,6 @@ describe("DefaultSetPasswordJitService", () => {
       masterPasswordService,
       organizationApiService,
       organizationUserService,
-      policyApiService,
       userDecryptionOptionsService,
     );
   });
@@ -80,6 +77,8 @@ describe("DefaultSetPasswordJitService", () => {
     let orgPublicKey: Uint8Array;
 
     let orgSsoIdentifier: string;
+    let orgId: string;
+    let resetPasswordAutoEnroll: boolean;
     let userId: UserId;
     let passwordInputResult: PasswordInputResult;
     let credentials: SetPasswordCredentials;
@@ -88,9 +87,6 @@ describe("DefaultSetPasswordJitService", () => {
     let setPasswordRequest: SetPasswordRequest;
 
     beforeEach(() => {
-      sut.orgId = "orgId";
-      sut.resetPasswordAutoEnroll = false;
-
       masterKey = new SymmetricCryptoKey(new Uint8Array(64).buffer as CsprngArray) as MasterKey;
       userKey = new SymmetricCryptoKey(new Uint8Array(64).buffer as CsprngArray) as UserKey;
       userKeyEncString = new EncString("userKeyEncrypted");
@@ -104,6 +100,8 @@ describe("DefaultSetPasswordJitService", () => {
       orgPublicKey = Utils.fromB64ToArray(organizationKeys.publicKey);
 
       orgSsoIdentifier = "orgSsoIdentifier";
+      orgId = "orgId";
+      resetPasswordAutoEnroll = false;
       userId = "userId" as UserId;
 
       passwordInputResult = {
@@ -117,6 +115,8 @@ describe("DefaultSetPasswordJitService", () => {
       credentials = {
         ...passwordInputResult,
         orgSsoIdentifier,
+        orgId,
+        resetPasswordAutoEnroll,
         userId,
       };
 
@@ -198,7 +198,7 @@ describe("DefaultSetPasswordJitService", () => {
 
     it("should handle reset password auto enroll", async () => {
       // Arrange
-      sut.resetPasswordAutoEnroll = true;
+      credentials.resetPasswordAutoEnroll = true;
 
       setupSetPasswordMocks();
       setupResetPasswordAutoEnrollMocks();
@@ -208,14 +208,14 @@ describe("DefaultSetPasswordJitService", () => {
 
       // Assert
       expect(apiService.setPassword).toHaveBeenCalledWith(setPasswordRequest);
-      expect(organizationApiService.getKeys).toHaveBeenCalledWith(sut.orgId);
+      expect(organizationApiService.getKeys).toHaveBeenCalledWith(orgId);
       expect(cryptoService.rsaEncrypt).toHaveBeenCalledWith(userKey.key, orgPublicKey);
       expect(organizationUserService.putOrganizationUserResetPasswordEnrollment).toHaveBeenCalled();
     });
 
     it("when handling reset password auto enroll, it should throw an error if organization keys are not found", async () => {
       // Arrange
-      sut.resetPasswordAutoEnroll = true;
+      credentials.resetPasswordAutoEnroll = true;
 
       setupSetPasswordMocks();
       setupResetPasswordAutoEnrollMocks(false);
