@@ -32,9 +32,15 @@ export class PasswordGeneratorStrategy
 
   // algorithm
   async generate(options: PasswordGenerationOptions): Promise<string> {
+    // converts password generation option sets, which are defined by
+    // an "enabled" and "quantity" parameter, to the password engine's
+    // parameters, which represent disabled options as `undefined`
+    // properties.
     function process(
+      // values read from the options
       enabled: boolean,
       quantity: number,
+      // value used if an option is missing
       defaultEnabled: boolean,
       defaultQuantity: number,
     ) {
@@ -73,6 +79,11 @@ export class PasswordGeneratorStrategy
       ambiguous: options.ambiguous ?? DefaultPasswordGenerationOptions.ambiguous,
       all: 0,
     };
+
+    // engine represents character sets as "include only"; you assert how many all
+    // characters there can be rather than a total length. This conversion has
+    // the character classes win, so that the result is always consistent with policy
+    // minimums.
     const required = sum(request.uppercase, request.lowercase, request.digits, request.special);
     const remaining = (options.length ?? 0) - required;
     request.all = Math.max(remaining, 0);

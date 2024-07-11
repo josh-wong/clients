@@ -2,7 +2,7 @@ import { PolicyType } from "@bitwarden/common/admin-console/enums";
 import { StateProvider } from "@bitwarden/common/platform/state";
 
 import { GeneratorStrategy } from "../abstractions";
-import { DefaultPassphraseGenerationOptions, Policies } from "../data";
+import { DefaultPassphraseBoundaries, DefaultPassphraseGenerationOptions, Policies } from "../data";
 import { PasswordRandomizer } from "../engine";
 import { mapPolicyToEvaluator } from "../rx";
 import { PassphraseGenerationOptions, PassphraseGeneratorPolicy } from "../types";
@@ -35,7 +35,7 @@ export class PassphraseGeneratorStrategy
   async generate(options: PassphraseGenerationOptions): Promise<string> {
     const requestWords = options.numWords ?? DefaultPassphraseGenerationOptions.numWords;
     const request = {
-      words: requestWords >= 3 ? requestWords : DefaultPassphraseGenerationOptions.numWords,
+      numberOfWords: Math.max(requestWords, DefaultPassphraseBoundaries.numWords.min),
       capitalize: options.capitalize ?? DefaultPassphraseGenerationOptions.capitalize,
       number: options.includeNumber ?? DefaultPassphraseGenerationOptions.includeNumber,
       separator: options.wordSeparator ?? DefaultPassphraseGenerationOptions.wordSeparator,
