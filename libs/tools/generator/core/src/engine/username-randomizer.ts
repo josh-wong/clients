@@ -21,7 +21,7 @@ export class UsernameRandomizer {
    *  @returns a promise that resolves with the generated username.
    */
   async randomWords(options?: WordsRequest) {
-    const length = options?.length ?? 1;
+    const length = options?.numberOfWords ?? 1;
     if (length < 1) {
       return "";
     }

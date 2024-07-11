@@ -40,7 +40,7 @@ export type RandomAsciiRequest = {
 /** Request random words drawn from the EFF "5 dice" word list */
 export type EffWordListRequest = {
   /** Number of words drawn from the word list */
-  words: number;
+  numberOfWords: number;
 
   /** Separator rendered in between each word */
   separator: string;
@@ -55,7 +55,7 @@ export type EffWordListRequest = {
 /** request random username drawn from a word list */
 export type WordsRequest = {
   /** the number of words to select. This defaults to 1. */
-  length?: number;
+  numberOfWords?: number;
 
   /** Draw the words from a custom word list; defaults to the EFF "5 dice" word list. */
   words?: Array<string>;

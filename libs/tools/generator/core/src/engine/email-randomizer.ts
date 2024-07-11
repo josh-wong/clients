@@ -65,19 +65,22 @@ export class EmailRandomizer {
 
   /** Creates a catchall address composed of random words
    *  @param domain the domain part of the generated email address.
-   *  @param options.length the number of words to include in the catchall
+   *  @param options.numberOfWords the number of words to include in the catchall
    *    address. Defaults to 1.
    *  @param options.words selects words from the provided wordlist. Defaults to
    *    the EFF "5-dice" list.
    *  @returns a promise that resolves with the generated email address.
    */
-  async randomWordsCatchall(domain: string, options?: { length?: number; words?: Array<string> }) {
+  async randomWordsCatchall(
+    domain: string,
+    options?: { numberOfWords?: number; words?: Array<string> },
+  ) {
     const emailDomain = domain?.startsWith("@") ? domain.substring(1, Infinity) : domain ?? "";
     if (emailDomain.length < 1) {
       return null;
     }
 
-    const length = options?.length ?? 1;
+    const length = options?.numberOfWords ?? 1;
     if (length < 1) {
       return null;
     }

@@ -158,7 +158,7 @@ describe("EmailRandomizer", () => {
     it("returns null if the length is 0", async () => {
       const emailRandomizer = new EmailRandomizer(randomizer);
 
-      const result = await emailRandomizer.randomWordsCatchall("example.com", { length: 0 });
+      const result = await emailRandomizer.randomWordsCatchall("example.com", { numberOfWords: 0 });
 
       expect(result).toBeNull();
     });
@@ -166,7 +166,9 @@ describe("EmailRandomizer", () => {
     it("returns null if the length is less than 0", async () => {
       const emailRandomizer = new EmailRandomizer(randomizer);
 
-      const result = await emailRandomizer.randomWordsCatchall("example.com", { length: -1 });
+      const result = await emailRandomizer.randomWordsCatchall("example.com", {
+        numberOfWords: -1,
+      });
 
       expect(result).toBeNull();
     });
@@ -191,7 +193,7 @@ describe("EmailRandomizer", () => {
       const emailRandomizer = new EmailRandomizer(randomizer);
       randomizer.pickWord.mockResolvedValueOnce("Biz");
 
-      await emailRandomizer.randomWordsCatchall("example.com", { length: 2 });
+      await emailRandomizer.randomWordsCatchall("example.com", { numberOfWords: 2 });
 
       expect(randomizer.pickWord).toHaveBeenNthCalledWith(1, EFFLongWordList, { titleCase: false });
       expect(randomizer.pickWord).toHaveBeenNthCalledWith(2, EFFLongWordList, { titleCase: true });

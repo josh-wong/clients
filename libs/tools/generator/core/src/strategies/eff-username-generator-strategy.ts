@@ -36,7 +36,7 @@ export class EffUsernameGeneratorStrategy
         ? "TitleCase"
         : "lowercase";
     const digits = options.wordIncludeNumber ?? DefaultEffUsernameOptions.wordIncludeNumber ? 4 : 0;
-    const word = await this.randomizer.randomWords({ length: 1, casing, digits });
+    const word = await this.randomizer.randomWords({ numberOfWords: 1, casing, digits });
     return word;
   }
 }

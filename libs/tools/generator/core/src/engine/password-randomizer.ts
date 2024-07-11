@@ -36,12 +36,12 @@ export class PasswordRandomizer {
     // select which word gets the number, if any
     let luckyNumber = -1;
     if (request.number) {
-      luckyNumber = await this.randomizer.uniform(0, request.words - 1);
+      luckyNumber = await this.randomizer.uniform(0, request.numberOfWords - 1);
     }
 
     // generate the passphrase
-    const wordList = new Array(request.words);
-    for (let i = 0; i < request.words; i++) {
+    const wordList = new Array(request.numberOfWords);
+    for (let i = 0; i < request.numberOfWords; i++) {
       const word = await this.randomizer.pickWord(EFFLongWordList, {
         titleCase: request.capitalize,
         number: i === luckyNumber,

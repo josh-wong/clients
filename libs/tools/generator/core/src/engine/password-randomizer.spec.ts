@@ -249,7 +249,7 @@ describe("PasswordRandomizer", () => {
       const password = new PasswordRandomizer(randomizer);
 
       const result = await password.randomEffLongWords({
-        words: 0,
+        numberOfWords: 0,
         separator: "",
         number: false,
         capitalize: false,
@@ -265,7 +265,7 @@ describe("PasswordRandomizer", () => {
       const password = new PasswordRandomizer(randomizer);
 
       const result = await password.randomEffLongWords({
-        words,
+        numberOfWords: words,
         separator: "",
         number: false,
         capitalize: false,
@@ -283,7 +283,7 @@ describe("PasswordRandomizer", () => {
       randomizer.pickWord.mockResolvedValueOnce("Foo");
 
       const result = await password.randomEffLongWords({
-        words: 1,
+        numberOfWords: 1,
         separator: "",
         number: false,
         capitalize: true,
@@ -305,7 +305,7 @@ describe("PasswordRandomizer", () => {
       randomizer.uniform.mockResolvedValueOnce(1);
 
       const result = await password.randomEffLongWords({
-        words: 2,
+        numberOfWords: 2,
         separator: "",
         number: true,
         capitalize: false,
@@ -326,7 +326,7 @@ describe("PasswordRandomizer", () => {
       const password = new PasswordRandomizer(randomizer);
 
       const result = await password.randomEffLongWords({
-        words: 2,
+        numberOfWords: 2,
         separator: "-",
         number: false,
         capitalize: false,
