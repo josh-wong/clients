@@ -1,11 +1,6 @@
 <bit-dialog>
   <span bitDialogTitle>
-    <ng-container *ngIf="variant === 'add'; else editTitle">
-      {{ "addField" | i18n }}
-    </ng-container>
-    <ng-template #editTitle>
-      {{ "editField" | i18n }}
-    </ng-template>
+    {{ (variant === "add" ? "addField" : "editField") | i18n }}
   </span>
   <div bitDialogContent [formGroup]="customFieldForm">
     <bit-form-field *ngIf="variant === 'add'">

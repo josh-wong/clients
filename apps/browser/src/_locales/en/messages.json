@@ -3665,6 +3665,9 @@
     "message": "Enter the the field's html id, name, aria-label, or placeholder."
   },
   "editField": {
+    "message": "Edit field"
+  },
+  "editFieldLabel": {
     "message": "Edit $LABEL$",
     "placeholders": {
       "label": {

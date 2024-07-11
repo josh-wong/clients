@@ -93,7 +93,7 @@
         <button
           type="button"
           (click)="openAddEditCustomFieldDialog({ index: i, label: field.value.name })"
-          [appA11yTitle]="'editField' | i18n: field.value.name"
+          [appA11yTitle]="'editFieldLabel' | i18n: field.value.name"
           bitIconButton="bwi-pencil-square"
           class="tw-self-end"
           data-testid="edit-custom-field-button"
