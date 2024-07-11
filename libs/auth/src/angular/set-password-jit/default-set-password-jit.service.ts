@@ -61,11 +61,7 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
 
     // Since this is an existing JIT provisioned user in a MP encryption org setting first password,
     // they will not already have a user asymmetric key pair so we must create it for them.
-    const newKeyPair = await this.cryptoService.makeKeyPair(protectedUserKey[0]);
-    if (newKeyPair == null) {
-      throw new Error("newKeyPair not found. Could not set password.");
-    }
-    const keysRequest = new KeysRequest(newKeyPair[0], newKeyPair[1].encryptedString);
+    const [keyPair, keysRequest] = await this.makeKeyPairAndRequest(protectedUserKey);
 
     const request = new SetPasswordRequest(
       masterKeyHash,
@@ -85,7 +81,7 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
     // User now has a password so update account decryption options in state
     await this.updateAccountDecryptionProperties(masterKey, kdfConfig, protectedUserKey, userId);
 
-    await this.cryptoService.setPrivateKey(newKeyPair[1].encryptedString, userId);
+    await this.cryptoService.setPrivateKey(keyPair[1].encryptedString, userId);
 
     await this.masterPasswordService.setMasterKeyHash(localMasterKeyHash, userId);
 
@@ -109,6 +105,18 @@ export class DefaultSetPasswordJitService implements SetPasswordJitService {
     }
 
     return protectedUserKey;
+  }
+
+  private async makeKeyPairAndRequest(
+    protectedUserKey: [UserKey, EncString],
+  ): Promise<[[string, EncString], KeysRequest]> {
+    const keyPair = await this.cryptoService.makeKeyPair(protectedUserKey[0]);
+    if (keyPair == null) {
+      throw new Error("keyPair not found. Could not set password.");
+    }
+    const keysRequest = new KeysRequest(keyPair[0], keyPair[1].encryptedString);
+
+    return [keyPair, keysRequest];
   }
 
   private async updateAccountDecryptionProperties(
