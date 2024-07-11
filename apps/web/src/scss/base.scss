@@ -306,3 +306,9 @@ a i.bwi {
   align-items: center;
   text-align: center;
 }
+
+.braintree-sheet__content--button
+  .braintree-sheet__button--paypal
+  iframe.zoid-prerender-frame.zoid-invisible {
+  display: none !important;
+}
