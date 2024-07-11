@@ -5,8 +5,8 @@ import { SafariApp } from "../../browser/safariApp";
 export default class VaultTimeoutService extends BaseVaultTimeoutService {
   startCheck() {
     if (this.platformUtilsService.isSafari()) {
-      void this.checkVaultTimeout();
-      void this.checkSafari();
+      this.checkVaultTimeout().catch((error) => this.logService.error(error));
+      this.checkSafari().catch((error) => this.logService.error(error));
       return;
     }
 

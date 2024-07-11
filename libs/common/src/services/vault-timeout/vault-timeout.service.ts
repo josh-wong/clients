@@ -1,6 +1,7 @@
 import { combineLatest, filter, firstValueFrom, map, switchMap, timeout } from "rxjs";
 
 import { LogoutReason } from "@bitwarden/auth/common";
+import { LogService } from "@bitwarden/common/platform/abstractions/log.service";
 import { TaskSchedulerService, ScheduledTaskNames } from "@bitwarden/common/platform/scheduling";
 
 import { SearchService } from "../../abstractions/search.service";
@@ -37,6 +38,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     private vaultTimeoutSettingsService: VaultTimeoutSettingsService,
     private stateEventRunnerService: StateEventRunnerService,
     private taskSchedulerService: TaskSchedulerService,
+    protected logService: LogService,
     private lockedCallback: (userId?: string) => Promise<void> = null,
     private loggedOutCallback: (
       logoutReason: LogoutReason,
@@ -61,8 +63,8 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
   }
 
   startCheck() {
-    void this.checkVaultTimeout();
-    void this.taskSchedulerService.setInterval(
+    this.checkVaultTimeout().catch((error) => this.logService.error(error));
+    this.taskSchedulerService.setInterval(
       ScheduledTaskNames.vaultTimeoutCheckInterval,
       10 * 1000, // check every 10 seconds
     );

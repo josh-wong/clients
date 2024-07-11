@@ -649,6 +649,7 @@ export class ServiceContainer {
       this.vaultTimeoutSettingsService,
       this.stateEventRunnerService,
       this.taskSchedulerService,
+      this.logService,
       lockedCallback,
       null,
     );

@@ -721,6 +721,7 @@ const safeProviders: SafeProvider[] = [
       VaultTimeoutSettingsServiceAbstraction,
       StateEventRunnerService,
       TaskSchedulerService,
+      LogService,
       LOCKED_CALLBACK,
       LOGOUT_CALLBACK,
     ],

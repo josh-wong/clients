@@ -36,7 +36,7 @@ export class EventUploadService implements EventUploadServiceAbstraction {
     this.inited = true;
     if (checkOnInterval) {
       void this.uploadEvents();
-      void this.taskSchedulerService.setInterval(
+      this.taskSchedulerService.setInterval(
         ScheduledTaskNames.eventUploadsInterval,
         60 * 1000, // check every 60 seconds
       );
