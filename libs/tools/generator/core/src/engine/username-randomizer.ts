@@ -11,30 +11,24 @@ export class UsernameRandomizer {
   constructor(private random: Randomizer) {}
 
   /** Creates a username composed of random words
-   *  @param domain the domain part of the generated email address.
-   *  @param options.length the number of words to include in the catchall
-   *    address. Defaults to 1.
-   *  @param options.words selects words from the provided wordlist. Defaults to
-   *    the EFF "5-dice" list.
-   *  @param options.digits determines the number of random digits to append to the end of the generated
-   *    word.
+   *  @param request parameters to which the generated username conforms
    *  @returns a promise that resolves with the generated username.
    */
-  async randomWords(options?: WordsRequest) {
-    const length = options?.numberOfWords ?? 1;
+  async randomWords(request?: WordsRequest) {
+    const length = request?.numberOfWords ?? 1;
     if (length < 1) {
       return "";
     }
 
-    const digits = Math.max(options?.digits ?? 0, 0);
+    const digits = Math.max(request?.digits ?? 0, 0);
     let selectCase = (_: number) => false;
-    if (options?.casing === "camelCase") {
+    if (request?.casing === "camelCase") {
       selectCase = (i: number) => i !== 0;
-    } else if (options?.casing === "TitleCase") {
+    } else if (request?.casing === "TitleCase") {
       selectCase = (_: number) => true;
     }
 
-    const wordList = options?.words ?? EFFLongWordList;
+    const wordList = request?.words ?? EFFLongWordList;
     const parts = [];
     for (let i = 0; i < length; i++) {
       const word = await this.random.pickWord(wordList, { titleCase: selectCase(i) });

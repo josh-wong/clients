@@ -54,7 +54,11 @@ export class PasswordRandomizer {
   }
 }
 
-function toAsciiSets(options: RandomAsciiRequest) {
+// given a generator request, convert each of its `number | undefined` properties
+// to an array of character sets, one for each property. The transformation is
+// deterministic.
+function toAsciiSets(request: RandomAsciiRequest) {
+  // allocate an array and initialize each cell with a fixed value
   function allocate<T>(size: number, value: T) {
     const data = new Array(size > 0 ? size : 0);
     data.fill(value, 0, size);
@@ -62,30 +66,30 @@ function toAsciiSets(options: RandomAsciiRequest) {
   }
 
   const allSet: CharacterSet = [];
-  const active = options.ambiguous ? Ascii.Full : Ascii.Unmistakable;
+  const active = request.ambiguous ? Ascii.Full : Ascii.Unmistakable;
   const parts: Array<CharacterSet> = [];
 
-  if (options.uppercase !== undefined) {
-    parts.push(...allocate(options.uppercase, active.Uppercase));
+  if (request.uppercase !== undefined) {
+    parts.push(...allocate(request.uppercase, active.Uppercase));
     allSet.push(...active.Uppercase);
   }
 
-  if (options.lowercase !== undefined) {
-    parts.push(...allocate(options.lowercase, active.Lowercase));
+  if (request.lowercase !== undefined) {
+    parts.push(...allocate(request.lowercase, active.Lowercase));
     allSet.push(...active.Lowercase);
   }
 
-  if (options.digits !== undefined) {
-    parts.push(...allocate(options.digits, active.Digit));
+  if (request.digits !== undefined) {
+    parts.push(...allocate(request.digits, active.Digit));
     allSet.push(...active.Digit);
   }
 
-  if (options.special !== undefined) {
-    parts.push(...allocate(options.special, active.Special));
+  if (request.special !== undefined) {
+    parts.push(...allocate(request.special, active.Special));
     allSet.push(...active.Special);
   }
 
-  parts.push(...allocate(options.all, allSet));
+  parts.push(...allocate(request.all, allSet));
 
   return parts;
 }
