@@ -92,20 +92,24 @@ export class ForwarderGeneratorStrategy<
     const classifier = new OptionsClassifier<Settings, Options>();
 
     // Derive the secret key definition
-    const key = SecretKeyDefinition.value(this.key.stateDefinition, this.key.key, classifier, {
-      deserializer: (d: Jsonify<Settings>) => this.key.deserializer(d) as Settings,
-      cleanupDelayMs: this.key.cleanupDelayMs,
-      clearOn: this.key.clearOn,
-    });
+    const key = SecretKeyDefinition.value<Options, Record<string, never>, Settings>(
+      this.key.stateDefinition,
+      this.key.key,
+      classifier,
+      {
+        deserializer: (d: Jsonify<Options>) => this.key.deserializer(d as any) as any,
+        cleanupDelayMs: this.key.cleanupDelayMs,
+        clearOn: this.key.clearOn,
+      },
+    );
 
     // the type parameter is explicit because type inference fails for `Omit<Options, "website">`
-    const secretState = SecretState.from<
-      Settings,
-      void,
-      Settings,
-      Record<keyof Settings, never>,
-      Settings
-    >(userId, key, this.stateProvider, encryptor);
+    const secretState = SecretState.from<Options, void, Options, Record<string, never>, Settings>(
+      userId,
+      key,
+      this.stateProvider,
+      encryptor,
+    );
 
     // rollover should occur once the user key is available for decryption
     const canDecrypt$ = this.keyService
