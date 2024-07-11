@@ -10,7 +10,12 @@
         <bit-label>
           {{ "assignedSeats" | i18n }}
         </bit-label>
-        <input type="number" bitInput formControlName="assignedSeats" />
+        <input
+          type="number"
+          bitInput
+          formControlName="assignedSeats"
+          [min]="dialogParams.organization.occupiedSeats"
+        />
         <bit-hint class="tw-text-muted" *ngIf="!isServiceUserWithPurchasedSeats">
           <div
             class="tw-grid tw-grid-flow-col tw-gap-1 tw-grid-cols-1"
