@@ -42,26 +42,7 @@ import BrowserPopupUtils from "../../platform/popup/browser-popup-utils";
   providers: [I18nPipe],
 })
 export class TwoFactorAuthEmailComponent extends TwoFactorAuthEmailBaseComponent {
-  constructor(
-    protected i18nService: I18nService,
-    protected twoFactorService: TwoFactorService,
-    protected loginStrategyService: LoginStrategyServiceAbstraction,
-    protected platformUtilsService: PlatformUtilsService,
-    protected logService: LogService,
-    protected apiService: ApiService,
-    protected appIdService: AppIdService,
-    protected dialogService: DialogService,
-  ) {
-    super(
-      i18nService,
-      twoFactorService,
-      loginStrategyService,
-      platformUtilsService,
-      logService,
-      apiService,
-      appIdService,
-    );
-  }
+const dialogService = inject(DialogService);
 
   async ngOnInit(): Promise<void> {
     if (BrowserPopupUtils.inPopup(window)) {
