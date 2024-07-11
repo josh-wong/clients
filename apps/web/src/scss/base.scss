@@ -307,6 +307,7 @@ a i.bwi {
   text-align: center;
 }
 
+// hide duplicate paypal iframe
 .braintree-sheet__content--button
   .braintree-sheet__button--paypal
   iframe.zoid-prerender-frame.zoid-invisible {
