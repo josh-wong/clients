@@ -1,12 +1,11 @@
 import { CommonModule } from "@angular/common";
-import { Component, DoCheck, Input, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { shareReplay } from "rxjs";
 
 import { JslibModule } from "@bitwarden/angular/jslib.module";
 import { CipherRepromptType } from "@bitwarden/common/vault/enums";
-import { CipherView } from "@bitwarden/common/vault/models/view/cipher.view";
 import {
   CardComponent,
   CheckboxModule,
@@ -38,8 +37,8 @@ import { CustomFieldsComponent } from "../custom-fields/custom-fields.component"
     CustomFieldsComponent,
   ],
 })
-export class AdditionalOptionsSectionComponent implements OnInit, DoCheck {
-  @Input({ required: true }) updatedCipherView: CipherView | null = null;
+export class AdditionalOptionsSectionComponent implements OnInit {
+  @ViewChild(CustomFieldsComponent) customFieldsComponent: CustomFieldsComponent;
 
   additionalOptionsForm = this.formBuilder.group({
     notes: [null as string],
@@ -50,12 +49,17 @@ export class AdditionalOptionsSectionComponent implements OnInit, DoCheck {
     shareReplay({ refCount: false, bufferSize: 1 }),
   );
 
+  /** When false when the add field button should be displayed in the Additional Options section  */
   hasCustomFields = false;
+
+  /** True when the form is in `partial-edit` mode */
+  isPartialEdit = false;
 
   constructor(
     private cipherFormContainer: CipherFormContainer,
     private formBuilder: FormBuilder,
     private passwordRepromptService: PasswordRepromptService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
     this.cipherFormContainer.registerChildForm("additionalOptions", this.additionalOptionsForm);
 
@@ -78,14 +82,22 @@ export class AdditionalOptionsSectionComponent implements OnInit, DoCheck {
 
     if (this.cipherFormContainer.config.mode === "partial-edit") {
       this.additionalOptionsForm.disable();
+      this.isPartialEdit = true;
     }
-
-    this.hasCustomFields = (this.updatedCipherView?.fields?.length ?? 0) > 0;
   }
 
-  // Because `updatedCipherView` always refers to the same object `ngOnChanges` doesn't fire when an underlying property changes.
-  // `ngDoCheck` is needed to update `hasCustomFields` when the fields change.
-  ngDoCheck(): void {
-    this.hasCustomFields = (this.updatedCipherView?.fields?.length ?? 0) > 0;
+  /** Opens the add custom field dialog */
+  addCustomField() {
+    this.customFieldsComponent.openAddEditCustomFieldDialog();
+  }
+
+  /** Update the local state when the number of fields changes */
+  handleCustomFieldChange(numberOfCustomFields: number) {
+    this.hasCustomFields = numberOfCustomFields > 0;
+
+    // The event that triggers `handleCustomFieldChange` can occur within
+    // the CustomFieldComponent `ngOnInit` lifecycle hook, so we need to
+    // manually trigger change detection to update the view.
+    this.changeDetectorRef.detectChanges();
   }
 }

@@ -107,8 +107,9 @@ export class CipherFormComponent implements AfterViewInit, OnInit, OnChanges, Ci
   /**
    * The value of the updated cipher. Starts as a new cipher (or clone of originalCipher) and is updated
    * by child components via the `patchCipher` method.
+   * @protected
    */
-  updatedCipherView: CipherView | null;
+  protected updatedCipherView: CipherView | null;
 
   protected loading: boolean = true;
 

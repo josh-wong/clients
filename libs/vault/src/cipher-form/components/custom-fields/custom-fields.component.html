@@ -1,21 +1,4 @@
-<ng-template #addTemplate>
-  <button
-    type="button"
-    class="tw-text-primary-600 tw-font-bold tw-flex tw-items-center tw-gap-1"
-    bitTypography="body2"
-    (click)="openAddEditCustomFieldDialog()"
-    *ngIf="!isPartialEdit"
-  >
-    <i class="bwi bwi-plus tw-font-bold" aria-hidden="true"></i>
-    {{ "addField" | i18n }}
-  </button>
-</ng-template>
-
-<ng-container *ngIf="!fields?.length">
-  <ng-container *ngTemplateOutlet="addTemplate"></ng-container>
-</ng-container>
-
-<bit-section *ngIf="fields?.length">
+<bit-section *ngIf="hasCustomFields">
   <bit-section-header>
     <h2 bitTypography="h5">{{ "customFields" | i18n }}</h2>
   </bit-section-header>
@@ -113,7 +96,16 @@
         ></button>
       </div>
 
-      <ng-container *ngTemplateOutlet="addTemplate"></ng-container>
+      <button
+        type="button"
+        class="tw-text-primary-600 tw-font-bold tw-flex tw-items-center tw-gap-1"
+        bitTypography="body2"
+        (click)="openAddEditCustomFieldDialog()"
+        *ngIf="!isPartialEdit"
+      >
+        <i class="bwi bwi-plus tw-font-bold" aria-hidden="true"></i>
+        {{ "addField" | i18n }}
+      </button>
     </bit-card>
   </form>
 </bit-section>

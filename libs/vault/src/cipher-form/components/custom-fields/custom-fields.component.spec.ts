@@ -4,12 +4,12 @@ import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { DebugElement } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { By } from "@angular/platform-browser";
-import { mock } from "jest-mock-extended";
 
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
-import { FieldType, LoginLinkedId } from "@bitwarden/common/vault/enums";
+import { CipherType, FieldType, LoginLinkedId } from "@bitwarden/common/vault/enums";
 import { CipherView } from "@bitwarden/common/vault/models/view/cipher.view";
 import { FieldView } from "@bitwarden/common/vault/models/view/field.view";
+import { LoginView } from "@bitwarden/common/vault/models/view/login.view";
 import { DialogService } from "@bitwarden/components";
 
 import { BitPasswordInputToggleDirective } from "../../../../../components/src/form-field/password-input-toggle.directive";
@@ -24,7 +24,9 @@ const mockFieldViews = [
   { type: FieldType.Linked, name: "linked label", value: null, linkedId: 1 },
 ] as FieldView[];
 
-const originalCipherView: CipherView | null = {} as CipherView;
+let originalCipherView: CipherView | null = new CipherView();
+originalCipherView.type = CipherType.Login;
+originalCipherView.login = new LoginView();
 
 describe("CustomFieldsComponent", () => {
   let component: CustomFieldsComponent;
@@ -37,6 +39,9 @@ describe("CustomFieldsComponent", () => {
     open = jest.fn();
     announce = jest.fn().mockResolvedValue(null);
     patchCipher = jest.fn();
+    originalCipherView = new CipherView();
+    originalCipherView.type = CipherType.Login;
+    originalCipherView.login = new LoginView();
 
     await TestBed.configureTestingModule({
       imports: [CustomFieldsComponent],
@@ -47,7 +52,7 @@ describe("CustomFieldsComponent", () => {
         },
         {
           provide: CipherFormContainer,
-          useValue: mock<CipherFormContainer>({ patchCipher, originalCipherView }),
+          useValue: { patchCipher, originalCipherView, registerChildForm: jest.fn(), config: {} },
         },
         {
           provide: LiveAnnouncer,
@@ -64,18 +69,15 @@ describe("CustomFieldsComponent", () => {
 
     fixture = TestBed.createComponent(CustomFieldsComponent);
     component = fixture.componentInstance;
-    component.updatedCipherView = null;
     fixture.detectChanges();
   });
 
   describe("initializing", () => {
     it("populates linkedFieldOptions", () => {
-      component.updatedCipherView = {
-        linkedFieldOptions: new Map([
-          [1, { i18nKey: "one-i18", propertyKey: "one" }],
-          [2, { i18nKey: "two-i18", propertyKey: "two" }],
-        ]),
-      } as CipherView;
+      originalCipherView.login.linkedFieldOptions = new Map([
+        [1, { i18nKey: "one-i18", propertyKey: "one" }],
+        [2, { i18nKey: "two-i18", propertyKey: "two" }],
+      ]);
 
       component.ngOnInit();
 
@@ -86,9 +88,7 @@ describe("CustomFieldsComponent", () => {
     });
 
     it("populates customFieldsForm", () => {
-      component.updatedCipherView = {
-        fields: mockFieldViews,
-      } as CipherView;
+      originalCipherView.fields = mockFieldViews;
 
       component.ngOnInit();
 
@@ -120,9 +120,7 @@ describe("CustomFieldsComponent", () => {
 
     it("forbids a user to view hidden fields when the cipher `viewPassword` is false", () => {
       originalCipherView.viewPassword = false;
-      component.updatedCipherView = {
-        fields: mockFieldViews,
-      } as CipherView;
+      originalCipherView.fields = mockFieldViews;
 
       component.ngOnInit();
 
@@ -225,9 +223,7 @@ describe("CustomFieldsComponent", () => {
 
   describe("updating a field", () => {
     beforeEach(() => {
-      component.updatedCipherView = {
-        fields: [mockFieldViews[0]],
-      } as CipherView;
+      originalCipherView.fields = [mockFieldViews[0]];
 
       component.ngOnInit();
     });
@@ -257,9 +253,7 @@ describe("CustomFieldsComponent", () => {
 
   describe("removing field", () => {
     beforeEach(() => {
-      component.updatedCipherView = {
-        fields: [mockFieldViews[0]],
-      } as CipherView;
+      originalCipherView.fields = [mockFieldViews[0]];
 
       component.ngOnInit();
     });
@@ -275,9 +269,7 @@ describe("CustomFieldsComponent", () => {
     let toggleItems: DebugElement[];
 
     beforeEach(() => {
-      component.updatedCipherView = {
-        fields: mockFieldViews,
-      } as CipherView;
+      originalCipherView.fields = mockFieldViews;
 
       component.ngOnInit();
 

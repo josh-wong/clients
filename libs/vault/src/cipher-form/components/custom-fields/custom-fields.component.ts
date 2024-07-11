@@ -7,8 +7,9 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-  Input,
+  EventEmitter,
   OnInit,
+  Output,
   QueryList,
   ViewChildren,
   inject,
@@ -21,7 +22,6 @@ import { JslibModule } from "@bitwarden/angular/jslib.module";
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
 import { Utils } from "@bitwarden/common/platform/misc/utils";
 import { FieldType, LinkedIdType } from "@bitwarden/common/vault/enums";
-import { CipherView } from "@bitwarden/common/vault/models/view/cipher.view";
 import { FieldView } from "@bitwarden/common/vault/models/view/field.view";
 import {
   DialogService,
@@ -72,10 +72,9 @@ export type CustomField = {
   ],
 })
 export class CustomFieldsComponent implements OnInit, AfterViewInit {
-  @ViewChildren("customFieldRow") customFieldRows: QueryList<ElementRef<HTMLDivElement>>;
+  @Output() numberOfFieldsChange = new EventEmitter<number>();
 
-  /** Cipher view that is updated with the user's edits */
-  @Input() updatedCipherView: CipherView | null = null;
+  @ViewChildren("customFieldRow") customFieldRows: QueryList<ElementRef<HTMLDivElement>>;
 
   customFieldsForm = this.formBuilder.group({
     fields: new FormArray([]),
@@ -89,6 +88,9 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
 
   /** True when edit/reorder toggles should be hidden based on partial-edit */
   isPartialEdit: boolean;
+
+  /** True when there are custom fields available */
+  hasCustomFields = false;
 
   /** Emits when a new custom field should be focused */
   private focusOnNewInput$ = new Subject<void>();
@@ -119,7 +121,7 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     // Populate options for linked custom fields
     this.linkedFieldOptions = Array.from(
-      this.updatedCipherView?.linkedFieldOptions?.entries() ?? [],
+      this.cipherFormContainer.originalCipherView?.linkedFieldOptions?.entries() ?? [],
     )
       .map(([id, linkedFieldOption]) => ({
         name: this.i18nService.t(linkedFieldOption.i18nKey),
@@ -128,7 +130,7 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
       .sort(Utils.getSortFunction(this.i18nService, "name"));
 
     // Populate the form with the existing fields
-    this.updatedCipherView?.fields?.forEach((field) => {
+    this.cipherFormContainer.originalCipherView?.fields?.forEach((field) => {
       let value: string | boolean = field.value;
 
       if (field.type === FieldType.Boolean) {
@@ -308,6 +310,10 @@ export class CustomFieldsComponent implements OnInit, AfterViewInit {
       fieldView.linkedId = field.linkedId;
       return fieldView;
     });
+
+    this.hasCustomFields = newFields.length > 0;
+
+    this.numberOfFieldsChange.emit(newFields.length);
 
     this.cipherFormContainer.patchCipher({
       fields: newFields,

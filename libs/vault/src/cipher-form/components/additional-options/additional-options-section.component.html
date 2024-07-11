@@ -13,11 +13,17 @@
       <bit-label>{{ "passwordPrompt" | i18n }}</bit-label>
     </bit-form-control>
 
-    <vault-custom-fields *ngIf="!hasCustomFields"></vault-custom-fields>
+    <button
+      type="button"
+      class="tw-text-primary-600 tw-font-bold tw-flex tw-items-center tw-gap-1"
+      bitTypography="body2"
+      *ngIf="!hasCustomFields && !isPartialEdit"
+      (click)="addCustomField()"
+    >
+      <i class="bwi bwi-plus tw-font-bold" aria-hidden="true"></i>
+      {{ "addField" | i18n }}
+    </button>
   </bit-card>
 </bit-section>
 
-<vault-custom-fields
-  *ngIf="hasCustomFields"
-  [updatedCipherView]="updatedCipherView"
-></vault-custom-fields>
+<vault-custom-fields (numberOfFieldsChange)="handleCustomFieldChange($event)"></vault-custom-fields>
