@@ -4,7 +4,7 @@ import {
 } from "@bitwarden/common/admin-console/enums";
 import { TableDataSource } from "@bitwarden/components";
 
-import { StatusType, UserViewTypes } from "./base.members.component";
+import { StatusType, UserViewTypes } from "./base-members.component";
 
 const MaxCheckedCount = 500;
 

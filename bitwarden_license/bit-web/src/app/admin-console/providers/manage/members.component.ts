@@ -2,7 +2,7 @@ import { DialogRef } from "@angular/cdk/dialog";
 import { Component } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router } from "@angular/router";
-import { combineLatest, lastValueFrom, Subject, switchMap } from "rxjs";
+import { combineLatest, lastValueFrom, switchMap } from "rxjs";
 import { first } from "rxjs/operators";
 
 import { UserNamePipe } from "@bitwarden/angular/pipes/user-name.pipe";
@@ -17,15 +17,13 @@ import {
 import { ProviderUserBulkRequest } from "@bitwarden/common/admin-console/models/request/provider/provider-user-bulk.request";
 import { ProviderUserConfirmRequest } from "@bitwarden/common/admin-console/models/request/provider/provider-user-confirm.request";
 import { ProviderUserUserDetailsResponse } from "@bitwarden/common/admin-console/models/response/provider/provider-user.response";
-import { FeatureFlag } from "@bitwarden/common/enums/feature-flag.enum";
 import { ListResponse } from "@bitwarden/common/models/response/list.response";
-import { ConfigService } from "@bitwarden/common/platform/abstractions/config/config.service";
 import { CryptoService } from "@bitwarden/common/platform/abstractions/crypto.service";
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
 import { LogService } from "@bitwarden/common/platform/abstractions/log.service";
 import { ValidationService } from "@bitwarden/common/platform/abstractions/validation.service";
 import { DialogService, ToastService } from "@bitwarden/components";
-import { BaseMembersComponent } from "@bitwarden/web-vault/app/admin-console/common/base.members.component";
+import { BaseMembersComponent } from "@bitwarden/web-vault/app/admin-console/common/base-members.component";
 import {
   peopleFilter,
   PeopleTableDataSource,
@@ -62,8 +60,6 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
   userStatusType = ProviderUserStatusType;
   userType = ProviderUserType;
 
-  private destroy$ = new Subject<void>();
-
   constructor(
     apiService: ApiService,
     cryptoService: CryptoService,
@@ -75,7 +71,6 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
     userNamePipe: UserNamePipe,
     validationService: ValidationService,
     private activatedRoute: ActivatedRoute,
-    private configService: ConfigService,
     private providerService: ProviderService,
     private router: Router,
   ) {
@@ -91,22 +86,12 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
       toastService,
     );
 
-    const useProviderPortalMembersPage$ = this.configService.getFeatureFlag$(
-      FeatureFlag.AC2828_ProviderPortalMembersPage,
-    );
-
-    const queryParams$ = this.activatedRoute.queryParams.pipe(first());
-
-    combineLatest([useProviderPortalMembersPage$, this.activatedRoute.parent.params, queryParams$])
+    combineLatest([
+      this.activatedRoute.parent.params,
+      this.activatedRoute.queryParams.pipe(first()),
+    ])
       .pipe(
-        switchMap(async ([useProviderPortalMembersPage, urlParams, queryParams]) => {
-          if (!useProviderPortalMembersPage) {
-            return await this.router.navigate(["../people"], {
-              relativeTo: this.activatedRoute,
-              queryParams,
-            });
-          }
-
+        switchMap(async ([urlParams, queryParams]) => {
           this.searchControl.setValue(queryParams.search, { emitEvent: false });
           this.dataSource.filter = peopleFilter(queryParams.search, null);
 
@@ -209,9 +194,10 @@ export class MembersComponent extends BaseMembersComponent<ProviderUser> {
     await this.apiService.postProviderUserConfirm(this.providerId, user.id, request);
   }
 
-  deleteUser = (id: string) => this.apiService.deleteProviderUser(this.providerId, id);
+  deleteUser = (id: string): Promise<void> =>
+    this.apiService.deleteProviderUser(this.providerId, id);
 
-  edit = async (user: ProviderUser | null) => {
+  edit = async (user: ProviderUser | null): Promise<void> => {
     const data: AddEditMemberDialogParams = {
       providerId: this.providerId,
     };

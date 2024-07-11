@@ -45,7 +45,7 @@ import { Collection } from "@bitwarden/common/vault/models/domain/collection";
 import { CollectionDetailsResponse } from "@bitwarden/common/vault/models/response/collection.response";
 import { DialogService, SimpleDialogOptions, ToastService } from "@bitwarden/components";
 
-import { BaseMembersComponent } from "../../common/base.members.component";
+import { BaseMembersComponent } from "../../common/base-members.component";
 import { PeopleTableDataSource } from "../../common/people-table-data-source";
 import { GroupService } from "../core";
 import { OrganizationUserView } from "../core/views/organization-user.view";

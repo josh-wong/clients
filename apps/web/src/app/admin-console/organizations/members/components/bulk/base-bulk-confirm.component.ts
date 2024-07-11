@@ -52,6 +52,8 @@ export abstract class BaseBulkConfirmComponent implements OnInit {
         this.fingerprints.set(entry.id, fingerprint.join("-"));
       }
     }
+
+    this.loading = false;
   }
 
   submit = async () => {

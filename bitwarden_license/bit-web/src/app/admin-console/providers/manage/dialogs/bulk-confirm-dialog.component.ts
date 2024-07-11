@@ -41,8 +41,6 @@ export class BulkConfirmDialogComponent extends BaseBulkConfirmComponent {
 
     this.providerId = dialogParams.providerId;
     this.users = dialogParams.users;
-
-    this.loading = false;
   }
 
   protected getCryptoKey = (): Promise<SymmetricCryptoKey> =>
