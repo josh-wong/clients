@@ -1,7 +1,7 @@
 import { DIALOG_DATA } from "@angular/cdk/dialog";
 import { CommonModule } from "@angular/common";
 import { Component, Inject } from "@angular/core";
-import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
+import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 
 import { JslibModule } from "@bitwarden/angular/jslib.module";
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
@@ -42,7 +42,7 @@ export class AddEditCustomFieldDialogComponent {
 
   customFieldForm = this.formBuilder.group({
     type: FieldType.Text,
-    label: [""],
+    label: ["", Validators.required],
   });
 
   fieldTypeOptions = [
@@ -84,12 +84,20 @@ export class AddEditCustomFieldDialogComponent {
 
   /** Invoke the `addField` callback with the custom field details */
   addField() {
+    if (this.customFieldForm.invalid) {
+      return;
+    }
+
     const { type, label } = this.customFieldForm.value;
     this.data.addField(type, label);
   }
 
   /** Invoke the `updateLabel` callback with the new label */
   updateLabel() {
+    if (this.customFieldForm.invalid) {
+      return;
+    }
+
     const { label } = this.customFieldForm.value;
     this.data.updateLabel(this.data.editLabelConfig.index, label);
   }
