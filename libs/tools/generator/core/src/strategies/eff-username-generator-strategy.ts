@@ -2,7 +2,7 @@ import { PolicyType } from "@bitwarden/common/admin-console/enums";
 import { StateProvider } from "@bitwarden/common/platform/state";
 
 import { GeneratorStrategy } from "../abstractions";
-import { DefaultEffUsernameOptions } from "../data";
+import { DefaultEffUsernameOptions, UsernameDigits } from "../data";
 import { UsernameRandomizer } from "../engine";
 import { newDefaultEvaluator } from "../rx";
 import { EffUsernameGenerationOptions, NoPolicy } from "../types";
@@ -35,7 +35,10 @@ export class EffUsernameGeneratorStrategy
       options.wordCapitalize ?? DefaultEffUsernameOptions.wordCapitalize
         ? "TitleCase"
         : "lowercase";
-    const digits = options.wordIncludeNumber ?? DefaultEffUsernameOptions.wordIncludeNumber ? 4 : 0;
+    const digits =
+      options.wordIncludeNumber ?? DefaultEffUsernameOptions.wordIncludeNumber
+        ? UsernameDigits.enabled
+        : UsernameDigits.disabled;
     const word = await this.randomizer.randomWords({ numberOfWords: 1, casing, digits });
     return word;
   }
