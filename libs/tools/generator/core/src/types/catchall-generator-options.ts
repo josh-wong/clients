@@ -1,4 +1,4 @@
-import { RequestOptions } from "@bitwarden/common/tools/integration/rpc";
+import { IntegrationRequest } from "@bitwarden/common/tools/integration/rpc";
 
 import { UsernameGenerationMode } from "./generator-options";
 
@@ -12,4 +12,4 @@ export type CatchallGenerationOptions = {
    *  is `jd`, then the generated email address will be `jd@mydomain.io`
    */
   catchallDomain?: string;
-} & RequestOptions;
+} & IntegrationRequest;

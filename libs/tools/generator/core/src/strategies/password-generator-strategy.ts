@@ -5,7 +5,7 @@ import { GeneratorStrategy, Randomizer } from "../abstractions";
 import { Policies, DefaultPasswordGenerationOptions } from "../data";
 import { mapPolicyToEvaluator } from "../rx";
 import { PasswordGenerationOptions, PasswordGeneratorPolicy } from "../types";
-import { clone$PerUserId, sharedStateByUserId } from "../util";
+import { observe$PerUserId, sharedStateByUserId } from "../util";
 
 import { PASSWORD_SETTINGS } from "./storage";
 
@@ -23,7 +23,7 @@ export class PasswordGeneratorStrategy
 
   // configuration
   durableState = sharedStateByUserId(PASSWORD_SETTINGS, this.stateProvider);
-  defaults$ = clone$PerUserId(DefaultPasswordGenerationOptions);
+  defaults$ = observe$PerUserId(() => DefaultPasswordGenerationOptions);
   readonly policy = PolicyType.PasswordGenerator;
   toEvaluator() {
     return mapPolicyToEvaluator(Policies.Password);

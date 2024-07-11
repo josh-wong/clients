@@ -14,12 +14,10 @@ describe("Addy.io forwarder", () => {
   describe("authenticate", () => {
     it("returns a bearer header with the token", () => {
       context.authenticationToken.mockReturnValue("token");
-      const settings = {};
-
-      const result = AddyIo.authenticate(settings, context);
+      const result = AddyIo.authenticate(null, context);
 
       expect(result).toEqual({ Authorization: "Bearer token" });
-      expect(context.authenticationToken).toHaveBeenCalledWith(settings);
+      expect(context.authenticationToken).toHaveBeenCalled();
     });
   });
 

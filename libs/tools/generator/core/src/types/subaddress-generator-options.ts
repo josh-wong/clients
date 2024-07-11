@@ -1,4 +1,4 @@
-import { RequestOptions } from "@bitwarden/common/tools/integration/rpc";
+import { IntegrationRequest } from "@bitwarden/common/tools/integration/rpc";
 
 import { UsernameGenerationMode } from "./generator-options";
 
@@ -9,4 +9,4 @@ export type SubaddressGenerationOptions = {
 
   /** the email address the subaddress is applied to. */
   subaddressEmail?: string;
-} & RequestOptions;
+} & IntegrationRequest;

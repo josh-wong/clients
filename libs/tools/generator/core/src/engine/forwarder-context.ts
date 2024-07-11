@@ -1,10 +1,11 @@
 import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.service";
 import { IntegrationContext } from "@bitwarden/common/tools/integration/integration-context";
+import { ApiSettings } from "@bitwarden/common/tools/integration/rpc";
 
 import { ForwarderConfiguration } from "./forwarder-configuration";
 import { EmailDomainSettings, EmailPrefixSettings } from "./settings";
 
-export class ForwarderContext<Settings extends object> extends IntegrationContext<Settings> {
+export class ForwarderContext<Settings extends ApiSettings> extends IntegrationContext<Settings> {
   constructor(
     readonly configuration: ForwarderConfiguration<Settings>,
     settings: Settings,

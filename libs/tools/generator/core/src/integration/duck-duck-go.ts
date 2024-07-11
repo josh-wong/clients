@@ -1,15 +1,16 @@
+import { GENERATOR_DISK, UserKeyDefinition } from "@bitwarden/common/platform/state";
 import { IntegrationContext, IntegrationId } from "@bitwarden/common/tools/integration";
 import { ApiSettings, IntegrationRequest } from "@bitwarden/common/tools/integration/rpc";
+import { BufferedKeyDefinition } from "@bitwarden/common/tools/state/buffered-key-definition";
 
 import { ForwarderConfiguration, ForwarderContext } from "../engine";
 import { CreateForwardingEmailRpcDef } from "../engine/forwarder-configuration";
-import { DUCK_DUCK_GO_BUFFER, DUCK_DUCK_GO_FORWARDER } from "../strategies/storage";
 import { ApiOptions } from "../types";
 
 // integration types
 export type DuckDuckGoSettings = ApiSettings;
 export type DuckDuckGoOptions = ApiOptions;
-export type DuckDuckGoConfiguration = ForwarderConfiguration<DuckDuckGoSettings, DuckDuckGoOptions>;
+export type DuckDuckGoConfiguration = ForwarderConfiguration<DuckDuckGoSettings>;
 
 // default values
 const defaultSettings = Object.freeze({
@@ -35,8 +36,14 @@ const createForwardingEmail = Object.freeze({
 // forwarder configuration
 const forwarder = Object.freeze({
   defaultSettings,
-  settings: DUCK_DUCK_GO_FORWARDER,
-  importBuffer: DUCK_DUCK_GO_BUFFER,
+  settings: new UserKeyDefinition<DuckDuckGoSettings>(GENERATOR_DISK, "duckDuckGoForwarder", {
+    deserializer: (value) => value,
+    clearOn: [],
+  }),
+  importBuffer: new BufferedKeyDefinition<DuckDuckGoSettings>(GENERATOR_DISK, "duckDuckGoBuffer", {
+    deserializer: (value) => value,
+    clearOn: ["logout"],
+  }),
   createForwardingEmail,
 } as const);
 

@@ -2,7 +2,7 @@ import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.servic
 import { Utils } from "@bitwarden/common/platform/misc/utils";
 
 import { IntegrationMetadata } from "./integration-metadata";
-import { ApiSettings, SelfHostedApiSettings, IntegrationRequest } from "./rpc";
+import { ApiSettings, IntegrationRequest } from "./rpc";
 
 /** Utilities for processing integration settings */
 export class IntegrationContext<Settings extends object> {
@@ -24,7 +24,7 @@ export class IntegrationContext<Settings extends object> {
    *  @throws a localized error message when a base URL is neither defined by the metadata or
    *   supplied by an argument.
    */
-  baseUrl(): Settings extends SelfHostedApiSettings ? string : never {
+  baseUrl(): string {
     // normalize baseUrl
     const setting =
       this.settings && "baseUrl" in this.settings ? (this.settings.baseUrl as string) : "";

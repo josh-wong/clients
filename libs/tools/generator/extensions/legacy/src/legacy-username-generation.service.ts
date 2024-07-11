@@ -1,11 +1,11 @@
 import { zip, firstValueFrom, map, concatMap, combineLatest } from "rxjs";
 
 import { AccountService } from "@bitwarden/common/auth/abstractions/account.service";
+import { IntegrationRequest } from "@bitwarden/common/tools/integration/rpc";
 import {
   ApiOptions,
   EmailDomainOptions,
   EmailPrefixOptions,
-  RequestOptions,
   SelfHostedApiOptions,
   NoPolicy,
   GeneratorService,
@@ -27,12 +27,12 @@ type MappedOptions = {
     subaddress: SubaddressGenerationOptions;
   };
   forwarders: {
-    addyIo: SelfHostedApiOptions & EmailDomainOptions & RequestOptions;
-    duckDuckGo: ApiOptions & RequestOptions;
-    fastmail: ApiOptions & EmailPrefixOptions & RequestOptions;
-    firefoxRelay: ApiOptions & RequestOptions;
-    forwardEmail: ApiOptions & EmailDomainOptions & RequestOptions;
-    simpleLogin: SelfHostedApiOptions & RequestOptions;
+    addyIo: SelfHostedApiOptions & EmailDomainOptions & IntegrationRequest;
+    duckDuckGo: ApiOptions & IntegrationRequest;
+    fastmail: ApiOptions & EmailPrefixOptions & IntegrationRequest;
+    firefoxRelay: ApiOptions & IntegrationRequest;
+    forwardEmail: ApiOptions & EmailDomainOptions & IntegrationRequest;
+    simpleLogin: SelfHostedApiOptions & IntegrationRequest;
   };
 };
 

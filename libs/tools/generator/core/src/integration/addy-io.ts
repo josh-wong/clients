@@ -1,19 +1,20 @@
+import { GENERATOR_DISK, UserKeyDefinition } from "@bitwarden/common/platform/state";
 import { IntegrationContext, IntegrationId } from "@bitwarden/common/tools/integration";
 import {
   ApiSettings,
   IntegrationRequest,
   SelfHostedApiSettings,
 } from "@bitwarden/common/tools/integration/rpc";
+import { BufferedKeyDefinition } from "@bitwarden/common/tools/state/buffered-key-definition";
 
 import { ForwarderConfiguration, ForwarderContext, EmailDomainSettings } from "../engine";
 import { CreateForwardingEmailRpcDef } from "../engine/forwarder-configuration";
-import { ADDY_IO_BUFFER, ADDY_IO_FORWARDER } from "../strategies/storage";
 import { EmailDomainOptions, SelfHostedApiOptions } from "../types";
 
 // integration types
 export type AddyIoSettings = SelfHostedApiSettings & EmailDomainSettings;
 export type AddyIoOptions = SelfHostedApiOptions & EmailDomainOptions;
-export type AddyIoConfiguration = ForwarderConfiguration<AddyIoSettings, AddyIoOptions>;
+export type AddyIoConfiguration = ForwarderConfiguration<AddyIoSettings>;
 
 // default values
 const defaultSettings = Object.freeze({
@@ -43,20 +44,30 @@ const createForwardingEmail = Object.freeze({
 // forwarder configuration
 const forwarder = Object.freeze({
   defaultSettings,
-  settings: ADDY_IO_FORWARDER,
-  importBuffer: ADDY_IO_BUFFER,
+  settings: new UserKeyDefinition<AddyIoSettings>(GENERATOR_DISK, "addyIoForwarder", {
+    deserializer: (value) => value,
+    clearOn: [],
+  }),
+  importBuffer: new BufferedKeyDefinition<AddyIoSettings>(GENERATOR_DISK, "addyIoBuffer", {
+    deserializer: (value) => value,
+    clearOn: ["logout"],
+  }),
   createForwardingEmail,
 } as const);
 
-// integration-wide configuration
 export const AddyIo = Object.freeze({
+  // integration
   id: "anonaddy" as IntegrationId,
   name: "Addy.io",
-  baseUrl: "https://app.addy.io",
-  selfHost: "maybe",
   extends: ["forwarder"],
+
+  // hosting
+  selfHost: "maybe",
+  baseUrl: "https://app.addy.io",
   authenticate(_request: IntegrationRequest, context: IntegrationContext<ApiSettings>) {
     return { Authorization: "Bearer " + context.authenticationToken() };
   },
+
+  // extensions
   forwarder,
 } as AddyIoConfiguration);

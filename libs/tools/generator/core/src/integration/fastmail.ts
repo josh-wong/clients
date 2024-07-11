@@ -1,5 +1,7 @@
+import { GENERATOR_DISK, UserKeyDefinition } from "@bitwarden/common/platform/state";
 import { IntegrationContext, IntegrationId } from "@bitwarden/common/tools/integration";
 import { ApiSettings, IntegrationRequest } from "@bitwarden/common/tools/integration/rpc";
+import { BufferedKeyDefinition } from "@bitwarden/common/tools/state/buffered-key-definition";
 
 import {
   ForwarderConfiguration,
@@ -9,18 +11,13 @@ import {
   AccountRequest,
 } from "../engine";
 import { CreateForwardingEmailRpcDef, GetAccountIdRpcDef } from "../engine/forwarder-configuration";
-import { FASTMAIL_BUFFER, FASTMAIL_FORWARDER } from "../strategies/storage";
 import { ApiOptions, EmailPrefixOptions } from "../types";
 
 // integration types
 export type FastmailSettings = ApiSettings & EmailPrefixSettings & EmailDomainSettings;
 export type FastmailOptions = ApiOptions & EmailPrefixOptions & AccountRequest;
 export type FastmailRequest = IntegrationRequest & AccountRequest;
-export type FastmailConfiguration = ForwarderConfiguration<
-  FastmailSettings,
-  FastmailOptions,
-  FastmailRequest
->;
+export type FastmailConfiguration = ForwarderConfiguration<FastmailSettings, FastmailRequest>;
 
 // default values
 const defaultSettings = Object.freeze({
@@ -102,8 +99,14 @@ const createForwardingEmail = Object.freeze({
 // forwarder configuration
 const forwarder = Object.freeze({
   defaultSettings,
-  settings: FASTMAIL_FORWARDER,
-  importBuffer: FASTMAIL_BUFFER,
+  settings: new UserKeyDefinition<FastmailSettings>(GENERATOR_DISK, "fastmailForwarder", {
+    deserializer: (value) => value,
+    clearOn: [],
+  }),
+  importBuffer: new BufferedKeyDefinition<FastmailSettings>(GENERATOR_DISK, "fastmailBuffer", {
+    deserializer: (value) => value,
+    clearOn: ["logout"],
+  }),
   createForwardingEmail,
   getAccountId,
 } as const);

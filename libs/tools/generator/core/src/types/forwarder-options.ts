@@ -1,7 +1,7 @@
 import { IntegrationId } from "@bitwarden/common/tools/integration";
 import {
   ApiSettings,
-  RequestOptions,
+  IntegrationRequest,
   SelfHostedApiSettings,
 } from "@bitwarden/common/tools/integration/rpc";
 
@@ -28,10 +28,10 @@ export type ForwarderMetadata = {
 };
 
 /** Options common to all forwarder APIs */
-export type ApiOptions = ApiSettings & RequestOptions;
+export type ApiOptions = ApiSettings & IntegrationRequest;
 
 /** Api configuration for forwarders that support self-hosted installations. */
-export type SelfHostedApiOptions = SelfHostedApiSettings & RequestOptions;
+export type SelfHostedApiOptions = SelfHostedApiSettings & IntegrationRequest;
 
 /** Api configuration for forwarders that support custom domains. */
 export type EmailDomainOptions = EmailDomainSettings;

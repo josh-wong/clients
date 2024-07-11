@@ -1,22 +1,20 @@
+import { GENERATOR_DISK, UserKeyDefinition } from "@bitwarden/common/platform/state";
 import { IntegrationContext, IntegrationId } from "@bitwarden/common/tools/integration";
 import {
   ApiSettings,
   IntegrationRequest,
   SelfHostedApiSettings,
 } from "@bitwarden/common/tools/integration/rpc";
+import { BufferedKeyDefinition } from "@bitwarden/common/tools/state/buffered-key-definition";
 
 import { ForwarderConfiguration, ForwarderContext } from "../engine";
 import { CreateForwardingEmailRpcDef } from "../engine/forwarder-configuration";
-import { SIMPLE_LOGIN_BUFFER, SIMPLE_LOGIN_FORWARDER } from "../strategies/storage";
 import { SelfHostedApiOptions } from "../types";
 
 // integration types
 export type SimpleLoginSettings = SelfHostedApiSettings;
 export type SimpleLoginOptions = SelfHostedApiOptions;
-export type SimpleLoginConfiguration = ForwarderConfiguration<
-  SimpleLoginSettings,
-  SimpleLoginOptions
->;
+export type SimpleLoginConfiguration = ForwarderConfiguration<SimpleLoginSettings>;
 
 // default values
 const defaultSettings = Object.freeze({
@@ -47,8 +45,18 @@ const createForwardingEmail = Object.freeze({
 // forwarder configuration
 const forwarder = Object.freeze({
   defaultSettings,
-  settings: SIMPLE_LOGIN_FORWARDER,
-  importBuffer: SIMPLE_LOGIN_BUFFER,
+  settings: new UserKeyDefinition<SimpleLoginSettings>(GENERATOR_DISK, "simpleLoginForwarder", {
+    deserializer: (value) => value,
+    clearOn: [],
+  }),
+  importBuffer: new BufferedKeyDefinition<SimpleLoginSettings>(
+    GENERATOR_DISK,
+    "simpleLoginBuffer",
+    {
+      deserializer: (value) => value,
+      clearOn: ["logout"],
+    },
+  ),
   createForwardingEmail,
 } as const);
 

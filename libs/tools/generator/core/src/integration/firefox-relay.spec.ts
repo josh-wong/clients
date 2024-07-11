@@ -12,14 +12,29 @@ describe("Firefox Relay forwarder", () => {
   });
 
   describe("authenticate", () => {
-    it("", () => {
+    it("returns a token header", () => {
       context.authenticationToken.mockReturnValue("token");
-      const settings = {};
 
-      const result = FirefoxRelay.authenticate(settings, context);
+      const result = FirefoxRelay.authenticate(null, context);
 
       expect(result).toEqual({ Authorization: "Token token" });
-      expect(context.authenticationToken).toHaveBeenCalledWith(settings);
+      expect(context.authenticationToken).toHaveBeenCalled();
+    });
+  });
+
+  describe("settings", () => {
+    it("should pass through deserialization", () => {
+      const value: any = {};
+      const result = FirefoxRelay.forwarder.settings.deserializer(value);
+      expect(result).toBe(value);
+    });
+  });
+
+  describe("importBuffer", () => {
+    it("should pass through deserialization", () => {
+      const value: any = {};
+      const result = FirefoxRelay.forwarder.importBuffer.options.deserializer(value);
+      expect(result).toBe(value);
     });
   });
 

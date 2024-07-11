@@ -1,18 +1,16 @@
+import { GENERATOR_DISK, UserKeyDefinition } from "@bitwarden/common/platform/state";
 import { IntegrationContext, IntegrationId } from "@bitwarden/common/tools/integration";
 import { ApiSettings, IntegrationRequest } from "@bitwarden/common/tools/integration/rpc";
+import { BufferedKeyDefinition } from "@bitwarden/common/tools/state/buffered-key-definition";
 
 import { ForwarderConfiguration, ForwarderContext } from "../engine";
 import { CreateForwardingEmailRpcDef } from "../engine/forwarder-configuration";
-import { FIREFOX_RELAY_BUFFER, FIREFOX_RELAY_FORWARDER } from "../strategies/storage";
 import { ApiOptions } from "../types";
 
 // integration types
 export type FirefoxRelaySettings = ApiSettings;
 export type FirefoxRelayOptions = ApiOptions;
-export type FirefoxRelayConfiguration = ForwarderConfiguration<
-  FirefoxRelaySettings,
-  FirefoxRelayOptions
->;
+export type FirefoxRelayConfiguration = ForwarderConfiguration<FirefoxRelaySettings>;
 
 // default values
 const defaultSettings = Object.freeze({
@@ -42,8 +40,18 @@ const createForwardingEmail = Object.freeze({
 // forwarder configuration
 const forwarder = Object.freeze({
   defaultSettings,
-  settings: FIREFOX_RELAY_FORWARDER,
-  importBuffer: FIREFOX_RELAY_BUFFER,
+  settings: new UserKeyDefinition<FirefoxRelaySettings>(GENERATOR_DISK, "firefoxRelayForwarder", {
+    deserializer: (value) => value,
+    clearOn: [],
+  }),
+  importBuffer: new BufferedKeyDefinition<FirefoxRelaySettings>(
+    GENERATOR_DISK,
+    "firefoxRelayBuffer",
+    {
+      deserializer: (value) => value,
+      clearOn: ["logout"],
+    },
+  ),
   createForwardingEmail,
 } as const);
 

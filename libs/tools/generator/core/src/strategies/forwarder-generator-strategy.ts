@@ -1,4 +1,5 @@
 import { map } from "rxjs";
+import { Jsonify } from "type-fest";
 
 import { PolicyType } from "@bitwarden/common/admin-console/enums";
 import { CryptoService } from "@bitwarden/common/platform/abstractions/crypto.service";
@@ -12,7 +13,6 @@ import {
 } from "@bitwarden/common/tools/integration/rpc";
 import { BufferedState } from "@bitwarden/common/tools/state/buffered-state";
 import { PaddedDataPacker } from "@bitwarden/common/tools/state/padded-data-packer";
-import { SecretClassifier } from "@bitwarden/common/tools/state/secret-classifier";
 import { SecretKeyDefinition } from "@bitwarden/common/tools/state/secret-key-definition";
 import { SecretState } from "@bitwarden/common/tools/state/secret-state";
 import { UserKeyEncryptor } from "@bitwarden/common/tools/state/user-key-encryptor";
@@ -23,23 +23,25 @@ import { ForwarderConfiguration, AccountRequest, ForwarderContext } from "../eng
 import { CreateForwardingAddressRpc } from "../engine/rpc/create-forwarding-address";
 import { GetAccountIdRpc } from "../engine/rpc/get-account-id";
 import { newDefaultEvaluator } from "../rx";
-import { ApiOptions, NoPolicy } from "../types";
-import { clone$PerUserId, sharedByUserId } from "../util";
+import { NoPolicy } from "../types";
+import { observe$PerUserId, sharedByUserId } from "../util";
+
+import { OptionsClassifier } from "./options-classifier";
 
 const OPTIONS_FRAME_SIZE = 512;
 
 /** An email forwarding service configurable through an API. */
-export class ForwarderGeneratorStrategy<Options extends ApiOptions> extends GeneratorStrategy<
-  Options,
-  NoPolicy
-> {
+export class ForwarderGeneratorStrategy<
+  Settings extends ApiSettings,
+  Options extends Settings & IntegrationRequest = Settings & IntegrationRequest,
+> extends GeneratorStrategy<Options, NoPolicy> {
   /** Initializes the generator strategy
    *  @param encryptService protects sensitive forwarder options
    *  @param keyService looks up the user key when protecting data.
    *  @param stateProvider creates the durable state for options storage
    */
   constructor(
-    private readonly configuration: ForwarderConfiguration<Options>,
+    private readonly configuration: ForwarderConfiguration<Settings>,
     private client: RestClient,
     private i18nService: I18nService,
     private readonly encryptService: EncryptService,
@@ -51,7 +53,7 @@ export class ForwarderGeneratorStrategy<Options extends ApiOptions> extends Gene
 
   // configuration
   readonly policy = PolicyType.PasswordGenerator;
-  defaults$ = clone$PerUserId(this.forwarder.defaultSettings);
+  defaults$ = observe$PerUserId<Options>(() => this.forwarder.defaultSettings as Options);
   toEvaluator = newDefaultEvaluator<Options>();
   durableState = sharedByUserId((userId) => this.getUserSecrets(userId));
 
@@ -76,7 +78,7 @@ export class ForwarderGeneratorStrategy<Options extends ApiOptions> extends Gene
     }
 
     const create = this.createForwardingAddress(this.configuration, options);
-    const result = await this.client.fetchJson(create, options);
+    const result = await this.client.fetchJson(create, requestOptions);
     return result;
   };
 
@@ -87,22 +89,22 @@ export class ForwarderGeneratorStrategy<Options extends ApiOptions> extends Gene
     const encryptor = new UserKeyEncryptor(this.encryptService, this.keyService, packer);
 
     // always exclude request properties
-    const classifier = SecretClassifier.allSecret<Options>().exclude("website");
+    const classifier = new OptionsClassifier<Settings, Options>();
 
     // Derive the secret key definition
     const key = SecretKeyDefinition.value(this.key.stateDefinition, this.key.key, classifier, {
-      deserializer: (d) => this.key.deserializer(d),
+      deserializer: (d: Jsonify<Settings>) => this.key.deserializer(d) as Settings,
       cleanupDelayMs: this.key.cleanupDelayMs,
       clearOn: this.key.clearOn,
     });
 
     // the type parameter is explicit because type inference fails for `Omit<Options, "website">`
     const secretState = SecretState.from<
-      Options,
+      Settings,
       void,
-      Options,
-      Record<keyof Options, never>,
-      Omit<Options, "website">
+      Settings,
+      Record<keyof Settings, never>,
+      Settings
     >(userId, key, this.stateProvider, encryptor);
 
     // rollover should occur once the user key is available for decryption
@@ -116,7 +118,10 @@ export class ForwarderGeneratorStrategy<Options extends ApiOptions> extends Gene
       canDecrypt$,
     );
 
-    return rolloverState;
+    // cast through unknown required because there's no way to prove to
+    // the compiler that `OptionsClassifier` runs within the buffer wrapping
+    // the secret state.
+    return rolloverState as unknown as SingleUserState<Options>;
   }
 
   private createContext<Settings>(

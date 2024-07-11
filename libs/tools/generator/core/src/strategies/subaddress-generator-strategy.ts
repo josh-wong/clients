@@ -5,7 +5,7 @@ import { GeneratorStrategy, Randomizer } from "../abstractions";
 import { DefaultSubaddressOptions } from "../data";
 import { newDefaultEvaluator } from "../rx";
 import { SubaddressGenerationOptions, NoPolicy } from "../types";
-import { clone$PerUserId, sharedStateByUserId } from "../util";
+import { observe$PerUserId, sharedStateByUserId } from "../util";
 
 import { SUBADDRESS_SETTINGS } from "./storage";
 
@@ -28,7 +28,7 @@ export class SubaddressGeneratorStrategy
 
   // configuration
   durableState = sharedStateByUserId(SUBADDRESS_SETTINGS, this.stateProvider);
-  defaults$ = clone$PerUserId(this.defaultOptions);
+  defaults$ = observe$PerUserId(() => this.defaultOptions);
   toEvaluator = newDefaultEvaluator<SubaddressGenerationOptions>();
   readonly policy = PolicyType.PasswordGenerator;
 

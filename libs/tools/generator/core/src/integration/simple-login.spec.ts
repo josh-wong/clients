@@ -14,12 +14,27 @@ describe("Addy.io forwarder", () => {
   describe("authenticate", () => {
     it("returns a bearer header with the token", () => {
       context.authenticationToken.mockReturnValue("token");
-      const settings = {};
 
-      const result = SimpleLogin.authenticate(settings, context);
+      const result = SimpleLogin.authenticate(null, context);
 
       expect(result).toEqual({ Authentication: "token" });
-      expect(context.authenticationToken).toHaveBeenCalledWith(settings);
+      expect(context.authenticationToken).toHaveBeenCalled();
+    });
+  });
+
+  describe("settings", () => {
+    it("should pass through deserialization", () => {
+      const value: any = {};
+      const result = SimpleLogin.forwarder.settings.deserializer(value);
+      expect(result).toBe(value);
+    });
+  });
+
+  describe("importBuffer", () => {
+    it("should pass through deserialization", () => {
+      const value: any = {};
+      const result = SimpleLogin.forwarder.importBuffer.options.deserializer(value);
+      expect(result).toBe(value);
     });
   });
 

@@ -14,12 +14,27 @@ describe("Addy.io forwarder", () => {
   describe("authenticate", () => {
     it("returns a bearer header with the token", () => {
       context.authenticationToken.mockReturnValue("token");
-      const settings = {};
 
-      const result = ForwardEmail.authenticate(settings, context);
+      const result = ForwardEmail.authenticate(null, context);
 
       expect(result).toEqual({ Authorization: "Basic token" });
-      expect(context.authenticationToken).toHaveBeenCalledWith(settings, { base64: true });
+      expect(context.authenticationToken).toHaveBeenCalledWith({ base64: true });
+    });
+  });
+
+  describe("settings", () => {
+    it("should pass through deserialization", () => {
+      const value: any = {};
+      const result = ForwardEmail.forwarder.settings.deserializer(value);
+      expect(result).toBe(value);
+    });
+  });
+
+  describe("importBuffer", () => {
+    it("should pass through deserialization", () => {
+      const value: any = {};
+      const result = ForwardEmail.forwarder.importBuffer.options.deserializer(value);
+      expect(result).toBe(value);
     });
   });
 

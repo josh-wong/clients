@@ -2,7 +2,7 @@ import { UserKeyDefinitionOptions, UserKeyDefinition } from "../../platform/stat
 // eslint-disable-next-line -- `StateDefinition` used as an argument
 import { StateDefinition } from "../../platform/state/state-definition";
 import { ClassifiedFormat } from "./classified-format";
-import { SecretClassifier } from "./secret-classifier";
+import { Classifier } from "./classifier";
 
 /** Encryption and storage settings for data stored by a `SecretState`.
  */
@@ -10,7 +10,7 @@ export class SecretKeyDefinition<Outer, Id, Inner extends object, Disclosed, Sec
   private constructor(
     readonly stateDefinition: StateDefinition,
     readonly key: string,
-    readonly classifier: SecretClassifier<Inner, Disclosed, Secret>,
+    readonly classifier: Classifier<Inner, Disclosed, Secret>,
     readonly options: UserKeyDefinitionOptions<Inner>,
     // type erasure is necessary here because typescript doesn't support
     // higher kinded types that generalize over collections. The invariants
