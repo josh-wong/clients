@@ -32,7 +32,7 @@
           </bit-toggle>
         </ng-container>
       </bit-toggle-group>
-      <bit-table [dataSource]="dataSource">
+      <bit-table [dataSource]="dataSource" class="table">
         <ng-container header *ngIf="!isAdminConsoleActive">
           <tr>
             <th></th>
@@ -42,7 +42,7 @@
         </ng-container>
         <ng-template body let-rows$>
           <tr bitRow *ngFor="let r of rows$ | async">
-            <td bitCell>
+            <td class="table-list-icon">
               <app-vault-icon [cipher]="r"></app-vault-icon>
             </td>
             <td class="reduced-lh wrap">
