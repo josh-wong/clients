@@ -16,5 +16,7 @@ export class PopupPageComponent {
   protected i18nService = inject(I18nService);
 
   @Input() loading = false;
+
+  /** Accessible loading label for the spinner. Defaults to "loading" */
   @Input() loadingText?: string = this.i18nService.t("loading");
 }
