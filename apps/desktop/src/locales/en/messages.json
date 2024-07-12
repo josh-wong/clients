@@ -551,6 +551,9 @@
   "masterPassHintLabel": {
     "message": "Master password hint"
   },
+  "joinOrganization": {
+    "message": "Join organization"
+  },
   "finishJoiningOrgBySettingMasterPassword": {
     "message": "Finish joining $ORGANIZATION$ by setting a master password.",
     "placeholders": {

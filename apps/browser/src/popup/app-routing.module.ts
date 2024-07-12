@@ -411,7 +411,7 @@ const routes: Routes = [
         canActivate: [canAccessFeature(FeatureFlag.EmailVerification)],
         component: SetPasswordJitComponent,
         data: {
-          pageTitle: "setMasterPassword",
+          pageTitle: "joinOrganization",
         } satisfies AnonLayoutWrapperData,
       },
     ],

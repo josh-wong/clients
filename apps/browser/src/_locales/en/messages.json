@@ -71,6 +71,9 @@
   "masterPassHint": {
     "message": "Master password hint (optional)"
   },
+  "joinOrganization": {
+    "message": "Join organization"
+  },
   "finishJoiningOrgBySettingMasterPassword": {
     "message": "Finish joining $ORGANIZATION$ by setting a master password.",
     "placeholders": {
