@@ -51,9 +51,8 @@ export class LoginDetailsSectionComponent implements OnInit {
 
   /**
    * Whether the TOTP field can be captured from the current tab. Only available in the browser extension.
-   * @protected
    */
-  protected get canCaptureTotp() {
+  get canCaptureTotp() {
     return this.totpCaptureService != null && this.loginDetailsForm.controls.totp.enabled;
   }
 

@@ -29,7 +29,7 @@
         bitSuffix
         *ngIf="
           loginDetailsForm.controls.password.enabled &&
-          loginDetailsForm.controls.password.value.length > 0
+          loginDetailsForm.controls.password.value?.length > 0
         "
         data-testid="check-password-button"
         [appA11yTitle]="'checkPassword' | i18n"
@@ -57,7 +57,12 @@
 
     <bit-form-field *ngIf="hasPasskey">
       <bit-label>{{ "typePasskey" | i18n }}</bit-label>
-      <input bitInput disabled [value]="fido2CredentialCreationDateValue" />
+      <input
+        bitInput
+        disabled
+        [value]="fido2CredentialCreationDateValue"
+        data-testid="passkey-field"
+      />
       <button
         type="button"
         bitIconButton="bwi-minus-circle"
@@ -98,6 +103,7 @@
         bitIconButton="bwi-camera"
         bitSuffix
         *ngIf="canCaptureTotp"
+        data-testid="capture-totp-button"
         [bitAction]="captureTotp"
         [appA11yTitle]="'totpCapture' | i18n"
       ></button>
