@@ -412,6 +412,7 @@ const routes: Routes = [
         component: SetPasswordJitComponent,
         data: {
           pageTitle: "joinOrganization",
+          pageSubtitle: "finishJoiningThisOrganizationBySettingAMasterPassword",
         } satisfies AnonLayoutWrapperData,
       },
     ],

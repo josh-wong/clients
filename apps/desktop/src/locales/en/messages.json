@@ -554,14 +554,8 @@
   "joinOrganization": {
     "message": "Join organization"
   },
-  "finishJoiningOrgBySettingMasterPassword": {
-    "message": "Finish joining $ORGANIZATION$ by setting a master password.",
-    "placeholders": {
-      "organization": {
-        "content": "$1",
-        "example": "Example Org"
-      }
-    }
+  "finishJoiningThisOrganizationBySettingAMasterPassword": {
+    "message": "Finish joining this organization by setting a master password."
   },
   "settings": {
     "message": "Settings"
