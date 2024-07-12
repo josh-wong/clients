@@ -1,10 +1,6 @@
-import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { RouterModule } from "@angular/router";
 import { firstValueFrom } from "rxjs";
 
-import { JslibModule } from "@bitwarden/angular/jslib.module";
 import { AutofillOverlayVisibility } from "@bitwarden/common/autofill/constants";
 import { AutofillSettingsServiceAbstraction } from "@bitwarden/common/autofill/services/autofill-settings.service";
 import { DomainSettingsService } from "@bitwarden/common/autofill/services/domain-settings.service";
@@ -20,46 +16,17 @@ import { I18nService } from "@bitwarden/common/platform/abstractions/i18n.servic
 import { MessagingService } from "@bitwarden/common/platform/abstractions/messaging.service";
 import { PlatformUtilsService } from "@bitwarden/common/platform/abstractions/platform-utils.service";
 import { VaultSettingsService } from "@bitwarden/common/vault/abstractions/vault-settings/vault-settings.service";
-import { DialogService ,
-  ItemModule,
-  CardComponent,
-  SectionComponent,
-  SectionHeaderComponent,
-  CheckboxModule,
-  TypographyModule,
-  FormFieldModule,
-} from "@bitwarden/components";
+import { DialogService } from "@bitwarden/components";
 
 import { BrowserApi } from "../../../platform/browser/browser-api";
 import { enableAccountSwitching } from "../../../platform/flags";
-import { PopOutComponent } from "../../../platform/popup/components/pop-out.component";
-import { PopupFooterComponent } from "../../../platform/popup/layout/popup-footer.component";
-import { PopupHeaderComponent } from "../../../platform/popup/layout/popup-header.component";
-import { PopupPageComponent } from "../../../platform/popup/layout/popup-page.component";
 import { AutofillService } from "../../services/abstractions/autofill.service";
 
 @Component({
-  templateUrl: "autofill.component.html",
-  standalone: true,
-  imports: [
-    CommonModule,
-    JslibModule,
-    RouterModule,
-    PopupPageComponent,
-    PopupHeaderComponent,
-    PopupFooterComponent,
-    PopOutComponent,
-    ItemModule,
-    CardComponent,
-    SectionComponent,
-    SectionHeaderComponent,
-    CheckboxModule,
-    TypographyModule,
-    FormFieldModule,
-    FormsModule,
-  ],
+  selector: "app-autofill-v1",
+  templateUrl: "autofill-v1.component.html",
 })
-export class AutofillComponent implements OnInit {
+export class AutofillV1Component implements OnInit {
   protected canOverrideBrowserAutofillSetting = false;
   protected defaultBrowserAutofillDisabled = false;
   protected autoFillOverlayVisibility: InlineMenuVisibilitySetting;
