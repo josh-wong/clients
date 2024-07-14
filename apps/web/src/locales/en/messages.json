@@ -619,7 +619,7 @@
     "message": "Log out"
   },
   "ok": {
-    "message": "Ok"
+    "message": "OK"
   },
   "yes": {
     "message": "Yes"
@@ -1686,7 +1686,7 @@
     "message": "Continue to bitwarden.com?"
   },
   "twoStepContinueToBitwardenUrlDesc": {
-    "message": "Bitwarden Authenticator allows you to store authenticator keys and generate TOTP codes for 2-step verification flows. Learn more on the bitwarden.com website."
+    "message": "Bitwarden Authenticator allows you to store authenticator keys and generate TOTP codes for two-step verification flows. Learn more on the bitwarden.com website."
   },
   "twoStepAuthenticatorScanCodeV2": {
     "message": "Scan the QR code below with your authenticator app or enter the key."
@@ -1897,7 +1897,7 @@
     "message": "Inactive two-step login"
   },
   "inactive2faReportDesc": {
-    "message": "Two-step login adds a layer of protection to your accounts. Set up two-step login using Bitwarden authenticator for these accounts or use an alternative method."
+    "message": "Two-step login adds a layer of protection to your accounts. Set up two-step login using Bitwarden Authenticator for these accounts or use an alternative method."
   },
   "inactive2faFound": {
     "message": "Logins without two-step login found"
@@ -2151,7 +2151,7 @@
     }
   },
   "premiumPriceWithFamilyPlan": {
-    "message": "Go premium for just $PRICE$ /year, or get premium accounts for $FAMILYPLANUSERCOUNT$ users and unlimited family sharing with a ",
+    "message": "Go Premium for just $PRICE$ /year, or get Premium accounts for $FAMILYPLANUSERCOUNT$ users and unlimited family sharing with a ",
     "placeholders": {
       "price": {
         "content": "$1",
@@ -3802,7 +3802,7 @@
     "message": "By checking this box you agree to the following:"
   },
   "acceptPoliciesRequired": {
-    "message": "Terms of Service and Privacy Policy have not been acknowledged."
+    "message": "Please acknowledge the Terms of Service and Privacy Policy."
   },
   "termsOfService": {
     "message": "Terms of Service"
@@ -3941,7 +3941,7 @@
     "description": "A 'fingerprint phrase' is a unique word phrase (similar to a passphrase) that a user can use to authenticate their public key with another user, for the purposes of sharing."
   },
   "fingerprintMatchInfo": {
-    "message": "Please make sure your vault is unlocked and Fingerprint phrase matches the other device."
+    "message": "Please make sure your vault is unlocked and fingerprint phrase matches the other device."
   },
   "fingerprintPhraseHeader": {
     "message": "Fingerprint phrase"
@@ -5385,7 +5385,7 @@
     "message": "Free Bitwarden Families"
   },
   "sponsoredFamiliesEligible": {
-    "message": "You and your family are eligible for Free Bitwarden Families. Redeem with your personal email to keep your data secure even when you are not at work."
+    "message": "You and your family are eligible for a free Bitwarden Families plan. Redeem this offer with your personal email to keep your data secure even when you are not at work."
   },
   "sponsoredFamiliesEligibleCard": {
     "message": "Redeem your Free Bitwarden for Families plan today to keep your data secure even when you are not at work."
@@ -5412,7 +5412,7 @@
     "message": "Select the organization you would like sponsored"
   },
   "familiesSponsoringOrgSelect": {
-    "message": "Which Free Families offer would you like to redeem?"
+    "message": "Which free Families offer would you like to redeem?"
   },
   "sponsoredFamiliesEmail": {
     "message": "Enter your personal email to redeem Bitwarden Families"
@@ -5439,7 +5439,7 @@
     }
   },
   "sponsoredFamiliesOffer": {
-    "message": "Accept Free Bitwarden Families"
+    "message": "Accept free Bitwarden Families offer"
   },
   "sponsoredFamiliesOfferRedeemed": {
     "message": "Free Bitwarden Families offer successfully redeemed"

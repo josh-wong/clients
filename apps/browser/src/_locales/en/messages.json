@@ -192,13 +192,13 @@
     "message": "Continue to web app?"
   },
   "continueToWebAppDesc": {
-    "message": "Explore more features of your Bitwarden account on the web app."
+    "message": "Explore more features of your Bitwarden account in the web app."
   },
   "continueToHelpCenter": {
     "message": "Continue to Help Center?"
   },
   "continueToHelpCenterDesc": {
-    "message": "Learn more about how to use Bitwarden on the Help Center."
+    "message": "Learn more about how to use Bitwarden in the Help Center."
   },
   "continueToBrowserExtensionStore": {
     "message": "Continue to browser extension store?"
@@ -207,7 +207,7 @@
     "message": "Help others find out if Bitwarden is right for them. Visit your browser's extension store and leave a rating now."
   },
   "changeMasterPasswordOnWebConfirmation": {
-    "message": "You can change your master password on the Bitwarden web app."
+    "message": "You can change your master password in the Bitwarden web app."
   },
   "fingerprintPhrase": {
     "message": "Fingerprint phrase",
@@ -242,7 +242,7 @@
     "message": "Bitwarden Authenticator"
   },
   "continueToAuthenticatorPageDesc": {
-    "message": "Bitwarden Authenticator allows you to store authenticator keys and generate TOTP codes for 2-step verification flows. Learn more on the bitwarden.com website"
+    "message": "Bitwarden Authenticator allows you to store authenticator keys and generate TOTP codes for two-step verification flows. Learn more on the bitwarden.com website."
   },
   "bitwardenSecretsManager": {
     "message": "Bitwarden Secrets Manager"
@@ -260,7 +260,7 @@
     "message": "Free Bitwarden Families"
   },
   "freeBitwardenFamiliesPageDesc": {
-    "message": "You are eligible for Free Bitwarden Families. Redeem this offer today in the web app."
+    "message": "You are eligible for a free Bitwarden Families plan. Redeem this offer today in the web app."
   },
   "version": {
     "message": "Version"
@@ -1016,7 +1016,7 @@
     "message": "Purchase Premium"
   },
   "premiumPurchaseAlert": {
-    "message": "You can purchase Premium membership on the bitwarden.com web vault. Do you want to visit the website now?"
+    "message": "You can purchase a Premium membership in the bitwarden.com web vault. Do you want to visit the website now?"
   },
   "premiumCurrentMember": {
     "message": "You are a Premium member!"
@@ -1836,10 +1836,10 @@
     "message": "and"
   },
   "acceptPolicies": {
-    "message": "By checking this box you agree to the following:"
+    "message": "By checking this box, you agree to the following:"
   },
   "acceptPoliciesRequired": {
-    "message": "Terms of Service and Privacy Policy have not been acknowledged."
+    "message": "Please acknowledge the Terms of Service and Privacy Policy."
   },
   "termsOfService": {
     "message": "Terms of Service"
@@ -1851,7 +1851,7 @@
     "message": "Your password hint cannot be the same as your password."
   },
   "ok": {
-    "message": "Ok"
+    "message": "OK"
   },
   "errorRefreshingAccessToken":{
     "message": "Access Token Refresh Error"
@@ -2585,7 +2585,7 @@
     "message": "Fingerprint phrase"
   },
   "fingerprintMatchInfo": {
-    "message": "Please make sure your vault is unlocked and the Fingerprint phrase matches on the other device."
+    "message": "Please make sure your vault is unlocked and the fingerprint phrase matches on the other device."
   },
   "resendNotification": {
     "message": "Resend notification"

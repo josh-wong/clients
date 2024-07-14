@@ -763,7 +763,7 @@
     "message": "Environment URLs saved"
   },
   "ok": {
-    "message": "Ok"
+    "message": "OK"
   },
   "yes": {
     "message": "Yes"
@@ -847,7 +847,7 @@
     "message": "Continue to web app?"
   },
   "changeMasterPasswordOnWebConfirmation": {
-    "message": "You can change your master password on the Bitwarden web app."
+    "message": "You can change your master password in the Bitwarden web app."
   },
   "fingerprintPhrase": {
     "message": "Fingerprint phrase",
@@ -895,7 +895,7 @@
     "message": "Invalid master password"
   },
   "twoStepLoginConfirmation": {
-    "message": "Two-step login makes your account more secure by requiring you to verify your login with another device such as a security key, authenticator app, SMS, phone call, or email. Two-step login can be set up on the bitwarden.com web vault. Do you want to visit the website now?"
+    "message": "Two-step login makes your account more secure by requiring you to verify your login with another device such as a security key, authenticator app, SMS, phone call, or email. Two-step login can be set up in the Bitwarden web app at bitwarden.com. Do you want to visit the website now?"
   },
   "twoStepLogin": {
     "message": "Two-step login"
@@ -1145,16 +1145,16 @@
     "message": "Priority customer support."
   },
   "premiumSignUpFuture": {
-    "message": "All future premium features. More coming soon!"
+    "message": "All future Premium features. More coming soon!"
   },
   "premiumPurchase": {
     "message": "Purchase Premium"
   },
   "premiumPurchaseAlert": {
-    "message": "You can purchase premium membership on the bitwarden.com web vault. Do you want to visit the website now?"
+    "message": "You can purchase a Premium membership on the bitwarden.com web vault. Do you want to visit the website now?"
   },
   "premiumCurrentMember": {
-    "message": "You are a premium member!"
+    "message": "You are a Premium member!"
   },
   "premiumCurrentMemberThanks": {
     "message": "Thank you for supporting Bitwarden."
@@ -1709,7 +1709,7 @@
     "message": "By checking this box you agree to the following:"
   },
   "acceptPoliciesRequired": {
-    "message": "Terms of Service and Privacy Policy have not been acknowledged."
+    "message": "Please acknowledge the Terms of Service and Privacy Policy."
   },
   "enableBrowserIntegration": {
     "message": "Allow browser integration"
@@ -2405,7 +2405,7 @@
     "message": "A notification has been sent to your device."
   },
   "fingerprintMatchInfo": {
-    "message": "Please make sure your vault is unlocked and Fingerprint phrase matches the other device."
+    "message": "Please make sure your vault is unlocked and fingerprint phrase matches the other device."
   },
   "fingerprintPhraseHeader": {
     "message": "Fingerprint phrase"
